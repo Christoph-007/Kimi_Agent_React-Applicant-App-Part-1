@@ -1,0 +1,507 @@
+# ShiftMaster — Frontend Implementation Document
+## Part 2: Employer Portal (SCR-17–30)
+
+> All screens in `src/pages/employer/`. All require `ProtectedRoute role="employer"`.  
+> Unapproved employers (SCR-17 and SCR-30 only) see a **pending approval banner**; all other employer screens redirect to dashboard.
+
+---
+
+### SCR-17 — Employer Dashboard (`/employer/dashboard`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Sidebar + main; stat cards row (6 cards) + 3 widget sections below |
+| Colors | Stat card accents: indigo (jobs), green (apps), amber (pending), blue (shortlist) |
+| Responsive | Cards 3×2 on desktop → 2×3 tablet → 1-col mobile; sidebar collapses |
+
+#### B. UI Components
+| Component | Type | States |
+|-----------|------|--------|
+| `Sidebar` (Employer) | Reusable | Expanded, collapsed |
+| `StatCard` (×6) | Reusable | Skeleton, loaded, zero |
+| `PendingApprovalBanner` | Screen-specific | Shown if `isApproved = false` |
+| `ApplicationCard` (×5) | Reusable | Default, hover |
+| `JobRequestCard` (×3) | Reusable | Default |
+| `ShiftCard` (×3) | Reusable | Default |
+| `QuickActionButton` | Screen-specific | Default, hover |
+
+#### C. Functional Elements
+- **API Calls (parallel on mount):**
+  - `GET /api/jobs/employer/my-jobs?limit=5`
+  - ⚠️ **FIND-01 Workaround:** No `GET /api/applications/employer/recent` endpoint exists in backend. Show recent applications by iterating the first 2-3 job IDs returned above, then calling `GET /api/applications/job/:jobId?limit=2` per job in parallel. Alternatively, display per-job application counts only and link to SCR-21.
+  - `GET /api/shifts/employer/my-shifts?limit=3`
+  - `GET /api/job-requests/employer/sent?limit=3`
+  - `GET /api/notifications/unread-count`
+  - `GET /api/shortlist?limit=1` (count only)
+- **Approval check:** If `isApproved === false`, show `PendingApprovalBanner`; hide action buttons for job creation
+- **Loading:** Independent skeleton per widget
+- **Empty States:** Each widget shows contextual empty message + CTA
+
+#### D. Navigation & Routing
+- **Route:** `/employer/dashboard`
+- **Guard:** `ProtectedRoute role="employer"` (approved + unapproved allowed)
+- **Redirect:** Unauthenticated → `/login`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/employer/DashboardPage.jsx`
+- **Performance:** `Promise.all` for parallel fetches; cache `isApproved` in `AuthContext`
+
+---
+
+### SCR-18 — My Job Postings (`/employer/jobs`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Filter bar + data table (or card list) below |
+| Colors | Status: open=green, closed=gray, filled=blue badges |
+| Responsive | Table → card stack on mobile |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `JobCardRow` | Default, hover, open/closed/filled states |
+| `StatusBadge` | Per status |
+| `SelectFilter` (status) | Default, selected |
+| `SearchBar` | Default, active |
+| `ConfirmDialog` | Closed, open (for close/delete) |
+| `Pagination` | Standard |
+| `EmptyState` | "No jobs posted yet" + Post Job CTA |
+
+#### C. Functional Elements
+- **API:** `GET /api/jobs/employer/my-jobs?status=&page=`; re-fetch on filter
+- **Close Job:** Confirm → `PUT /api/jobs/:id/close` → update status badge
+- **Reopen Job:** `PUT /api/jobs/:id/reopen` (no confirm)
+- **Delete Job:** Confirm → `DELETE /api/jobs/:id` → remove row
+- **Guard:** Unapproved employer → redirect to `/employer/dashboard`
+- **Loading:** Skeleton rows
+
+#### D. Navigation & Routing
+- **Route:** `/employer/jobs`
+- **Guard:** `ProtectedRoute role="employer" requireApproved`
+- **Exits:** `/employer/jobs/create`, `/employer/jobs/:id/edit`, `/employer/jobs/:id/applicants`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/employer/MyJobsPage.jsx`
+
+---
+
+### SCR-19 — Create Job (`/employer/jobs/create`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Single-column form with section dividers; max-w-3xl centered |
+| Colors | Required field asterisks in red; tag input with indigo chips |
+| Responsive | 2-col form fields on desktop → 1-col on mobile |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `TextInput`, `TextareaInput`, `SelectInput` | Default, focused, error |
+| `SkillTagInput` (required skills) | Default, tag added, remove |
+| `SkillTagInput` (benefits) | Same as above |
+| `DatePicker` (expiry) | Default, open calendar, selected |
+| `Button` (Post Job) | Default, loading, disabled |
+
+#### C. Functional Elements
+- **Validation:**
+
+| Field | Rule |
+|-------|------|
+| Job Title | Required |
+| Description | Required |
+| Job Type | Required (select) |
+| Salary Amount | Required, ≥ 0 |
+| Salary Period | Required (select) |
+| City, State | Required |
+| Pincode | Required, 6 digits |
+
+- **API:** `POST /api/jobs` on submit
+- **Success:** Toast + navigate to `/employer/jobs`
+- **Error:** Per-field inline errors; toast on server error
+- **Loading:** Submit button spinner; fields disabled
+
+#### D. Navigation & Routing
+- **Route:** `/employer/jobs/create`
+- **Guard:** `ProtectedRoute role="employer" requireApproved`
+- **Redirect on success:** `/employer/jobs`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/employer/CreateJobPage.jsx`
+- **Libraries:** `react-hook-form` + `yup`; `react-datepicker` for expiry date
+
+---
+
+### SCR-20 — Edit Job (`/employer/jobs/:id/edit`)
+
+> Same form and implementation as SCR-19, with:
+- `GET /api/jobs/:id` on mount to pre-populate all fields
+- Submit calls `PUT /api/jobs/:id` instead of `POST`
+- Button labels: "Save Changes" / "Discard Changes"
+- **Folder:** `src/pages/employer/EditJobPage.jsx`
+
+---
+
+### SCR-21 — Job Applications (`/employer/jobs/:id/applicants`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Page header (job title) + filter bar + application card list |
+| Colors | Status: applied=blue, reviewing=yellow, accepted=green, rejected=red |
+| Responsive | Cards stack; timeline collapses |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `ApplicationCard` (expandable) | Collapsed, expanded (cover letter + timeline), hover |
+| `StatusBadge` | Per status |
+| `RejectModal` | Closed, open, submitting |
+| `JobRequestModal` | Closed, open, submitting |
+| `ConfirmDialog` | Accept confirm |
+| `StatusFilter` | Default, selected |
+
+#### C. Functional Elements
+- **API:**
+  - `GET /api/applications/job/:jobId?status=&page=`
+  - `GET /api/applications/:id` — full detail for expand modal
+  - `PUT /api/applications/:id/accept`
+  - `PUT /api/applications/:id/reject { rejectionReason }` ⚠️ field is `rejectionReason` (not `rejectReason`)
+  - `GET /api/resume/:applicantId` → open URL
+  - `POST /api/shortlist`
+  - `POST /api/job-requests`
+- **Accept:** Updates card status badge inline
+- **Reject:** Opens reason modal; on confirm, updates badge
+- **Shortlist:** Toggle heart icon; `POST /api/shortlist`
+- **Loading:** Skeleton application cards
+
+#### D. Navigation & Routing
+- **Route:** `/employer/jobs/:id/applicants`
+- **Guard:** `ProtectedRoute role="employer" requireApproved`
+- **Ownership:** API returns 403 if employer doesn't own the job
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/employer/JobApplicationsPage.jsx`
+
+---
+
+### SCR-22 — Browse Applicants (`/employer/applicants`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Left sidebar (filter panel, 280px, collapsible) + right applicant cards grid |
+| Colors | Availability indicator: green dot = available, gray = unavailable |
+| Responsive | Sidebar → top filter drawer on mobile; grid 3→2→1 col |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `FilterPanel` | Expanded, collapsed |
+| `ApplicantCard` | Default, hover, shortlisted (heart filled) |
+| `AvailabilityDot` | Green (available), Gray |
+| `SkillBadge` | Static |
+| `JobRequestModal` | Closed, open, submitting |
+| `SearchBar` | Default, active |
+| `SaveFilterButton` | Default, saving, saved |
+| `Pagination` | Standard |
+| `EmptyState` | "No applicants match" |
+
+#### C. Functional Elements
+- **Filters (all query params):** name search, job categories, shift type, location, min/max rate, available day, sort/order
+- **API:**
+  - `GET /api/employer/applicants?...` — debounced re-fetch on filter change
+  - `GET /api/employer/saved-filters` — load saved filters on mount
+  - `PUT /api/employer/saved-filters` — save current filters
+  - `POST /api/shortlist` — shortlist toggle
+  - `POST /api/job-requests` — send job request
+- **Loading:** Skeleton applicant cards (×6)
+- **Empty State:** "No applicants match your current filters" + Clear Filters CTA
+
+#### D. Navigation & Routing
+- **Route:** `/employer/applicants`
+- **Guard:** `ProtectedRoute role="employer" requireApproved`
+- **Exit:** `/employer/applicants/:id`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/employer/BrowseApplicantsPage.jsx`
+- **Performance:** Debounce filter API calls 400ms; paginate results
+
+---
+
+### SCR-23 — Applicant Full Profile Employer View (`/employer/applicants/:id`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Single column profile card; sticky action sidebar on desktop |
+| Colors | Availability badge prominent at top |
+| Responsive | Sticky sidebar → bottom action bar on mobile |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `ProfileHeader` | Read-only (readonly mode) |
+| `ShortlistToggleButton` | Not shortlisted, shortlisted |
+| `ShortlistNotesInput` | Hidden, shown on shortlist action |
+| `JobRequestModal` | Closed, open, submitting |
+| `SkillBadge` | Static |
+| `DayAvailabilityGrid` | Read-only |
+
+#### C. Functional Elements
+- **API:**
+  - `GET /api/employer/applicants/:id`
+  - `GET /api/shortlist/check/:id` — check if already shortlisted
+  - `GET /api/resume/:id` → open URL
+  - `POST /api/shortlist` / `DELETE /api/shortlist/:id`
+  - `POST /api/job-requests`
+- **Shortlist toggle:** Heart button + optional notes/label input appears
+- **Loading:** Skeleton profile
+
+#### D. Navigation & Routing
+- **Route:** `/employer/applicants/:id`
+- **Guard:** `ProtectedRoute role="employer" requireApproved`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/employer/ApplicantProfilePage.jsx`
+
+---
+
+### SCR-24 — My Shortlist (`/employer/shortlist`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Card grid with inline editable notes |
+| Colors | Shortlist card has heart icon filled in red |
+| Responsive | Grid 3→2→1 col |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `ShortlistCard` | Default, editing notes, hover |
+| `InlineEditInput` | View mode (text), edit mode (textarea) |
+| `ConfirmDialog` (remove) | Closed, open |
+| `JobRequestModal` | Closed, open, submitting |
+| `Pagination` | Standard |
+| `EmptyState` | "No shortlisted applicants yet" |
+
+#### C. Functional Elements
+- **API:**
+  - `GET /api/shortlist?page=`
+  - `PUT /api/shortlist/:id` — save notes/label
+  - `DELETE /api/shortlist/:id`
+  - `POST /api/job-requests`
+- **Inline Notes Edit:** Click "Edit Notes" → textarea appears → "Save" → `PUT`
+- **Remove:** Confirm dialog → `DELETE` → card removed from list
+
+#### D. Navigation & Routing
+- **Route:** `/employer/shortlist`
+- **Guard:** `ProtectedRoute role="employer" requireApproved`
+- **Exit:** `/employer/applicants/:applicantId`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/employer/ShortlistPage.jsx`
+
+---
+
+### SCR-25 — Sent Job Requests (`/employer/job-requests`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Filter bar + request card list |
+| Colors | sent=amber, accepted=green, declined=red, expired=gray |
+| Responsive | Cards stack |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `JobRequestCard` | Default, hover, expanded (response detail) |
+| `StatusBadge` | Per status |
+| `SelectFilter` (status) | Default, selected |
+| `Pagination` | Standard |
+| `EmptyState` | "No job requests sent yet" |
+
+#### C. Functional Elements
+- **API:** `GET /api/job-requests/employer/sent?status=&page=` — re-fetch on filter
+- **Read-only:** No actions on sent requests (view only)
+- **Loading:** Skeleton cards
+
+#### D. Navigation & Routing
+- **Route:** `/employer/job-requests`
+- **Guard:** `ProtectedRoute role="employer" requireApproved`
+- **Exit:** `/employer/applicants/:id`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/employer/SentJobRequestsPage.jsx`
+
+---
+
+### SCR-26 — My Shifts Employer (`/employer/shifts`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Filter bar + shift card list |
+| Colors | Status badges consistent with applicant shift view |
+| Responsive | Cards stack |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `ShiftCard` | Default, hover |
+| `StatusBadge` | Per status |
+| `DateRangePicker` | Default, selecting |
+| `EditShiftModal` | Closed, open |
+| `ConfirmDialog` (cancel/delete) | Closed, open, reason textarea |
+| `SelectFilter` | Standard |
+
+#### C. Functional Elements
+- **API:**
+  - `GET /api/shifts/employer/my-shifts?status=&page=`
+  - `PUT /api/shifts/:id` — **edit shift** (update date/time/location/instructions/payment) via inline modal
+  - `PUT /api/shifts/:id/cancel { reason }` (shared with applicant — same endpoint, both roles)
+  - `DELETE /api/shifts/:id`
+- **Edit Shift:** Modal with pre-filled form → `PUT /api/shifts/:id`
+- **Loading:** Skeleton cards
+
+#### D. Navigation & Routing
+- **Route:** `/employer/shifts`
+- **Guard:** `ProtectedRoute role="employer" requireApproved`
+- **Exit:** `/employer/shifts/create`, `/employer/attendance`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/employer/MyShiftsPage.jsx`
+
+---
+
+### SCR-27 — Create Shift (`/employer/shifts/create`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Single-column form card, max-w-2xl |
+| Colors | Job and applicant selects are dependent (applicant list loads after job selection) |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `SelectInput` (job) | Default, loading options, selected |
+| `SelectInput` (applicant) | Disabled until job selected, loading, selected |
+| `DatePicker` | Default, open, selected |
+| `TimeInput` (×2) | Default, focused, error |
+| `TextInput` (location) | Standard |
+| `TextareaInput` (instructions) | Optional |
+| `NumberInput` (payment) | Optional |
+| `Button` (Create) | Default, loading, disabled |
+
+#### C. Functional Elements
+- **Cascading selects:** On job select → `GET /api/applications/job/:jobId?status=accepted` to populate applicant dropdown
+- **API:**
+  - `GET /api/jobs/employer/my-jobs?status=open` on mount
+  - `POST /api/shifts` on submit
+- **Validation:** Job, applicant, date, start time, end time, location all required; end time must be after start time
+- **Success:** Toast + navigate to `/employer/shifts`
+
+#### D. Navigation & Routing
+- **Route:** `/employer/shifts/create`
+- **Guard:** `ProtectedRoute role="employer" requireApproved`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/employer/CreateShiftPage.jsx`
+- **Libraries:** `react-hook-form`; `react-datepicker`
+
+---
+
+### SCR-28 — Attendance Records Employer (`/employer/attendance`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Filter bar + data table |
+| Colors | Status: pending=amber, approved=green, disputed=red |
+| Responsive | Table horizontally scrollable on mobile |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `DataTable` | Loading, populated, empty |
+| `StatusBadge` | Per status |
+| `DateRangePicker` | Default, selecting |
+| `SearchBar` (applicant name) | Default, active |
+| `ManualAttendanceModal` | Closed, open, submitting |
+| `ConfirmDialog` (approve) | Closed, open |
+| `ExportButton` | Default, downloading |
+
+#### C. Functional Elements
+- **API:**
+  - `GET /api/attendance/employer/records?page=`
+  - `GET /api/attendance/shift/:shiftId` — fetch attendance detail record for a specific shift
+  - `PUT /api/attendance/:id/approve`
+  - `POST /api/attendance/manual { shiftId, applicantId, checkIn, checkOut }`
+- **Export:** CSV download of table data
+- **Loading:** Table skeleton rows
+
+#### D. Navigation & Routing
+- **Route:** `/employer/attendance`
+- **Guard:** `ProtectedRoute role="employer" requireApproved`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/employer/AttendancePage.jsx`
+- **Libraries:** `papaparse` for CSV export
+
+---
+
+### SCR-29 — Notifications Employer (`/employer/notifications`)
+
+> **⚡ Shared implementation with SCR-13 (Applicant Notifications).** Same component and layout.
+
+| Property | Detail |
+|----------|--------|
+| **Route** | `/employer/notifications` |
+| **Guard** | `ProtectedRoute role="employer"` |
+| **Notification Types** | `job_request_response`, `new_matching_applicant` |
+| **API Calls** | Same as SCR-13 — scoped by JWT |
+| **Folder** | `src/pages/employer/NotificationsPage.jsx` |
+| **Reuse** | `NotificationItem`, `Pagination`, `EmptyState` components identical to SCR-13 |
+
+---
+
+### SCR-30 — Business Profile & Settings (`/employer/profile`) ⚠️ Sensitive
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Tabbed or sectioned single-column card; view/edit mode toggle |
+| Colors | Account status badges prominent; approval=green, blocked=red |
+| Responsive | Full-width sections |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `ProfileHeader` | View mode, edit mode |
+| `AccountStatusBadge` | Approved, Pending, Blocked |
+| `TextInput`, `SelectInput`, `TextareaInput` | View-only, edit, error |
+| `PasswordInput` (×3) | Standard |
+| `Button` (Save / Update Password) | Default, loading, disabled |
+| `SavedFiltersPreview` | View, clear button |
+
+#### C. Functional Elements
+- **API:**
+  - `GET /api/auth/me` on mount
+  - `PUT /api/auth/me` — update business profile
+  - `PUT /api/auth/update-password`
+  - `GET /api/employer/saved-filters`
+  - `PUT /api/employer/saved-filters` (clear = send empty values)
+- **Approval/blocked status** is read-only (admin-controlled)
+- **Edit toggle:** Cancel reverts to fetched values
+
+#### D. Navigation & Routing
+- **Route:** `/employer/profile`
+- **Guard:** `ProtectedRoute role="employer"` (approved + unapproved allowed)
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/employer/ProfilePage.jsx`

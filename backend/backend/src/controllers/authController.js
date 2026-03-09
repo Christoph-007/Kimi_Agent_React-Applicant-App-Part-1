@@ -1,0 +1,369 @@
+const Employer = require('../models/Employer');
+const Applicant = require('../models/Applicant');
+const Admin = require('../models/Admin');
+const { sendTokenResponse } = require('../utils/tokenUtils');
+const { successResponse, errorResponse } = require('../utils/responseUtils');
+const {
+    notifyEmployerSignup,
+    notifyApplicantSignup,
+} = require('../services/notificationService');
+
+// NEW: in-app notification service (does not replace the above)
+const {
+    notifyEmployersNewMatchingApplicant,
+} = require('../services/inAppNotificationService');
+
+// @desc    Register employer
+// @route   POST /api/auth/employer/signup
+// @access  Public
+const employerSignup = async (req, res) => {
+    try {
+        const {
+            storeName,
+            ownerName,
+            email,
+            phone,
+            password,
+            address, // might be string (street) or object
+            city,
+            state,
+            pincode,
+            businessType,
+            description,
+            businessDescription,
+        } = req.body;
+
+        // Check if employer already exists
+        const existingEmployer = await Employer.findOne({
+            $or: [{ email }, { phone }],
+        });
+
+        if (existingEmployer) {
+            return errorResponse(
+                res,
+                400,
+                'An employer with this email or phone already exists'
+            );
+        }
+
+        // Map address fields
+        const addressObj = {
+            street: typeof address === 'string' ? address : (address?.street || ''),
+            city: city || address?.city,
+            state: state || address?.state,
+            pincode: pincode || address?.pincode,
+        };
+
+        // Create employer
+        const employer = await Employer.create({
+            storeName,
+            ownerName,
+            email,
+            phone,
+            password,
+            address: addressObj,
+            businessType: businessType || 'other',
+            businessDescription: description || businessDescription || '',
+            isApproved: false,
+        });
+
+        // Send welcome email (graceful failure)
+        try {
+            await notifyEmployerSignup(employer);
+        } catch (err) {
+            console.error('[Auth] Welcome email failed:', err.message);
+        }
+
+        // Send token response
+        sendTokenResponse(employer, 201, res, 'employer');
+    } catch (error) {
+        console.error('Employer signup error:', error);
+        return errorResponse(res, 500, 'Error creating employer account', error.message);
+    }
+};
+
+// @desc    Register applicant
+// @route   POST /api/auth/applicant/signup
+// @access  Public
+const applicantSignup = async (req, res) => {
+    try {
+        const {
+            name,
+            fullName,
+            phone,
+            email,
+            password,
+            skills,
+            experience,
+            preferredJobType,
+            jobCategories,
+            preferredShiftType,
+            preferredWorkLocation,
+            weeklyAvailability,
+            availabilityDays,
+            expectedHourlyRate,
+        } = req.body;
+
+        // Check if applicant already exists
+        const query = { phone };
+        if (email) {
+            query.$or = [{ phone }, { email }];
+        }
+
+        const existingApplicant = await Applicant.findOne(query);
+
+        if (existingApplicant) {
+            return errorResponse(
+                res,
+                400,
+                'An applicant with this phone or email already exists'
+            );
+        }
+
+        // Map weekly availability
+        const availability = weeklyAvailability || {
+            days: availabilityDays || [],
+        };
+
+        // Create applicant
+        const applicant = await Applicant.create({
+            name: name || fullName,
+            phone,
+            email,
+            password,
+            skills,
+            experience,
+            preferredJobType,
+            jobCategories,
+            preferredShiftType,
+            preferredWorkLocation,
+            weeklyAvailability: availability,
+            expectedHourlyRate,
+        });
+
+        // Send welcome email if email provided (graceful failure)
+        if (email) {
+            try {
+                await notifyApplicantSignup(applicant);
+            } catch (err) {
+                console.error('[Auth] Applicant welcome email failed:', err.message);
+            }
+        }
+
+        // NEW: notify employers whose saved filters match this new applicant
+        if (jobCategories && jobCategories.length > 0) {
+            (async () => {
+                try {
+                    const matchingEmployers = await Employer.find({
+                        isApproved: true,
+                        isBlocked: false,
+                        'savedFilters.jobCategories': { $in: jobCategories },
+                    });
+                    if (matchingEmployers.length > 0) {
+                        await notifyEmployersNewMatchingApplicant(applicant, matchingEmployers);
+                    }
+                } catch (err) {
+                    console.error('[Auth] Employer match notification failed:', err.message);
+                }
+            })();
+        }
+
+        // Send token response
+        sendTokenResponse(applicant, 201, res, 'applicant');
+    } catch (error) {
+        console.error('Applicant signup error:', error);
+        return errorResponse(res, 500, 'Error creating applicant account', error.message);
+    }
+};
+
+// @desc    Login user (employer/applicant/admin)
+// @route   POST /api/auth/login
+// @access  Public
+const login = async (req, res) => {
+    try {
+        const { identifier, password, userType } = req.body;
+
+        let Model;
+        if (userType === 'employer') {
+            Model = Employer;
+        } else if (userType === 'applicant') {
+            Model = Applicant;
+        } else if (userType === 'admin') {
+            Model = Admin;
+        } else {
+            return errorResponse(res, 400, 'Invalid user type');
+        }
+
+        const user = await Model.findOne({
+            $or: [{ email: identifier }, { phone: identifier }],
+        }).select('+password');
+
+        if (!user) {
+            return errorResponse(res, 401, 'Invalid credentials');
+        }
+
+        const isPasswordMatch = await user.comparePassword(password);
+
+        if (!isPasswordMatch) {
+            return errorResponse(res, 401, 'Invalid credentials');
+        }
+
+        if (userType === 'employer' && user.isBlocked) {
+            return errorResponse(res, 403, 'Your account has been blocked.');
+        }
+
+        if (userType === 'applicant' && !user.isActive) {
+            return errorResponse(res, 403, 'Your account has been deactivated.');
+        }
+
+        if (userType === 'admin' && !user.isActive) {
+            return errorResponse(res, 403, 'Your admin account has been deactivated.');
+        }
+
+        if (userType === 'admin') {
+            user.lastLogin = new Date();
+            await user.save();
+        }
+
+        user.password = undefined;
+        sendTokenResponse(user, 200, res, userType);
+    } catch (error) {
+        console.error('Login error:', error);
+        return errorResponse(res, 500, 'Error logging in', error.message);
+    }
+};
+
+// @desc    Get current logged in user
+// @route   GET /api/auth/me
+// @access  Private
+const getMe = async (req, res) => {
+    try {
+        const userObj = req.user.toObject ? req.user.toObject() : { ...req.user };
+        userObj.type = req.userType;
+        return successResponse(res, 200, 'User retrieved successfully', userObj);
+    } catch (error) {
+        return errorResponse(res, 500, 'Error retrieving user', error.message);
+    }
+};
+
+// @desc    Update current logged in user profile
+// @route   PUT /api/auth/me
+// @access  Private
+const updateMe = async (req, res) => {
+    try {
+        let Model;
+        if (req.userType === 'employer') {
+            Model = Employer;
+        } else if (req.userType === 'applicant') {
+            Model = Applicant;
+        } else if (req.userType === 'admin') {
+            Model = Admin;
+        }
+
+        // Fields that can be updated
+        const updatableFields = [
+            'fullName', 'name', 'phone', 'email', 'experience', 'expectedHourlyRate',
+            'skills', 'jobCategories', 'preferredShiftType', 'preferredWorkLocation',
+            'availabilityDays', 'isAvailable', 'storeName', 'ownerName', 'address',
+            'city', 'state', 'pincode', 'description', 'businessDescription'
+        ];
+
+        const updates = {};
+        Object.keys(req.body).forEach(key => {
+            if (updatableFields.includes(key)) {
+                updates[key] = req.body[key];
+            }
+        });
+
+        // Specialized mapping for Applicant
+        if (req.userType === 'applicant') {
+            if (updates.fullName) updates.name = updates.fullName;
+            if (updates.availabilityDays) {
+                updates.weeklyAvailability = {
+                    ...req.user.weeklyAvailability,
+                    days: updates.availabilityDays
+                };
+            }
+        }
+
+        // Specialized mapping for Employer
+        if (req.userType === 'employer') {
+            if (updates.city || updates.state || updates.pincode) {
+                updates.address = {
+                    street: updates.address || req.user.address?.street || '',
+                    city: updates.city || req.user.address?.city,
+                    state: updates.state || req.user.address?.state,
+                    pincode: updates.pincode || req.user.address?.pincode,
+                };
+            }
+            if (updates.description) updates.businessDescription = updates.description;
+        }
+
+        const user = await Model.findByIdAndUpdate(req.user._id, updates, {
+            new: true,
+            runValidators: true,
+        });
+
+        const userObj = user.toObject ? user.toObject() : { ...user };
+        userObj.type = req.userType;
+
+        return successResponse(res, 200, 'Profile updated successfully', userObj);
+    } catch (error) {
+        console.error('Update profile error:', error);
+        return errorResponse(res, 500, 'Error updating profile', error.message);
+    }
+};
+
+// @desc    Update password
+// @route   PUT /api/auth/update-password
+// @access  Private
+const updatePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return errorResponse(res, 400, 'Please provide current and new password');
+        }
+
+        let Model;
+        if (req.userType === 'employer') Model = Employer;
+        else if (req.userType === 'applicant') Model = Applicant;
+        else if (req.userType === 'admin') Model = Admin;
+
+        const user = await Model.findById(req.user._id).select('+password');
+        const isPasswordMatch = await user.comparePassword(currentPassword);
+
+        if (!isPasswordMatch) {
+            return errorResponse(res, 401, 'Current password is incorrect');
+        }
+
+        user.password = newPassword;
+        await user.save();
+
+        return successResponse(res, 200, 'Password updated successfully');
+    } catch (error) {
+        console.error('Update password error:', error);
+        return errorResponse(res, 500, 'Error updating password', error.message);
+    }
+};
+
+// @desc    Logout user
+// @route   POST /api/auth/logout
+// @access  Private
+const logout = async (req, res) => {
+    try {
+        return successResponse(res, 200, 'Logged out successfully');
+    } catch (error) {
+        return errorResponse(res, 500, 'Error logging out', error.message);
+    }
+};
+
+module.exports = {
+    employerSignup,
+    applicantSignup,
+    login,
+    getMe,
+    updateMe,
+    updatePassword,
+    logout,
+};

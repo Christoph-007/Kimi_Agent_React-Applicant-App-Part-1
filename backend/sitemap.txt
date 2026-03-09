@@ -1,0 +1,597 @@
+# ShiftMaster — Complete Sitemap
+> **Version:** 1.0 | **Generated:** 2026-03-02 | **Total Screens:** 35
+
+---
+
+## 📊 Screen Count Summary
+
+| Role / Section           | Screen Count |
+|--------------------------|:------------:|
+| Public / Unauthenticated | 6            |
+| Applicant Portal         | 10           |
+| Employer Portal          | 14           |
+| Admin Portal             | 5            |
+| **TOTAL**                | **35**       |
+
+---
+
+## 📋 Flat Screen Index (All 35 in Order)
+
+| ID     | Screen Name                        | Route                              | Role        |
+|--------|------------------------------------|------------------------------------|-------------|
+| SCR-01 | Landing Page                       | `/`                                | Public      |
+| SCR-02 | Login                              | `/login`                           | Public      |
+| SCR-03 | Applicant Registration             | `/signup/applicant`                | Public      |
+| SCR-04 | Employer Registration              | `/signup/employer`                 | Public      |
+| SCR-05 | Browse Jobs (Public)               | `/jobs`                            | Public      |
+| SCR-06 | Job Detail (Public)                | `/jobs/:id`                        | Public      |
+| SCR-07 | Applicant Dashboard                | `/applicant/dashboard`             | Applicant   |
+| SCR-08 | Browse Jobs (Auth)                 | `/applicant/jobs`                  | Applicant   |
+| SCR-09 | My Applications                    | `/applicant/applications`          | Applicant   |
+| SCR-10 | My Shifts                          | `/applicant/shifts`                | Applicant   |
+| SCR-11 | Attendance History                 | `/applicant/attendance`            | Applicant   |
+| SCR-12 | Job Requests (Received)            | `/applicant/job-requests`          | Applicant   |
+| SCR-13 | Notifications (Applicant)          | `/applicant/notifications`         | Applicant   |
+| SCR-14 | Applicant Profile                  | `/applicant/profile`               | Applicant   |
+| SCR-15 | Resume Management                  | `/applicant/resume`                | Applicant   |
+| SCR-16 | Account Settings (Applicant)       | `/applicant/settings`              | Applicant   |
+| SCR-17 | Employer Dashboard                 | `/employer/dashboard`              | Employer    |
+| SCR-18 | My Job Postings                    | `/employer/jobs`                   | Employer    |
+| SCR-19 | Create Job                         | `/employer/jobs/create`            | Employer    |
+| SCR-20 | Edit Job                           | `/employer/jobs/:id/edit`          | Employer    |
+| SCR-21 | Job Applications                   | `/employer/jobs/:id/applicants`    | Employer    |
+| SCR-22 | Browse Applicants                  | `/employer/applicants`             | Employer    |
+| SCR-23 | Applicant Full Profile (Employer)  | `/employer/applicants/:id`         | Employer    |
+| SCR-24 | My Shortlist                       | `/employer/shortlist`              | Employer    |
+| SCR-25 | Sent Job Requests                  | `/employer/job-requests`           | Employer    |
+| SCR-26 | My Shifts (Employer)               | `/employer/shifts`                 | Employer    |
+| SCR-27 | Create Shift                       | `/employer/shifts/create`          | Employer    |
+| SCR-28 | Attendance Records (Employer)      | `/employer/attendance`             | Employer    |
+| SCR-29 | Notifications (Employer)           | `/employer/notifications`          | Employer    |
+| SCR-30 | Business Profile & Settings        | `/employer/profile`                | Employer    |
+| SCR-31 | Admin Dashboard                    | `/admin/dashboard`                 | Admin       |
+| SCR-32 | Manage Employers                   | `/admin/employers`                 | Admin       |
+| SCR-33 | Manage Applicants                  | `/admin/applicants`                | Admin       |
+| SCR-34 | Moderate Jobs                      | `/admin/jobs`                      | Admin       |
+| SCR-35 | Platform Analytics                 | `/admin/analytics`                 | Admin       |
+
+---
+
+## 🌐 SECTION 1 — Public / Unauthenticated Screens (6 screens)
+
+> Accessible to all visitors. No authentication required. Login/Signup CTAs are present.
+
+---
+
+### SCR-01 — Landing Page
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Public |
+| **Route**       | `/` |
+| **User Types**  | All (unauthenticated, applicant, employer, admin) |
+| **Purpose**     | Marketing page — converts visitors into applicants or employers |
+| **Parent**      | Root / Entry point |
+| **Entry Points** | Direct URL, browser bookmark, external links |
+| **Exit Points** | `/jobs`, `/signup/applicant`, `/signup/employer`, `/login`, `/jobs/:id` |
+
+---
+
+### SCR-02 — Login
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Public (Authentication) ⚠️ *Sensitive* |
+| **Route**       | `/login` |
+| **User Types**  | All unauthenticated users |
+| **Purpose**     | Unified login portal for all 3 user types (applicant, employer, admin) |
+| **Parent**      | Root |
+| **Entry Points** | Navbar login button (SCR-01), redirect from protected routes, signup page links |
+| **Exit Points** | `/applicant/dashboard`, `/employer/dashboard`, `/admin/dashboard` (role-based on success); `/signup/applicant`, `/signup/employer` |
+
+---
+
+### SCR-03 — Applicant Registration
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Public (Authentication) ⚠️ *Sensitive* |
+| **Route**       | `/signup/applicant` |
+| **User Types**  | Unauthenticated only |
+| **Purpose**     | New applicant account creation with preferences and optional resume upload |
+| **Parent**      | Root |
+| **Entry Points** | SCR-01 hero CTA ("Get Started as Applicant"), SCR-02 signup link, navbar signup dropdown |
+| **Exit Points** | `/login` (after success), `/login` (via "Already have account?"), `/applicant/dashboard` (auto-login after signup) |
+
+---
+
+### SCR-04 — Employer Registration
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Public (Authentication) ⚠️ *Sensitive + Approval required* |
+| **Route**       | `/signup/employer` |
+| **User Types**  | Unauthenticated only |
+| **Purpose**     | New employer account creation. Account requires admin approval before posting jobs. |
+| **Parent**      | Root |
+| **Entry Points** | SCR-01 hero CTA ("Post a Job"), SCR-02 signup link, navbar signup dropdown |
+| **Exit Points** | `/employer/dashboard` (pending-approval state), `/login` (via "Already have account?") |
+
+---
+
+### SCR-05 — Browse Jobs (Public)
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Public |
+| **Route**       | `/jobs` |
+| **User Types**  | All — unauthenticated visitors and authenticated users |
+| **Purpose**     | Public job listings with search and filter. Apply CTA redirects to login. |
+| **Parent**      | Root |
+| **Entry Points** | Navbar, SCR-01 "View All Jobs" button, `/jobs` direct URL |
+| **Exit Points** | `/jobs/:id` (each job card), `/login` (apply CTA if unauthenticated) |
+
+---
+
+### SCR-06 — Job Detail (Public)
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Public |
+| **Route**       | `/jobs/:id` |
+| **User Types**  | All — unauthenticated visitors and authenticated users |
+| **Purpose**     | Full job description. Authenticated applicants can apply inline; others are redirected to login. |
+| **Parent**      | `/jobs` (SCR-05) |
+| **Entry Points** | Job card click from SCR-05, SCR-01 featured job cards |
+| **Exit Points** | Apply modal (inline), `/login` (if unauthenticated + apply click), `/jobs` (back button) |
+
+---
+
+## 🟢 SECTION 2 — Applicant Portal Screens (10 screens)
+
+> All routes prefixed with `/applicant/*`. Requires authentication + `userType === 'applicant'`. Unauthorized users are redirected to `/login`.
+
+---
+
+### SCR-07 — Applicant Dashboard
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Applicant) |
+| **Route**       | `/applicant/dashboard` |
+| **User Types**  | Applicant only |
+| **Purpose**     | Central overview: stats, recent applications, upcoming shifts, job requests, notifications |
+| **Parent**      | Applicant Portal root |
+| **Entry Points** | Post-login redirect, sidebar nav |
+| **Exit Points** | `/applicant/jobs`, `/applicant/applications`, `/applicant/shifts`, `/applicant/job-requests`, `/applicant/notifications` |
+
+---
+
+### SCR-08 — Browse Jobs (Authenticated)
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Applicant) |
+| **Route**       | `/applicant/jobs` |
+| **User Types**  | Applicant only |
+| **Purpose**     | Same job listing as SCR-05 but with active Apply buttons and already-applied badges |
+| **Parent**      | Applicant Portal |
+| **Entry Points** | Sidebar nav, SCR-07 "Browse Jobs" quick action |
+| **Exit Points** | `/jobs/:id` (job detail), apply modal (inline) |
+
+---
+
+### SCR-09 — My Applications
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Applicant) |
+| **Route**       | `/applicant/applications` |
+| **User Types**  | Applicant only |
+| **Purpose**     | Track all submitted applications by status with withdrawal option |
+| **Parent**      | Applicant Portal |
+| **Entry Points** | Sidebar nav, SCR-07 "View All Applications" |
+| **Exit Points** | `/jobs/:id` (via job title link), application detail modal |
+
+---
+
+### SCR-10 — My Shifts
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Applicant) |
+| **Route**       | `/applicant/shifts` |
+| **User Types**  | Applicant only |
+| **Purpose**     | View and manage assigned shifts; confirm, cancel, check-in, check-out |
+| **Parent**      | Applicant Portal |
+| **Entry Points** | Sidebar nav, SCR-07 "View All Shifts" |
+| **Exit Points** | Attendance modal / check-in flow, shift detail |
+
+---
+
+### SCR-11 — Attendance History
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Applicant) |
+| **Route**       | `/applicant/attendance` |
+| **User Types**  | Applicant only |
+| **Purpose**     | Personal check-in/check-out records; exportable |
+| **Parent**      | Applicant Portal |
+| **Entry Points** | Sidebar nav |
+| **Exit Points** | Attendance detail expand/modal |
+
+---
+
+### SCR-12 — Job Requests (Received)
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Applicant) |
+| **Route**       | `/applicant/job-requests` |
+| **User Types**  | Applicant only |
+| **Purpose**     | View and respond to direct job offers sent by employers |
+| **Parent**      | Applicant Portal |
+| **Entry Points** | Sidebar nav, SCR-07 "View Job Requests" quick action, notification click |
+| **Exit Points** | Decline modal (inline), success state |
+
+---
+
+### SCR-13 — Notifications (Applicant)
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Applicant) |
+| **Route**       | `/applicant/notifications` |
+| **User Types**  | Applicant only |
+| **Purpose**     | In-app notification inbox: job requests, job matches, status changes |
+| **Parent**      | Applicant Portal |
+| **Entry Points** | Sidebar nav, Navbar notification bell |
+| **Exit Points** | `/applicant/job-requests` (on job-request notification click) |
+
+---
+
+### SCR-14 — Applicant Profile
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Applicant) ⚠️ *Sensitive* |
+| **Route**       | `/applicant/profile` |
+| **User Types**  | Applicant only |
+| **Purpose**     | View and edit personal info, job preferences, availability, skills |
+| **Parent**      | Applicant Portal |
+| **Entry Points** | Sidebar nav, Navbar avatar menu |
+| **Exit Points** | Stays on page (inline edit/save), `/applicant/settings` |
+
+---
+
+### SCR-15 — Resume Management
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Applicant) ⚠️ *Sensitive* |
+| **Route**       | `/applicant/resume` |
+| **User Types**  | Applicant only |
+| **Purpose**     | Upload, preview, and delete resume file (stored on Cloudinary) |
+| **Parent**      | Applicant Portal |
+| **Entry Points** | Sidebar nav, profile page link |
+| **Exit Points** | External Cloudinary URL (resume preview tab), stays on page |
+
+---
+
+### SCR-16 — Account Settings (Applicant)
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Applicant) ⚠️ *Sensitive* |
+| **Route**       | `/applicant/settings` |
+| **User Types**  | Applicant only |
+| **Purpose**     | Change password; account management / deactivation |
+| **Parent**      | Applicant Portal |
+| **Entry Points** | Sidebar nav, Navbar avatar menu |
+| **Exit Points** | Stays on page (after password update), `/login` (after deactivation) |
+
+---
+
+## 🟠 SECTION 3 — Employer Portal Screens (14 screens)
+
+> All routes prefixed with `/employer/*`. Requires authentication + `userType === 'employer'`. Unapproved employers see limited screens (dashboard + profile only with pending banner). Unauthorized users are redirected to `/login`.
+
+---
+
+### SCR-17 — Employer Dashboard
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Employer) |
+| **Route**       | `/employer/dashboard` |
+| **User Types**  | Employer (approved & unapproved) |
+| **Purpose**     | Business overview: stats, recent applications, sent job requests, upcoming shifts, quick actions |
+| **Parent**      | Employer Portal root |
+| **Entry Points** | Post-login redirect, sidebar nav |
+| **Exit Points** | `/employer/jobs/create`, `/employer/applicants`, `/employer/shortlist`, `/employer/notifications`, application & shift detail |
+
+---
+
+### SCR-18 — My Job Postings
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Employer — Approved Only) |
+| **Route**       | `/employer/jobs` |
+| **User Types**  | Approved Employer only |
+| **Purpose**     | List, manage, and moderate own job postings; open/close/delete |
+| **Parent**      | Employer Portal |
+| **Entry Points** | Sidebar nav, SCR-17 quick action |
+| **Exit Points** | `/employer/jobs/create`, `/employer/jobs/:id/edit`, `/employer/jobs/:id/applicants` |
+
+---
+
+### SCR-19 — Create Job
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Employer — Approved Only) |
+| **Route**       | `/employer/jobs/create` |
+| **User Types**  | Approved Employer only |
+| **Purpose**     | Post a new job listing with full details |
+| **Parent**      | `/employer/jobs` (SCR-18) |
+| **Entry Points** | SCR-18 "Post New Job" button, SCR-17 quick action |
+| **Exit Points** | `/employer/jobs` (after save or cancel) |
+
+---
+
+### SCR-20 — Edit Job
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Employer — Approved Only) |
+| **Route**       | `/employer/jobs/:id/edit` |
+| **User Types**  | Approved Employer (owner of the job) |
+| **Purpose**     | Edit an existing job posting |
+| **Parent**      | `/employer/jobs` (SCR-18) |
+| **Entry Points** | SCR-18 "Edit" action per job row |
+| **Exit Points** | `/employer/jobs` (after save or discard) |
+
+---
+
+### SCR-21 — Job Applications
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Employer — Approved Only) |
+| **Route**       | `/employer/jobs/:id/applicants` |
+| **User Types**  | Approved Employer (owner of the job) |
+| **Purpose**     | Review all applications for a specific job; accept, reject, shortlist, view resume |
+| **Parent**      | `/employer/jobs` (SCR-18) |
+| **Entry Points** | SCR-18 "View Applications" per job, SCR-17 application cards |
+| **Exit Points** | Reject modal (inline), `/employer/applicants/:id`, Resume URL (new tab) |
+
+---
+
+### SCR-22 — Browse Applicants
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Employer — Approved Only) |
+| **Route**       | `/employer/applicants` |
+| **User Types**  | Approved Employer only |
+| **Purpose**     | Discover and filter available applicants; send job requests; shortlist |
+| **Parent**      | Employer Portal |
+| **Entry Points** | Sidebar nav, SCR-17 "Browse Applicants" quick action |
+| **Exit Points** | `/employer/applicants/:id`, Job Request modal (inline) |
+
+---
+
+### SCR-23 — Applicant Full Profile (Employer View)
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Employer — Approved Only) |
+| **Route**       | `/employer/applicants/:id` |
+| **User Types**  | Approved Employer only |
+| **Purpose**     | Read-only detailed view of one applicant including resume, skills, preferences |
+| **Parent**      | `/employer/applicants` (SCR-22) |
+| **Entry Points** | SCR-22 applicant card click, SCR-21 "View Profile", SCR-24 "View Profile" |
+| **Exit Points** | `/employer/applicants` (back), Resume URL (new tab), Job Request modal (inline), Shortlist toggle |
+
+---
+
+### SCR-24 — My Shortlist
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Employer — Approved Only) |
+| **Route**       | `/employer/shortlist` |
+| **User Types**  | Approved Employer only |
+| **Purpose**     | View and manage saved/favourite applicants with private notes |
+| **Parent**      | Employer Portal |
+| **Entry Points** | Sidebar nav, SCR-17 "View Shortlist" quick action |
+| **Exit Points** | `/employer/applicants/:id` (profile link), Job Request modal (inline) |
+
+---
+
+### SCR-25 — Sent Job Requests
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Employer — Approved Only) |
+| **Route**       | `/employer/job-requests` |
+| **User Types**  | Approved Employer only |
+| **Purpose**     | Track all job requests sent to applicants and their response statuses |
+| **Parent**      | Employer Portal |
+| **Entry Points** | Sidebar nav, SCR-17 job request cards |
+| **Exit Points** | `/employer/applicants/:id` (applicant profile link) |
+
+---
+
+### SCR-26 — My Shifts (Employer)
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Employer — Approved Only) |
+| **Route**       | `/employer/shifts` |
+| **User Types**  | Approved Employer only |
+| **Purpose**     | Manage all shifts created; cancel, delete, view attendance |
+| **Parent**      | Employer Portal |
+| **Entry Points** | Sidebar nav, SCR-17 upcoming shifts section |
+| **Exit Points** | `/employer/shifts/create`, `/employer/attendance`, Edit shift modal (inline) |
+
+---
+
+### SCR-27 — Create Shift
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Employer — Approved Only) |
+| **Route**       | `/employer/shifts/create` |
+| **User Types**  | Approved Employer only |
+| **Purpose**     | Assign a shift to an accepted applicant for a specific job |
+| **Parent**      | `/employer/shifts` (SCR-26) |
+| **Entry Points** | SCR-26 "Create Shift" button |
+| **Exit Points** | `/employer/shifts` (after create or cancel) |
+
+---
+
+### SCR-28 — Attendance Records (Employer)
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Employer — Approved Only) |
+| **Route**       | `/employer/attendance` |
+| **User Types**  | Approved Employer only |
+| **Purpose**     | Review and approve applicant check-in/check-out records; manual entry |
+| **Parent**      | Employer Portal |
+| **Entry Points** | Sidebar nav, SCR-26 "View Attendance" per shift |
+| **Exit Points** | Manual attendance modal (inline) |
+
+---
+
+### SCR-29 — Notifications (Employer)
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Employer) |
+| **Route**       | `/employer/notifications` |
+| **User Types**  | Employer only |
+| **Purpose**     | In-app notification inbox: job request responses, new matching applicants |
+| **Parent**      | Employer Portal |
+| **Entry Points** | Sidebar nav, Navbar notification bell |
+| **Exit Points** | `/employer/applicants/:id` (on applicant-match notification click) |
+
+---
+
+### SCR-30 — Business Profile & Settings
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Auth-Protected (Employer) ⚠️ *Sensitive* |
+| **Route**       | `/employer/profile` |
+| **User Types**  | Employer (approved & unapproved) |
+| **Purpose**     | Edit business info, address, change password, clear saved filters |
+| **Parent**      | Employer Portal |
+| **Entry Points** | Sidebar nav, Navbar avatar menu |
+| **Exit Points** | Stays on page (inline edit/save), `/login` (after password change) |
+
+---
+
+## 🔴 SECTION 4 — Admin Portal Screens (5 screens)
+
+> All routes prefixed with `/admin/*`. Requires authentication + `userType === 'admin'`. Unauthorized users are redirected to `/login`.
+
+---
+
+### SCR-31 — Admin Dashboard
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Admin-Only |
+| **Route**       | `/admin/dashboard` |
+| **User Types**  | Admin only |
+| **Purpose**     | Platform-wide KPIs, pending employer approvals, recent jobs, activity chart |
+| **Parent**      | Admin Portal root |
+| **Entry Points** | Post-login redirect, sidebar nav |
+| **Exit Points** | `/admin/employers`, `/admin/jobs`, employer approval/rejection (inline) |
+
+---
+
+### SCR-32 — Manage Employers
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Admin-Only ⚠️ *Sensitive — Approval Control* |
+| **Route**       | `/admin/employers` |
+| **User Types**  | Admin only |
+| **Purpose**     | Full employer management: search, approve, block, unblock |
+| **Parent**      | Admin Portal |
+| **Entry Points** | Sidebar nav, SCR-31 "View All Employers" |
+| **Exit Points** | Employer detail expand/modal (inline) |
+
+---
+
+### SCR-33 — Manage Applicants
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Admin-Only ⚠️ *Sensitive — Account Control* |
+| **Route**       | `/admin/applicants` |
+| **User Types**  | Admin only |
+| **Purpose**     | View and search applicant accounts; **deactivate only** — no activation endpoint exists in backend |
+| **Parent**      | Admin Portal |
+| **Entry Points** | Sidebar nav |
+| **Exit Points** | Applicant detail expand/modal (inline) |
+
+---
+
+### SCR-34 — Moderate Jobs
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Admin-Only |
+| **Route**       | `/admin/jobs` |
+| **User Types**  | Admin only |
+| **Purpose**     | Review all job postings using public `GET /api/jobs`; admin action is **delete only** — no admin-side close endpoint exists in backend |
+| **Parent**      | Admin Portal |
+| **Entry Points** | Sidebar nav, SCR-31 "View All Jobs" |
+| **Exit Points** | `/jobs/:id` (public view, new tab) |
+
+---
+
+### SCR-35 — Platform Analytics
+
+| Attribute       | Details |
+|-----------------|---------|
+| **Screen Type** | Admin-Only |
+| **Route**       | `/admin/analytics` |
+| **User Types**  | Admin only |
+| **Purpose**     | Charts and metrics for platform health: applications, signups, shift completion rates |
+| **Parent**      | Admin Portal |
+| **Entry Points** | Sidebar nav |
+| **Exit Points** | Stays on screen (date-range filter updates charts) |
+
+---
+
+## 🔗 Navigation Flow Diagram (Text)
+
+```
+[ Landing / ] ──→ [ Login /login ] ──→ Role-based redirect
+      │                                        │
+      ├──→ [ /signup/applicant ]               ├──→ /applicant/dashboard (Applicant)
+      ├──→ [ /signup/employer ]                ├──→ /employer/dashboard  (Employer)
+      └──→ [ /jobs ] ──→ [ /jobs/:id ]         └──→ /admin/dashboard     (Admin)
+
+APPLICANT PORTAL (/applicant/*)                    ← POST /api/auth/logout on Navbar
+  dashboard → jobs → applications → shifts → attendance
+           → job-requests → notifications → profile → resume → settings
+
+EMPLOYER PORTAL (/employer/*)                      ← POST /api/auth/logout on Navbar
+  dashboard → jobs → jobs/create
+           → jobs/:id/edit → jobs/:id/applicants
+           → applicants → applicants/:id
+           → shortlist → job-requests
+           → shifts → shifts/create → attendance
+           → notifications → profile
+
+ADMIN PORTAL (/admin/*)                            ← POST /api/auth/logout on Navbar
+  dashboard → employers → applicants → jobs → analytics
+```

@@ -1,0 +1,768 @@
+{
+    "info": {
+        "_postman_id": "shiftmaster-api-collection",
+        "name": "ShiftMaster API",
+        "description": "Complete collection for testing all ShiftMaster endpoints sequentially.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1.0 Auth",
+            "item": [
+                {
+                    "name": "Employer Signup",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"storeName\": \"Test Store\",\n  \"ownerName\": \"John Doe\",\n  \"email\": \"employer@test.com\",\n  \"phone\": \"9876543210\",\n  \"password\": \"Test@1234\",\n  \"businessType\": \"retail\",\n  \"address\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"Mumbai\",\n    \"state\": \"Maharashtra\",\n    \"pincode\": \"400001\"\n  }\n}",
+                            "options": {
+                                "padding": {
+                                    "top": 5
+                                },
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/employer/signup",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "employer",
+                                "signup"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Applicant Signup",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Jane Smith\",\n  \"email\": \"applicant@test.com\",\n  \"phone\": \"9765432109\",\n  \"password\": \"Test@1234\",\n  \"jobCategories\": [\"retail\"],\n  \"preferredShiftType\": \"full-time\",\n  \"preferredWorkLocation\": \"in-store\",\n  \"expectedHourlyRate\": 200,\n  \"availability\": { \"monday\": true, \"tuesday\": true }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/applicant/signup",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "applicant",
+                                "signup"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@shiftmaster.com\",\n  \"password\": \"Admin@123\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Me (Profile)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/auth/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "me"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Password",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"currentPassword\": \"Test@1234\",\n  \"newPassword\": \"New@1234\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/update-password",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "update-password"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "2.0 Jobs",
+            "item": [
+                {
+                    "name": "Public List Jobs",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/jobs?limit=10&page=1&status=open",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "jobs"
+                            ],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "open"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Job",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Store Associate\",\n  \"description\": \"Join our retail team in Mumbai!\",\n  \"jobType\": \"full-time\",\n  \"salary\": { \"amount\": 18000, \"period\": \"monthly\", \"currency\": \"INR\" },\n  \"location\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"Mumbai\",\n    \"state\": \"Maharashtra\",\n    \"pincode\": \"400001\"\n  },\n  \"requirements\": [\"Dependable\", \"Cheerful\"],\n  \"benefits\": [\"Paid time off\"]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/jobs",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "jobs"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "My Employer Jobs",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/jobs/employer/my-jobs",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "jobs",
+                                "employer",
+                                "my-jobs"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Job Details",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/jobs/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "jobs",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "JOB_ID_HERE"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Job",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Senior Store Associate\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/jobs/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "jobs",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "JOB_ID_HERE"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3.0 Applications",
+            "item": [
+                {
+                    "name": "Apply for Job",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"coverLetter\": \"I have 3 years experience in retail.\",\n  \"expectedSalary\": 19000,\n  \"resume_url\": \"optional_url\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/applications/:jobId",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "applications",
+                                ":jobId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "jobId",
+                                    "value": "JOB_ID_HERE"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "My Applications (Applicant)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/applications/my-applications",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "applications",
+                                "my-applications"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Accept Application",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"note\": \"Welcome to the team!\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/applications/:id/accept",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "applications",
+                                ":id",
+                                "accept"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "APP_ID_HERE"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Reject Application",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"rejectionReason\": \"Position filled by internal candidate.\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/applications/:id/reject",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "applications",
+                                ":id",
+                                "reject"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "APP_ID_HERE"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "4.0 Shifts",
+            "item": [
+                {
+                    "name": "Create Shift",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"job\": \"JOB_ID\",\n  \"applicant\": \"APP_ID\",\n  \"date\": \"2026-03-10\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"17:00\",\n  \"location\": { \"street\": \"123 Main St\", \"city\": \"Mumbai\", \"state\": \"Maharashtra\", \"pincode\": \"400001\" },\n  \"payment\": 500\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/shifts",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "shifts"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "My Shifts (Employer)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/shifts/employer/my-shifts",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "shifts",
+                                "employer",
+                                "my-shifts"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Confirm Shift (Applicant)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/shifts/:id/confirm",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "shifts",
+                                ":id",
+                                "confirm"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "SHIFT_ID_HERE"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "5.0 Attendance",
+            "item": [
+                {
+                    "name": "Check-in",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"latitude\": 19.076,\n  \"longitude\": 72.8777\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/attendance/:shiftId/checkin",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "attendance",
+                                ":shiftId",
+                                "checkin"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "shiftId",
+                                    "value": "SHIFT_ID"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Approve Attendance",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/attendance/:id/approve",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "attendance",
+                                ":id",
+                                "approve"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "ATT_ID"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "11.0 Admin",
+            "item": [
+                {
+                    "name": "Admin Dashboard Stats",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/admin/dashboard/stats",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "dashboard",
+                                "stats"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Approve Employer",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/admin/employers/:id/approve",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "employers",
+                                ":id",
+                                "approve"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "EMP_ID"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:5000/api",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "",
+            "type": "string"
+        }
+    ]
+}

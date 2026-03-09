@@ -1,0 +1,118 @@
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authApi, type SignupData } from '@/api/auth';
+import type { User, UserType } from '@/types';
+
+interface AuthContextType {
+  user: User | null;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  unreadCount: number;
+  login: (identifier: string, password: string, userType: UserType) => Promise<void>;
+  signup: (data: SignupData, userType: Exclude<UserType, 'admin'>) => Promise<void>;
+  logout: () => void;
+  refreshUser: () => Promise<void>;
+  fetchUnreadCount: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const response = await authApi.getMe();
+        setUser(response.data);
+        fetchUnreadCount();
+      } catch {
+        localStorage.removeItem('token');
+      }
+    }
+    setIsLoading(false);
+  };
+
+  const fetchUnreadCount = async () => {
+    try {
+      const response = await authApi.getUnreadCount();
+      setUnreadCount(response.data.unreadCount);
+    } catch {
+      // Ignore error
+    }
+  };
+
+  const login = async (identifier: string, password: string, userType: UserType) => {
+    const response = await authApi.login({ identifier, password, userType });
+    localStorage.setItem('token', response.token);
+    setUser(response.user);
+    
+    // Navigate based on user type
+    const routes: Record<UserType, string> = {
+      applicant: '/home',
+      employer: '/employer/dashboard',
+      admin: '/admin/dashboard',
+    };
+    
+    navigate(routes[userType]);
+  };
+
+  const signup = async (data: SignupData, userType: Exclude<UserType, 'admin'>) => {
+    const response = await authApi.signup(data, userType);
+    localStorage.setItem('token', response.token);
+    setUser(response.user);
+    
+    const route = userType === 'employer' ? '/employer/dashboard' : '/home';
+    navigate(route);
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+    setUnreadCount(0);
+    navigate('/login');
+  };
+
+  const refreshUser = async () => {
+    try {
+      const response = await authApi.getMe();
+      setUser(response.data);
+    } catch {
+      // Ignore error
+    }
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        isAuthenticated: !!user,
+        unreadCount,
+        login,
+        signup,
+        logout,
+        refreshUser,
+        fetchUnreadCount,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
