@@ -24,7 +24,7 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
     cloudinary,
     params: {
-        folder: 'shiftmaster/resumes',
+        folder: 'shiftmatch/resumes',
         resource_type: 'raw',          // required for non-image files (PDF, DOC)
         allowed_formats: ['pdf', 'doc', 'docx'],
         // Use applicant ID + timestamp as public_id for uniqueness

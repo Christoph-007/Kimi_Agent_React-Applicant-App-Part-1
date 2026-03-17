@@ -54,4 +54,10 @@ export const authApi = {
 
   getUnreadCount: () =>
     apiClient.get<ApiResponse<{ unreadCount: number }>>('/notifications/unread-count'),
+
+  forgotPassword: (data: { email: string; userType: string }) =>
+    apiClient.post('/auth/forgot-password', data),
+
+  resetPassword: (token: string, data: { password: string; userType: string }) =>
+    apiClient.post(`/auth/reset-password/${token}`, data),
 };

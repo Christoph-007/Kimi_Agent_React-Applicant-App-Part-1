@@ -134,6 +134,13 @@ export interface Shift {
   employer: {
     _id: string;
     storeName: string;
+    phone?: string;
+    address?: {
+      street: string;
+      city: string;
+      state: string;
+      pincode: string;
+    };
   };
   date: string;
   startTime: string;

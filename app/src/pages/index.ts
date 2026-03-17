@@ -7,6 +7,8 @@ export { CandidatesPage } from './CandidatesPage';
 export { LoginPage } from './auth/LoginPage';
 export { ApplicantSignupPage } from './auth/ApplicantSignupPage';
 export { EmployerSignupPage } from './auth/EmployerSignupPage';
+export { ForgotPasswordPage } from './auth/ForgotPasswordPage';
+export { ResetPasswordPage } from './auth/ResetPasswordPage';
 
 // Applicant Pages
 export { HomePage } from './applicant/HomePage';

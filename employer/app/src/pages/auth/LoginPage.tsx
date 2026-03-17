@@ -11,7 +11,7 @@ export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,11 +40,10 @@ export function LoginPage() {
         <button
           type="button"
           onClick={() => setSelectedType('applicant')}
-          className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all ${
-            selectedType === 'applicant'
+          className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all ${selectedType === 'applicant'
               ? 'border-forest-900 bg-forest-50 text-forest-900'
               : 'border-gray-200 hover:border-gray-300 text-gray-600'
-          }`}
+            }`}
         >
           <User className="w-5 h-5" />
           <span className="font-medium">Applicant</span>
@@ -52,11 +51,10 @@ export function LoginPage() {
         <button
           type="button"
           onClick={() => setSelectedType('employer')}
-          className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all ${
-            selectedType === 'employer'
+          className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all ${selectedType === 'employer'
               ? 'border-forest-900 bg-forest-50 text-forest-900'
               : 'border-gray-200 hover:border-gray-300 text-gray-600'
-          }`}
+            }`}
         >
           <Building2 className="w-5 h-5" />
           <span className="font-medium">Employer</span>
@@ -114,9 +112,9 @@ export function LoginPage() {
             <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-forest-900 focus:ring-forest-500" />
             <span className="text-sm text-gray-600">Remember me</span>
           </label>
-          <a href="#" className="text-sm text-forest-700 hover:text-forest-900 font-medium">
+          <NavLink to="/forgot-password" className="text-sm text-forest-700 hover:text-forest-900 font-medium">
             Forgot password?
-          </a>
+          </NavLink>
         </div>
 
         <button

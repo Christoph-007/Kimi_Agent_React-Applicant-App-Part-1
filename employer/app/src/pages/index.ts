@@ -4,6 +4,8 @@ export { LandingPage } from './LandingPage';
 export { LoginPage } from './auth/LoginPage';
 export { ApplicantSignupPage } from './auth/ApplicantSignupPage';
 export { EmployerSignupPage } from './auth/EmployerSignupPage';
+export { ForgotPasswordPage } from './auth/ForgotPasswordPage';
+export { ResetPasswordPage } from './auth/ResetPasswordPage';
 
 // Applicant Pages
 export { HomePage } from './applicant/HomePage';
@@ -14,6 +16,7 @@ export { ShiftsPage } from './applicant/ShiftsPage';
 export { AttendancePage } from './applicant/AttendancePage';
 export { ProfilePage } from './applicant/ProfilePage';
 export { NotificationsPage } from './applicant/NotificationsPage';
+export { ShiftDetailPage } from './applicant/ShiftDetailPage';
 
 // Employer Pages
 export { DashboardPage } from './employer/DashboardPage';

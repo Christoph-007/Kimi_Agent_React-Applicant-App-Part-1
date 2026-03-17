@@ -10,10 +10,10 @@ export function AuthLayout() {
             <div className="w-8 h-8 bg-forest-900 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">S</span>
             </div>
-            <span className="font-semibold text-lg text-forest-900">ShiftMaster</span>
+            <span className="font-semibold text-lg text-forest-900">ShiftMatch</span>
           </NavLink>
-          <NavLink 
-            to="/" 
+          <NavLink
+            to="/"
             className="text-sm text-gray-600 hover:text-forest-700 transition-colors"
           >
             Back to Home
@@ -28,7 +28,7 @@ export function AuthLayout() {
 
       {/* Simple Footer */}
       <footer className="py-4 text-center text-sm text-gray-500">
-        <p>&copy; {new Date().getFullYear()} ShiftMaster. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} ShiftMatch. All rights reserved.</p>
       </footer>
     </div>
   );

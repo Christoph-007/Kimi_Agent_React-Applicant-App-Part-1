@@ -6,16 +6,16 @@
 
 // ─── Applicant: Job Request Received ─────────────────────────────────────────
 const jobRequestReceivedTemplate = (
-    applicantName,
-    employerName,
-    jobTitle,
-    shiftType,
-    location,
-    offeredHourlyRate,
-    message
+  applicantName,
+  employerName,
+  jobTitle,
+  shiftType,
+  location,
+  offeredHourlyRate,
+  message
 ) => ({
-    subject: `Job Request from ${employerName} — ${jobTitle}`,
-    html: `
+  subject: `Job Request from ${employerName} — ${jobTitle}`,
+  html: `
     <!DOCTYPE html>
     <html>
     <head>
@@ -43,24 +43,24 @@ const jobRequestReceivedTemplate = (
           </div>
           <p>Log in to your account to accept or decline this request.</p>
         </div>
-        <div class="footer"><p>&copy; 2026 ShiftMaster. All rights reserved.</p></div>
+        <div class="footer"><p>&copy; 2026 ShiftMatch. All rights reserved.</p></div>
       </div>
     </body>
     </html>`,
-    text: `Hello ${applicantName},\n\n${employerName} has sent you a job request for "${jobTitle}".\n\nShift Type: ${shiftType}\nLocation: ${location}\nOffered Rate: ₹${offeredHourlyRate}/hr\n${message ? `Message: ${message}\n` : ''}\nLog in to accept or decline.`,
+  text: `Hello ${applicantName},\n\n${employerName} has sent you a job request for "${jobTitle}".\n\nShift Type: ${shiftType}\nLocation: ${location}\nOffered Rate: ₹${offeredHourlyRate}/hr\n${message ? `Message: ${message}\n` : ''}\nLog in to accept or decline.`,
 });
 
 // ─── Employer: Job Request Response ──────────────────────────────────────────
 const jobRequestResponseTemplate = (
-    employerName,
-    applicantName,
-    jobTitle,
-    status
+  employerName,
+  applicantName,
+  jobTitle,
+  status
 ) => {
-    const accepted = status === 'accepted';
-    return {
-        subject: `Job Request ${accepted ? 'Accepted' : 'Declined'} — ${jobTitle}`,
-        html: `
+  const accepted = status === 'accepted';
+  return {
+    subject: `Job Request ${accepted ? 'Accepted' : 'Declined'} — ${jobTitle}`,
+    html: `
     <!DOCTYPE html>
     <html>
     <head>
@@ -80,25 +80,25 @@ const jobRequestResponseTemplate = (
           <p><strong>${applicantName}</strong> has <strong>${status}</strong> your job request for "<strong>${jobTitle}</strong>".</p>
           ${accepted ? '<p>You can now proceed to schedule a shift or contact the applicant directly.</p>' : '<p>You can continue browsing other available applicants on the platform.</p>'}
         </div>
-        <div class="footer"><p>&copy; 2026 ShiftMaster. All rights reserved.</p></div>
+        <div class="footer"><p>&copy; 2026 ShiftMatch. All rights reserved.</p></div>
       </div>
     </body>
     </html>`,
-        text: `Hello ${employerName},\n\n${applicantName} has ${status} your job request for "${jobTitle}".\n\n${accepted ? 'You can now proceed to schedule a shift.' : 'You can browse other applicants on the platform.'}`,
-    };
+    text: `Hello ${employerName},\n\n${applicantName} has ${status} your job request for "${jobTitle}".\n\n${accepted ? 'You can now proceed to schedule a shift.' : 'You can browse other applicants on the platform.'}`,
+  };
 };
 
 // ─── Applicant: Job Match Alert ───────────────────────────────────────────────
 const jobMatchAlertTemplate = (
-    applicantName,
-    jobTitle,
-    employerName,
-    city,
-    jobType,
-    jobId
+  applicantName,
+  jobTitle,
+  employerName,
+  city,
+  jobType,
+  jobId
 ) => ({
-    subject: `New Job Match: ${jobTitle} at ${employerName}`,
-    html: `
+  subject: `New Job Match: ${jobTitle} at ${employerName}`,
+  html: `
     <!DOCTYPE html>
     <html>
     <head>
@@ -126,22 +126,22 @@ const jobMatchAlertTemplate = (
           </div>
           <a href="${process.env.FRONTEND_URL}/jobs/${jobId}" class="button">View Job</a>
         </div>
-        <div class="footer"><p>&copy; 2026 ShiftMaster. All rights reserved.</p></div>
+        <div class="footer"><p>&copy; 2026 ShiftMatch. All rights reserved.</p></div>
       </div>
     </body>
     </html>`,
-    text: `Hello ${applicantName},\n\nA new job matching your interests has been posted!\n\nJob: ${jobTitle}\nEmployer: ${employerName}\nLocation: ${city}\nType: ${jobType}\n\nView it at: ${process.env.FRONTEND_URL}/jobs/${jobId}`,
+  text: `Hello ${applicantName},\n\nA new job matching your interests has been posted!\n\nJob: ${jobTitle}\nEmployer: ${employerName}\nLocation: ${city}\nType: ${jobType}\n\nView it at: ${process.env.FRONTEND_URL}/jobs/${jobId}`,
 });
 
 // ─── Employer: New Matching Applicant ────────────────────────────────────────
 const newMatchingApplicantTemplate = (
-    employerName,
-    applicantName,
-    jobCategories,
-    preferredWorkLocation
+  employerName,
+  applicantName,
+  jobCategories,
+  preferredWorkLocation
 ) => ({
-    subject: `New Matching Applicant: ${applicantName}`,
-    html: `
+  subject: `New Matching Applicant: ${applicantName}`,
+  html: `
     <!DOCTYPE html>
     <html>
     <head>
@@ -159,7 +159,7 @@ const newMatchingApplicantTemplate = (
         <div class="header"><h1>👤 New Matching Applicant</h1></div>
         <div class="content">
           <h2>Hello ${employerName},</h2>
-          <p>A new applicant matching your saved filters has joined ShiftMaster!</p>
+          <p>A new applicant matching your saved filters has joined ShiftMatch!</p>
           <div class="detail-box">
             <p><strong>Name:</strong> ${applicantName}</p>
             <p><strong>Interests:</strong> ${(jobCategories || []).join(', ') || 'Not specified'}</p>
@@ -167,16 +167,16 @@ const newMatchingApplicantTemplate = (
           </div>
           <p>Log in to view their full profile and send a job request.</p>
         </div>
-        <div class="footer"><p>&copy; 2026 ShiftMaster. All rights reserved.</p></div>
+        <div class="footer"><p>&copy; 2026 ShiftMatch. All rights reserved.</p></div>
       </div>
     </body>
     </html>`,
-    text: `Hello ${employerName},\n\nA new applicant matching your saved filters has joined!\n\nName: ${applicantName}\nInterests: ${(jobCategories || []).join(', ') || 'Not specified'}\nPreferred Location: ${preferredWorkLocation || 'Not specified'}\n\nLog in to view their profile.`,
+  text: `Hello ${employerName},\n\nA new applicant matching your saved filters has joined!\n\nName: ${applicantName}\nInterests: ${(jobCategories || []).join(', ') || 'Not specified'}\nPreferred Location: ${preferredWorkLocation || 'Not specified'}\n\nLog in to view their profile.`,
 });
 
 module.exports = {
-    jobRequestReceivedTemplate,
-    jobRequestResponseTemplate,
-    jobMatchAlertTemplate,
-    newMatchingApplicantTemplate,
+  jobRequestReceivedTemplate,
+  jobRequestResponseTemplate,
+  jobMatchAlertTemplate,
+  newMatchingApplicantTemplate,
 };

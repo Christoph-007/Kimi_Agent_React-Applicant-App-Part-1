@@ -17,6 +17,11 @@ const sendTokenResponse = (user, statusCode, res, userType) => {
     const userObj = user.toObject ? user.toObject() : { ...user };
     userObj.type = userType;
 
+    // Ensure 'name' is available for all user types for consistent frontend display
+    if (userType === 'employer' && !userObj.name) {
+        userObj.name = userObj.ownerName || userObj.storeName;
+    }
+
     res.status(statusCode).json({
         success: true,
         token,

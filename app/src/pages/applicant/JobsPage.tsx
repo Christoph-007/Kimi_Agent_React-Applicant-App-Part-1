@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Search,
   MapPin,
@@ -15,6 +15,8 @@ import {
   Bookmark,
   Share2
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
 import { jobsApi } from '@/api/jobs';
 import { toast } from 'sonner';
 import type { Job } from '@/types';
@@ -22,14 +24,6 @@ import type { Job } from '@/types';
 export function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    search: '',
-    jobType: '',
-    city: '',
-    minSalary: '',
-    maxSalary: '',
-    category: '',
-  });
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -37,6 +31,33 @@ export function JobsPage() {
   });
   const [showFilters, setShowFilters] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { isAuthenticated } = useAuth();
+
+  const [filters, setFilters] = useState({
+    search: searchParams.get('search') || '',
+    jobType: searchParams.get('jobType') || '',
+    city: searchParams.get('city') || '',
+    minSalary: '',
+    maxSalary: '',
+    category: searchParams.get('category') || '',
+  });
+
+  // Sync URL params to filters
+  useEffect(() => {
+    const search = searchParams.get('search') || '';
+    const jobType = searchParams.get('jobType') || '';
+    const city = searchParams.get('city') || '';
+    const category = searchParams.get('category') || '';
+
+    setFilters(prev => ({
+      ...prev,
+      search,
+      jobType,
+      city,
+      category
+    }));
+  }, [searchParams]);
 
   const jobTypes = ['full-time', 'part-time', 'shift', 'contract'];
   const categories = ['Food Service', 'Retail', 'Logistics', 'Healthcare', 'Hospitality', 'Warehouse', 'Security', 'Driver'];
@@ -73,6 +94,11 @@ export function JobsPage() {
 
   const handleToggleSave = async (e: React.MouseEvent, jobId: string) => {
     e.stopPropagation();
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: window.location.pathname } });
+      toast.info('Please sign in to save jobs');
+      return;
+    }
     try {
       const response: any = await jobsApi.toggleSave(jobId);
       const isSaved = response.data?.isSaved;
@@ -149,16 +175,16 @@ export function JobsPage() {
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white rounded-2xl p-4 shadow-card">
+      <div className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100">
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <div className="flex-1 relative bg-gray-50 rounded-2xl flex items-center px-4">
+            <Search className="w-5 h-5 text-gray-400 mr-2" />
             <input
               type="text"
               placeholder="Search jobs by title, skills, or company..."
               value={filters.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent"
+              className="w-full py-3 bg-transparent outline-none text-gray-700 font-medium"
             />
           </div>
           <div className="relative">
@@ -282,47 +308,44 @@ export function JobsPage() {
           <Loader2 className="w-8 h-8 animate-spin text-forest-700" />
         </div>
       ) : jobs.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl shadow-card">
+        <div className="text-center py-16 bg-white rounded-3xl shadow-sm border border-gray-50">
           <Briefcase className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No jobs found</h3>
-          <p className="text-gray-500 mb-4">Try adjusting your filters or search criteria</p>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">No jobs found</h3>
+          <p className="text-gray-500 mb-6 font-medium">Try adjusting your filters or search criteria</p>
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="px-6 py-2 bg-forest-900 text-white rounded-full font-medium hover:bg-forest-800 transition-colors"
+              className="px-8 py-3 bg-lime-200 text-forest-900 rounded-full font-bold hover:bg-lime-300 transition-all shadow-sm active:scale-95"
             >
               Clear Filters
             </button>
           )}
         </div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {jobs.map((job) => (
             <div
               key={job._id}
               onClick={() => navigate(`/jobs/${job._id}`)}
-              className="bg-white rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-shadow cursor-pointer"
+              className="group bg-white rounded-3xl p-8 border border-gray-50 hover:shadow-2xl transition-all duration-300 cursor-pointer flex flex-col h-full"
             >
               <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 bg-forest-100 rounded-xl flex items-center justify-center">
-                  <span className="text-forest-700 font-bold text-lg">
-                    {job.employer.storeName[0]}
-                  </span>
-                </div>
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full">
+                  <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-lg border border-green-100">
                     {job.status}
                   </span>
+                </div>
+                <div className="flex items-center gap-2 z-10" onClick={e => e.stopPropagation()}>
                   <button
                     onClick={(e) => handleToggleSave(e, job._id)}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors group"
+                    className="p-2 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
                     title={job.isSaved ? "Remove from saved" : "Save job"}
                   >
                     <Bookmark className={`w-5 h-5 transition-colors ${job.isSaved ? 'text-forest-700 fill-forest-700' : 'text-gray-400 group-hover:text-forest-600'}`} />
                   </button>
                   <button
                     onClick={(e) => handleShare(e, job)}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors group"
+                    className="p-2 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
                     title="Share job"
                   >
                     <Share2 className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
@@ -330,31 +353,63 @@ export function JobsPage() {
                 </div>
               </div>
 
-              <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1">{job.title}</h3>
-              <p className="text-sm text-gray-500 mb-4">{job.employer.storeName}</p>
+              <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-2xl font-bold border border-gray-100 group-hover:bg-forest-50 group-hover:border-forest-100 transition-colors mb-6">
+                {job.employer.storeName[0]}
+              </div>
 
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <MapPin className="w-4 h-4 flex-shrink-0" />
+              <h3 className="text-xl font-bold text-forest-900 mb-2 line-clamp-2 group-hover:text-forest-700 transition-colors">{job.title}</h3>
+              <p className="text-sm text-gray-400 mb-8 font-medium">{job.employer.storeName}</p>
+
+              <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-sm text-gray-500 mb-10 mt-auto">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-gray-300" />
                   <span className="truncate">{job.location.city}, {job.location.state}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <DollarSign className="w-4 h-4 flex-shrink-0" />
-                  <span>{formatSalary(job)}</span>
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-gray-300" />
+                  <span className="font-semibold text-gray-900">{formatSalary(job)}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Briefcase className="w-4 h-4 flex-shrink-0" />
+                <div className="flex items-center gap-2">
+                  <Briefcase className="w-4 h-4 text-gray-300" />
                   <span className="capitalize">{job.jobType.replace('-', ' ')}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Clock className="w-4 h-4 flex-shrink-0" />
-                  <span>{job.totalApplications} applications</span>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-gray-300" />
+                  <span>{job.totalApplications} apps</span>
                 </div>
               </div>
 
-              <button className="w-full py-2.5 bg-forest-900 text-white rounded-full font-medium hover:bg-forest-800 transition-colors">
-                View Details
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/jobs/${job._id}`);
+                  }}
+                  className={cn(
+                    "flex-1 py-4 rounded-2xl font-bold text-base shadow-sm transition-all duration-300",
+                    'bg-forest-900 text-white hover:bg-forest-800 hover:shadow-lg'
+                  )}
+                >
+                  View Details
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isAuthenticated) {
+                      navigate('/login', { state: { from: window.location.pathname } });
+                      toast.info('Please sign in to apply for this job');
+                    } else {
+                      navigate(`/jobs/${job._id}?apply=true`);
+                    }
+                  }}
+                  className={cn(
+                    "flex-1 py-4 rounded-2xl font-bold text-base shadow-sm transition-all duration-300",
+                    'bg-lime-200 text-forest-900 hover:bg-lime-300 hover:shadow-md'
+                  )}
+                >
+                  Apply Now
+                </button>
+              </div>
             </div>
           ))}
         </div>

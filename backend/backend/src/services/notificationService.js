@@ -6,6 +6,7 @@ const {
     applicantSignupTemplate,
     applicationStatusTemplate,
     shiftAssignmentTemplate,
+    forgotPasswordTemplate,
 } = require('../utils/emailTemplates');
 
 // Notify employer on signup
@@ -99,10 +100,30 @@ const notifyShiftAssignment = async (shift, applicant, job) => {
     });
 };
 
+// Notify user on password reset request
+const notifyForgotPassword = async (user, resetUrl) => {
+    const template = forgotPasswordTemplate(user.name || user.ownerName, resetUrl);
+    await sendEmail({
+        to: user.email,
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
+    });
+
+    // Also send SMS if phone is available
+    if (user.phone) {
+        await sendSMS({
+            to: user.phone,
+            message: `Your ShiftMatch password reset link: ${resetUrl}`,
+        });
+    }
+};
+
 module.exports = {
     notifyEmployerSignup,
     notifyEmployerApproval,
     notifyApplicantSignup,
     notifyApplicationStatus,
     notifyShiftAssignment,
+    notifyForgotPassword,
 };

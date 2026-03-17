@@ -1,7 +1,7 @@
 {
-  "name": "shiftmaster-backend",
+  "name": "shiftmatch-backend",
   "version": "1.0.0",
-  "description": "ShiftMaster Backend API - Job Management Platform",
+  "description": "ShiftMatch Backend API - Job Management Platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

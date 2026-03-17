@@ -14,6 +14,7 @@ export { ShiftsPage } from './applicant/ShiftsPage';
 export { AttendancePage } from './applicant/AttendancePage';
 export { ProfilePage } from './applicant/ProfilePage';
 export { NotificationsPage } from './applicant/NotificationsPage';
+export { ShiftDetailPage } from './applicant/ShiftDetailPage';
 
 // Employer Pages
 export { DashboardPage } from './employer/DashboardPage';

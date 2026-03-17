@@ -159,6 +159,7 @@ const getAllJobs = async (req, res) => {
         if (search) {
             searchArray.push({ title: new RegExp(search, 'i') });
             searchArray.push({ description: new RegExp(search, 'i') });
+            searchArray.push({ 'requirements.skills': new RegExp(search, 'i') });
         }
         if (category) {
             searchArray.push({ title: new RegExp(category, 'i') });

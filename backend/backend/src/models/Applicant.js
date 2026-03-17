@@ -142,6 +142,8 @@ const applicantSchema = new mongoose.Schema(
                 ref: 'Job',
             },
         ],
+        resetPasswordToken: String,
+        resetPasswordExpire: Date,
     },
     {
         timestamps: true,

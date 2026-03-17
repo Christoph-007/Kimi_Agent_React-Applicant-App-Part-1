@@ -1,9 +1,9 @@
 import { NavLink } from 'react-router-dom';
-import { 
-  Search, 
-  ArrowRight, 
-  CheckCircle, 
-  Briefcase, 
+import {
+  Search,
+  ArrowRight,
+  CheckCircle,
+  Briefcase,
   Clock,
   ChevronDown,
   ChevronUp,
@@ -51,19 +51,7 @@ function HeroSection() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="hidden sm:block w-px bg-gray-200" />
-          <div className="relative">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full sm:w-48 px-4 py-3 bg-gray-50 rounded-full outline-none text-gray-700 appearance-none cursor-pointer"
-            >
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-          </div>
+
           <NavLink
             to="/jobs"
             className="bg-lime text-forest-900 px-8 py-3 rounded-full font-semibold hover:bg-lime-400 transition-colors flex items-center justify-center gap-2"
@@ -73,18 +61,7 @@ function HeroSection() {
           </NavLink>
         </div>
 
-        {/* Popular Searches */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <span className="text-gray-400 text-sm">Popular:</span>
-          {['Chef', 'Delivery', 'Retail', 'Security', 'Driver'].map((tag) => (
-            <span
-              key={tag}
-              className="px-4 py-1.5 bg-white/10 text-white text-sm rounded-full hover:bg-white/20 transition-colors cursor-pointer"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+
       </div>
     </section>
   );
@@ -258,36 +235,13 @@ function FeaturedJobsSection() {
                   className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-full outline-none focus:ring-2 focus:ring-forest-500"
                 />
               </div>
-              <div className="relative">
-                <select className="w-full sm:w-48 px-4 py-3 border border-gray-200 rounded-full outline-none focus:ring-2 focus:ring-forest-500 appearance-none bg-white">
-                  <option>Web Development</option>
-                  <option>Design</option>
-                  <option>Marketing</option>
-                </select>
-                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-              </div>
+
               <button className="bg-lime text-forest-900 p-3 rounded-full hover:bg-lime-400 transition-colors">
                 <Search className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Categories */}
-            <div className="flex flex-wrap items-center gap-3 mb-8">
-              <span className="text-gray-500 text-sm">Popular Categories:</span>
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  className={cn(
-                    "px-4 py-2 text-sm rounded-full transition-colors",
-                    cat === 'Web Developer'
-                      ? 'bg-forest-900 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  )}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
+
 
             {/* Jobs Grid */}
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -301,7 +255,7 @@ function FeaturedJobsSection() {
                     <MapPin className="w-4 h-4 mr-1" />
                     {job.location}
                   </div>
-                  
+
                   <div className="flex items-center gap-2 mb-4">
                     <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center text-sm font-bold">
                       {job.logo}
@@ -635,7 +589,7 @@ export function LandingPage() {
               </div>
               <span className="font-semibold text-lg text-white">ShiftMaster</span>
             </NavLink>
-            
+
             <div className="hidden md:flex items-center gap-8">
               <NavLink to="/" className="text-white hover:text-lime transition-colors">Home</NavLink>
               <NavLink to="/jobs" className="text-gray-300 hover:text-white transition-colors">Find Jobs</NavLink>

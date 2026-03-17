@@ -11,8 +11,7 @@ import {
   DollarSign,
   ArrowRight,
   Loader2,
-  Bookmark,
-  Share2
+  Bookmark
 } from 'lucide-react';
 import { jobsApi } from '@/api/jobs';
 import { shiftsApi } from '@/api/shifts';
@@ -91,32 +90,7 @@ export function HomePage() {
     }
   };
 
-  const handleShare = async (e: React.MouseEvent, job: Job) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const jobUrl = `${window.location.origin}/jobs/${job._id}`;
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: job.title,
-          text: `Check out this job: ${job.title} at ${job.employer.storeName}`,
-          url: jobUrl,
-        });
-        toast.success('Job shared successfully!');
-      } catch (error) {
-        console.error('Error sharing job:', error);
-        toast.error('Failed to share job.');
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(jobUrl);
-        toast.success('Job link copied to clipboard!');
-      } catch (error) {
-        console.error('Error copying to clipboard:', error);
-        toast.error('Failed to copy job link.');
-      }
-    }
-  };
+
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -155,24 +129,22 @@ export function HomePage() {
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white rounded-2xl p-4 shadow-card">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search jobs by title, skills, or company..."
-              className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent"
-            />
-          </div>
-          <NavLink
-            to="/jobs"
-            className="px-6 py-3 bg-forest-900 text-white rounded-xl font-medium hover:bg-forest-800 transition-colors flex items-center justify-center gap-2"
-          >
-            Search Jobs
-            <ArrowRight className="w-4 h-4" />
-          </NavLink>
+      <div className="bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-sm border border-gray-100 flex flex-col sm:flex-row gap-2">
+        <div className="flex-1 flex items-center px-4 py-2">
+          <Search className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
+          <input
+            type="text"
+            placeholder="Search jobs by title, skills, or company..."
+            className="flex-1 outline-none text-gray-700 placeholder:text-gray-400 font-medium bg-transparent"
+          />
         </div>
+        <NavLink
+          to="/jobs"
+          className="bg-lime-200 text-forest-900 px-8 py-3 rounded-full font-bold hover:bg-lime-300 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"
+        >
+          Search Jobs
+          <ArrowRight className="w-4 h-4" />
+        </NavLink>
       </div>
 
       {/* Quick Stats */}
@@ -180,15 +152,15 @@ export function HomePage() {
         {[
           { label: 'Applied Jobs', value: stats.applied, icon: Briefcase, color: 'bg-blue-50 text-blue-600' },
           { label: 'Upcoming Shifts', value: stats.upcoming, icon: Calendar, color: 'bg-green-50 text-green-600' },
-          { label: 'Completed Shifts', value: stats.completed, icon: CheckCircle, color: 'bg-purple-50 text-purple-600' },
+          { label: 'Completed Shifts', value: stats.completed, icon: CheckCircle, color: 'bg-lime-100 text-forest-700' },
           { label: 'Pending Requests', value: stats.pending, icon: Clock, color: 'bg-orange-50 text-orange-600' },
         ].map((stat, index) => (
-          <div key={index} className="bg-white rounded-2xl p-6 shadow-card">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${stat.color}`}>
+          <div key={index} className="bg-white rounded-3xl p-6 shadow-sm border border-gray-50 hover:shadow-md transition-shadow">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${stat.color}`}>
               <stat.icon className="w-6 h-6" />
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</div>
-            <div className="text-sm text-gray-500">{stat.label}</div>
+            <div className="text-3xl font-bold text-forest-900 mb-1">{stat.value}</div>
+            <div className="text-sm text-gray-500 font-medium">{stat.label}</div>
           </div>
         ))}
       </div>
@@ -197,10 +169,10 @@ export function HomePage() {
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-8">
           {/* Recent Notifications */}
-          <div className="bg-white rounded-2xl p-6 shadow-card">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">Recent Notifications</h2>
-              <NavLink to="/notifications" className="text-sm text-forest-700 hover:text-forest-900 font-medium">
+          <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-50">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-xl font-bold text-forest-900">Recent Notifications</h2>
+              <NavLink to="/notifications" className="text-sm text-forest-700 hover:text-forest-900 font-bold">
                 View All
               </NavLink>
             </div>
@@ -215,15 +187,15 @@ export function HomePage() {
                 {notifications.slice(0, 3).map((notification) => (
                   <div
                     key={notification._id}
-                    className={`flex items-start gap-4 p-4 rounded-xl ${notification.isRead ? 'bg-gray-50' : 'bg-forest-50'
+                    className={`flex items-start gap-4 p-5 rounded-2xl transition-colors ${notification.isRead ? 'bg-gray-50 hover:bg-gray-100' : 'bg-forest-50 hover:bg-forest-100/80'
                       }`}
                   >
-                    <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${notification.isRead ? 'bg-gray-300' : 'bg-forest-600'
+                    <div className={`w-3 h-3 rounded-full mt-2 flex-shrink-0 ${notification.isRead ? 'bg-gray-300' : 'bg-lime-400 shadow-[0_0_8px_rgba(163,230,53,0.6)]'
                       }`} />
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{notification.title}</h4>
+                      <h4 className="font-bold text-forest-900">{notification.title}</h4>
                       <p className="text-sm text-gray-500 mt-1">{notification.message}</p>
-                      <span className="text-xs text-gray-400 mt-2 block">
+                      <span className="text-xs text-gray-400 mt-2 block font-medium">
                         {formatTimeAgo(notification.createdAt)}
                       </span>
                     </div>
@@ -234,11 +206,11 @@ export function HomePage() {
           </div>
 
           {/* Recommended Jobs */}
-          <div className="bg-white rounded-2xl p-6 shadow-card">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">Recommended For You</h2>
-              <NavLink to="/jobs" className="text-sm text-forest-700 hover:text-forest-900 font-medium">
-                View All Jobs
+          <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-50">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-xl font-bold text-forest-900">Recommended For You</h2>
+              <NavLink to="/jobs" className="text-sm text-forest-700 hover:text-forest-900 font-bold">
+                View All
               </NavLink>
             </div>
 
@@ -248,40 +220,39 @@ export function HomePage() {
                 <p>No recommended jobs yet</p>
               </div>
             ) : (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {recommendedJobs.map((job) => (
                   <NavLink
                     key={job._id}
                     to={`/jobs/${job._id}`}
-                    className="group border border-gray-100 rounded-xl p-4 hover:shadow-card-hover transition-all relative overflow-hidden"
+                    className="group bg-white border border-gray-100 rounded-3xl p-6 hover:shadow-xl transition-all relative overflow-hidden flex flex-col h-full"
                   >
-                    <div className="absolute top-2 right-2 flex gap-1 z-10">
+                    <div className="absolute top-4 right-4 flex gap-2 z-10">
                       <button
                         onClick={(e) => handleToggleSave(e, job._id)}
-                        className="p-1.5 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:bg-gray-100 transition-colors"
+                        className="p-2 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
                         title={job.isSaved ? "Remove from saved" : "Save job"}
                       >
                         <Bookmark className={`w-4 h-4 transition-colors ${job.isSaved ? 'text-forest-700 fill-forest-700' : 'text-gray-400 group-hover:text-forest-600'}`} />
                       </button>
-                      <button
-                        onClick={(e) => handleShare(e, job)}
-                        className="p-1.5 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm hover:bg-gray-100 transition-colors"
-                        title="Share job"
-                      >
-                        <Share2 className="w-4 h-4 text-gray-400 hover:text-gray-600" />
-                      </button>
                     </div>
-                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1 pr-6">{job.title}</h3>
-                    <p className="text-sm text-gray-500 mb-3">{job.employer.storeName}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
+
+                    <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-xl font-bold border border-gray-100 group-hover:bg-forest-50 group-hover:border-forest-100 transition-colors mt-2 mb-4">
+                      {job.employer.storeName[0]}
+                    </div>
+
+                    <h3 className="font-bold text-forest-900 mb-2 line-clamp-2 pr-6 group-hover:text-forest-700 transition-colors">{job.title}</h3>
+                    <p className="text-sm text-gray-400 mb-6 font-medium">{job.employer.storeName}</p>
+
+                    <div className="mt-auto space-y-3">
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <MapPin className="w-4 h-4 text-gray-300" />
                         {job.location.city}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <DollarSign className="w-4 h-4" />
-                        ₹{job.salary.amount}/{job.salary.period}
-                      </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <DollarSign className="w-4 h-4 text-gray-300" />
+                        <span className="font-semibold text-gray-900">₹{job.salary.amount}/{job.salary.period}</span>
+                      </div>
                     </div>
                   </NavLink>
                 ))}
@@ -291,10 +262,10 @@ export function HomePage() {
         </div>
 
         {/* Right Column - Upcoming Shifts */}
-        <div className="bg-white rounded-2xl p-6 shadow-card">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Upcoming Shifts</h2>
-            <NavLink to="/shifts" className="text-sm text-forest-700 hover:text-forest-900 font-medium">
+        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-50 h-fit">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-xl font-bold text-forest-900">Upcoming Shifts</h2>
+            <NavLink to="/shifts" className="text-sm text-forest-700 hover:text-forest-900 font-bold">
               View All
             </NavLink>
           </div>
@@ -305,7 +276,7 @@ export function HomePage() {
               <p>No upcoming shifts</p>
               <NavLink
                 to="/jobs"
-                className="inline-block mt-4 px-4 py-2 bg-forest-900 text-white rounded-full text-sm font-medium hover:bg-forest-800 transition-colors"
+                className="inline-block mt-6 px-6 py-3 bg-lime-200 text-forest-900 rounded-full font-bold hover:bg-lime-300 transition-all shadow-sm active:scale-95"
               >
                 Browse Jobs
               </NavLink>
@@ -315,27 +286,31 @@ export function HomePage() {
               {upcomingShifts.map((shift) => (
                 <div
                   key={shift._id}
-                  className="border border-gray-100 rounded-xl p-4"
+                  className="bg-gray-50 rounded-2xl p-5 border border-gray-100 hover:border-gray-200 transition-colors"
                 >
-                  <div className="text-sm text-gray-500 mb-2">
+                  <div className="inline-flex px-3 py-1 bg-white rounded-lg text-sm text-forest-700 font-bold shadow-sm mb-4">
                     {formatDate(shift.date)}
                   </div>
-                  <h4 className="font-semibold text-gray-900 mb-1">
+                  <h4 className="font-bold text-forest-900 text-lg mb-1">
                     {shift.job.title}
                   </h4>
-                  <p className="text-sm text-gray-500 mb-3">{shift.employer.storeName}</p>
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-                    <Clock className="w-4 h-4" />
-                    {shift.startTime} - {shift.endTime}
+                  <p className="text-sm text-gray-500 font-medium mb-4">{shift.employer.storeName}</p>
+
+                  <div className="space-y-2 mb-6">
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <Clock className="w-4 h-4 text-gray-400" />
+                      {shift.startTime} - {shift.endTime}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <MapPin className="w-4 h-4 text-gray-400" />
+                      {shift.location}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <MapPin className="w-4 h-4" />
-                    {shift.location}
-                  </div>
+
                   <div className="mt-4 flex gap-2">
                     <NavLink
                       to={`/shifts/${shift._id}`}
-                      className="flex-1 px-3 py-2 bg-forest-50 text-forest-700 rounded-lg text-sm font-medium text-center hover:bg-forest-100 transition-colors"
+                      className="flex-1 px-4 py-3 bg-white border border-gray-200 text-forest-900 rounded-xl text-sm font-bold text-center hover:bg-gray-50 transition-colors shadow-sm"
                     >
                       View Details
                     </NavLink>

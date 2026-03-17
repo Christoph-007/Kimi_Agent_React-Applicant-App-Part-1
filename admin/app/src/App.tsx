@@ -19,7 +19,7 @@ import { MyJobsPage as ApplicantMyJobsPage } from '@/pages/applicant/MyJobsPage'
 import { ShiftsPage as ApplicantShiftsPage } from '@/pages/applicant/ShiftsPage';
 import { AttendancePage as ApplicantAttendancePage } from '@/pages/applicant/AttendancePage';
 import { ProfilePage } from '@/pages/applicant/ProfilePage';
-import { NotificationsPage } from '@/pages/applicant/NotificationsPage';
+import { NotificationsPage, ShiftDetailPage } from '@/pages';
 
 // Employer Pages
 import { DashboardPage as EmployerDashboardPage } from '@/pages/employer/DashboardPage';
@@ -63,7 +63,7 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
-            
+
             {/* Auth Routes */}
             <Route element={<AuthLayout />}>
               <Route path="/login" element={<LoginPage />} />
@@ -79,6 +79,7 @@ function App() {
                 <Route path="/jobs/:id" element={<ApplicantJobDetailPage />} />
                 <Route path="/my-jobs" element={<ApplicantMyJobsPage />} />
                 <Route path="/shifts" element={<ApplicantShiftsPage />} />
+                <Route path="/shifts/:id" element={<ShiftDetailPage />} />
                 <Route path="/attendance" element={<ApplicantAttendancePage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />

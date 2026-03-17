@@ -13,6 +13,8 @@ interface AuthContextType {
   logout: () => void;
   refreshUser: () => Promise<void>;
   fetchUnreadCount: () => Promise<void>;
+  forgotPassword: (email: string, userType: UserType) => Promise<void>;
+  resetPassword: (token: string, password: string, userType: UserType) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -54,14 +56,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const response = await authApi.login({ identifier, password, userType });
     localStorage.setItem('token', response.token);
     setUser(response.user);
-    
+
     // Navigate based on user type
     const routes: Record<UserType, string> = {
       applicant: '/home',
       employer: '/employer/dashboard',
       admin: '/admin/dashboard',
     };
-    
+
     navigate(routes[userType]);
   };
 
@@ -69,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const response = await authApi.signup(data, userType);
     localStorage.setItem('token', response.token);
     setUser(response.user);
-    
+
     const route = userType === 'employer' ? '/employer/dashboard' : '/home';
     navigate(route);
   };
@@ -90,6 +92,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const forgotPassword = async (email: string, userType: UserType) => {
+    await authApi.forgotPassword({ email, userType });
+  };
+
+  const resetPassword = async (token: string, password: string, userType: UserType) => {
+    await authApi.resetPassword(token, { password, userType });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -102,6 +112,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         refreshUser,
         fetchUnreadCount,
+        forgotPassword,
+        resetPassword,
       }}
     >
       {children}

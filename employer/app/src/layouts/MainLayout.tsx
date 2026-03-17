@@ -1,9 +1,9 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { 
-  Home, 
-  Search, 
-  Briefcase, 
-  Calendar, 
+import {
+  Home,
+  Search,
+  Briefcase,
+  Calendar,
   ClipboardList,
   Bell,
   User,
@@ -40,45 +40,45 @@ export function MainLayout() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50">
+      <header className="fixed top-0 left-0 right-0 h-16 bg-forest-900 border-b border-forest-800 z-50">
         <div className="h-full px-4 lg:px-6 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+              className="lg:hidden p-2 hover:bg-forest-800 rounded-lg text-white"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
             <NavLink to="/home" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-forest-900 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">S</span>
+              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                <span className="text-forest-900 font-bold text-sm">S</span>
               </div>
-              <span className="font-semibold text-lg text-forest-900 hidden sm:block">ShiftMaster</span>
+              <span className="font-semibold text-lg text-white hidden sm:block">ShiftMatch</span>
             </NavLink>
           </div>
 
           {/* Right side */}
           <div className="flex items-center gap-3">
-            <NavLink 
-              to="/notifications" 
-              className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            <NavLink
+              to="/notifications"
+              className="relative p-2 hover:bg-forest-800 rounded-lg transition-colors"
             >
-              <Bell className="w-5 h-5 text-gray-600" />
+              <Bell className="w-5 h-5 text-gray-300 hover:text-white" />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
             </NavLink>
-            <NavLink 
-              to="/profile" 
-              className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            <NavLink
+              to="/profile"
+              className="flex items-center gap-2 p-2 hover:bg-forest-800 rounded-lg transition-colors group"
             >
-              <div className="w-8 h-8 bg-forest-100 rounded-full flex items-center justify-center">
-                <User className="w-4 h-4 text-forest-700" />
+              <div className="w-8 h-8 bg-forest-800 rounded-full flex items-center justify-center group-hover:bg-forest-700">
+                <User className="w-4 h-4 text-gray-300 group-hover:text-white" />
               </div>
-              <span className="text-sm font-medium text-gray-700 hidden sm:block">
+              <span className="text-sm font-medium text-gray-300 group-hover:text-white hidden sm:block">
                 {user?.name || 'User'}
               </span>
             </NavLink>
@@ -88,7 +88,7 @@ export function MainLayout() {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
@@ -96,7 +96,7 @@ export function MainLayout() {
 
       <div className="flex pt-16">
         {/* Sidebar */}
-        <aside 
+        <aside
           className={cn(
             "fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-white border-r border-gray-200 z-40 flex flex-col",
             "transition-transform duration-300 lg:translate-x-0",
@@ -155,7 +155,7 @@ export function MainLayout() {
                 )}
               </NavLink>
             ))}
-            
+
             <button
               onClick={logout}
               className="flex items-center w-full px-4 py-3 text-sm font-medium text-red-600 rounded-xl hover:bg-red-50 transition-colors"

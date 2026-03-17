@@ -59,7 +59,7 @@ export function EmployerLayout() {
                 <span className="text-white font-bold text-sm">S</span>
               </div>
               <span className="font-semibold text-lg text-forest-900 hidden sm:block">
-                {user?.storeName || 'ShiftMaster'}
+                {user?.storeName || 'ShiftMatch'}
               </span>
             </NavLink>
           </div>

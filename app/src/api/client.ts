@@ -40,7 +40,7 @@ class ApiClient {
     this.client.interceptors.response.use(
       (response) => response.data,
       (error: AxiosError<ApiError>) => {
-        if (error.response?.status === 401) {
+        if (error.response?.status === 401 && error.config && !error.config.url?.includes('/login')) {
           // Token expired or invalid
           localStorage.removeItem('token');
           window.location.href = '/login';

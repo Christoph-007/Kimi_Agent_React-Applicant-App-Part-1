@@ -8,9 +8,11 @@ import { MainLayout, AuthLayout, EmployerLayout } from '@/layouts';
 
 // Pages
 import { LandingPage, BlogPage, ContactPage, CandidatesPage } from '@/pages';
-import { LoginPage } from '@/pages/auth/LoginPage';
-import { ApplicantSignupPage } from '@/pages/auth/ApplicantSignupPage';
-import { EmployerSignupPage } from '@/pages/auth/EmployerSignupPage';
+import { LoginPage } from './pages/auth/LoginPage';
+import { ApplicantSignupPage } from './pages/auth/ApplicantSignupPage';
+import { EmployerSignupPage } from './pages/auth/EmployerSignupPage';
+import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { HomePage } from '@/pages/applicant/HomePage';
 import { JobsPage } from '@/pages/applicant/JobsPage';
 import { JobDetailPage } from '@/pages/applicant/JobDetailPage';
@@ -63,14 +65,20 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup/applicant" element={<ApplicantSignupPage />} />
               <Route path="/signup/employer" element={<EmployerSignupPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+            </Route>
+
+            {/* Public Business Routes */}
+            <Route element={<MainLayout />}>
+              <Route path="/jobs" element={<JobsPage />} />
+              <Route path="/jobs/:id" element={<JobDetailPage />} />
             </Route>
 
             {/* Applicant Routes */}
             <Route element={<ProtectedRoute allowedRoles={['applicant']} />}>
               <Route element={<MainLayout />}>
                 <Route path="/home" element={<HomePage />} />
-                <Route path="/jobs" element={<JobsPage />} />
-                <Route path="/jobs/:id" element={<JobDetailPage />} />
                 <Route path="/my-jobs" element={<MyJobsPage />} />
                 <Route path="/shifts" element={<ShiftsPage />} />
                 <Route path="/shifts/:id" element={<ShiftDetailPage />} />

@@ -11,7 +11,7 @@ export function ContactPage() {
                             <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                                 <span className="text-forest-900 font-bold text-sm">S</span>
                             </div>
-                            <span className="font-semibold text-lg text-white">ShiftMaster</span>
+                            <span className="font-semibold text-lg text-white">ShiftMatch</span>
                         </NavLink>
                         <NavLink to="/" className="text-white hover:text-lime transition-colors">Home</NavLink>
                     </div>
@@ -23,7 +23,7 @@ export function ContactPage() {
                     <div className="text-center mb-16">
                         <h1 className="text-4xl font-bold text-forest-900 mb-4">Get in Touch</h1>
                         <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-                            Have questions or need support? We're here to help you get the most out of ShiftMaster.
+                            Have questions or need support? We're here to help you get the most out of ShiftMatch.
                         </p>
                     </div>
 
@@ -38,7 +38,7 @@ export function ContactPage() {
                                         </div>
                                         <div>
                                             <p className="text-sm text-gray-500 mb-1">Email us at</p>
-                                            <p className="font-semibold text-gray-900">support@shiftmaster.com</p>
+                                            <p className="font-semibold text-gray-900">support@shiftmatch.com</p>
                                         </div>
                                     </div>
 

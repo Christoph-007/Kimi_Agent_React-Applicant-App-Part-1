@@ -41,47 +41,52 @@
   * {
     @apply border-border;
   }
+
   html {
     @apply antialiased;
   }
+
   body {
     @apply bg-background text-foreground font-sans;
+  }
+
+  /* Hide number input spinners */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type=number] {
+    -moz-appearance: textfield;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-forest-900 text-white px-6 py-3 rounded-full font-medium 
-           hover:bg-forest-800 transition-all duration-200 
-           focus:outline-none focus:ring-2 focus:ring-forest-500 focus:ring-offset-2;
+    @apply bg-forest-900 text-white px-6 py-3 rounded-full font-medium hover:bg-forest-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:ring-offset-2;
   }
-  
+
   .btn-accent {
-    @apply bg-lime text-forest-900 px-6 py-3 rounded-full font-medium 
-           hover:bg-lime-400 transition-all duration-200 
-           focus:outline-none focus:ring-2 focus:ring-lime focus:ring-offset-2;
+    @apply bg-lime text-forest-900 px-6 py-3 rounded-full font-medium hover:bg-lime-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-lime focus:ring-offset-2;
   }
-  
+
   .btn-outline {
-    @apply border-2 border-forest-900 text-forest-900 px-6 py-3 rounded-full font-medium 
-           hover:bg-forest-900 hover:text-white transition-all duration-200;
+    @apply border-2 border-forest-900 text-forest-900 px-6 py-3 rounded-full font-medium hover:bg-forest-900 hover:text-white transition-all duration-200;
   }
-  
+
   .card {
-    @apply bg-white rounded-2xl shadow-card p-6 
-           hover:shadow-card-hover transition-shadow duration-200;
+    @apply bg-white rounded-2xl shadow-card p-6 hover:shadow-card-hover transition-shadow duration-200;
   }
-  
+
   .input-field {
-    @apply w-full px-4 py-3 rounded-xl border border-gray-200 
-           focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent
-           placeholder:text-gray-400;
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent placeholder:text-gray-400;
   }
-  
+
   .section-title {
     @apply text-3xl md:text-4xl font-bold text-forest-900;
   }
-  
+
   .section-subtitle {
     @apply text-gray-500 text-lg;
   }

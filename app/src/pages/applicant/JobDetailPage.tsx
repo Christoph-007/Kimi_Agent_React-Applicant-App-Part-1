@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, NavLink, useNavigate } from 'react-router-dom';
+import { useParams, NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   MapPin,
   DollarSign,
@@ -14,6 +14,7 @@ import {
   Share2,
   AlertCircle
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { jobsApi } from '@/api/jobs';
 import type { Job } from '@/types';
 import { toast } from 'sonner';
@@ -21,6 +22,8 @@ import { toast } from 'sonner';
 export function JobDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { isAuthenticated } = useAuth();
   const [job, setJob] = useState<Job | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isApplying, setIsApplying] = useState(false);
@@ -42,6 +45,9 @@ export function JobDetailPage() {
       setIsLoading(true);
       const response = await jobsApi.getById(id!);
       setJob(response.data);
+      if (searchParams.get('apply') === 'true' && !response.data.hasApplied && isAuthenticated) {
+        setShowApplyModal(true);
+      }
     } catch (error) {
       console.error('Failed to fetch job details:', error);
     } finally {
@@ -380,7 +386,14 @@ export function JobDetailPage() {
               </div>
             ) : (
               <button
-                onClick={() => setShowApplyModal(true)}
+                onClick={() => {
+                  if (isAuthenticated) {
+                    setShowApplyModal(true);
+                  } else {
+                    navigate('/login', { state: { from: window.location.pathname } });
+                    toast.info('Please sign in to apply for this job');
+                  }
+                }}
                 className="w-full py-3.5 bg-forest-900 text-white rounded-full font-semibold hover:bg-forest-800 transition-colors"
               >
                 Apply Now
@@ -440,9 +453,11 @@ export function JobDetailPage() {
                   Expected Salary (₹ per hour)
                 </label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={expectedSalary}
-                  onChange={(e) => setExpectedSalary(e.target.value)}
+                  onChange={(e) => setExpectedSalary(e.target.value.replace(/\D/g, ''))}
                   placeholder="Enter your expected hourly rate"
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent"
                 />

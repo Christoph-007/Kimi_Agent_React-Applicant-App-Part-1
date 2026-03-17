@@ -277,8 +277,8 @@ export function JobFormPage() {
                     type="button"
                     onClick={() => handleChange('jobType', type)}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${formData.jobType === type
-                        ? 'bg-forest-900 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-forest-900 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                   >
                     {type.charAt(0).toUpperCase() + type.slice(1).replace('-', ' ')}
@@ -299,9 +299,11 @@ export function JobFormPage() {
                 Amount (₹) <span className="text-red-500">*</span>
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={formData.salary.amount || ''}
-                onChange={(e) => handleNestedChange('salary', 'amount', parseInt(e.target.value) || 0)}
+                onChange={(e) => handleNestedChange('salary', 'amount', parseInt(e.target.value.replace(/\D/g, '')) || 0)}
                 placeholder="e.g., 200"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent"
                 required
@@ -398,9 +400,11 @@ export function JobFormPage() {
                 Hours per Day
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={formData.workingHours.hoursPerDay}
-                onChange={(e) => handleNestedChange('workingHours', 'hoursPerDay', parseInt(e.target.value) || 0)}
+                onChange={(e) => handleNestedChange('workingHours', 'hoursPerDay', parseInt(e.target.value.replace(/\D/g, '')) || 0)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent"
               />
             </div>
@@ -409,9 +413,11 @@ export function JobFormPage() {
                 Days per Week
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={formData.workingHours.daysPerWeek}
-                onChange={(e) => handleNestedChange('workingHours', 'daysPerWeek', parseInt(e.target.value) || 0)}
+                onChange={(e) => handleNestedChange('workingHours', 'daysPerWeek', parseInt(e.target.value.replace(/\D/g, '')) || 0)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent"
               />
             </div>
@@ -441,9 +447,11 @@ export function JobFormPage() {
                   Minimum Experience (years)
                 </label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={formData.requirements.minimumExperience}
-                  onChange={(e) => handleRequirementsChange('minimumExperience', parseInt(e.target.value) || 0)}
+                  onChange={(e) => handleRequirementsChange('minimumExperience', parseInt(e.target.value.replace(/\D/g, '')) || 0)}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent"
                 />
               </div>

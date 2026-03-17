@@ -64,7 +64,7 @@ export function CandidatesPage() {
                             <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                                 <span className="text-forest-900 font-bold text-sm">S</span>
                             </div>
-                            <span className="font-semibold text-lg text-white">ShiftMaster</span>
+                            <span className="font-semibold text-lg text-white">ShiftMatch</span>
                         </NavLink>
                         <div className="flex items-center gap-4">
                             <NavLink to="/login" className="text-white hover:text-lime transition-colors">Sign In</NavLink>

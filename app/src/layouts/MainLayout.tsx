@@ -1,9 +1,9 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { 
-  Home, 
-  Search, 
-  Briefcase, 
-  Calendar, 
+import {
+  Home,
+  Search,
+  Briefcase,
+  Calendar,
   ClipboardList,
   Bell,
   User,
@@ -29,7 +29,7 @@ const bottomNavItems = [
 ];
 
 export function MainLayout() {
-  const { logout, unreadCount, user } = useAuth();
+  const { logout, unreadCount, user, isAuthenticated } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -40,55 +40,74 @@ export function MainLayout() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50">
+      <header className="fixed top-0 left-0 right-0 h-16 bg-forest-900 border-b border-forest-800 z-50">
         <div className="h-full px-4 lg:px-6 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+              className="lg:hidden p-2 hover:bg-forest-800 rounded-lg text-white"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            <NavLink to="/home" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-forest-900 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">S</span>
+            <NavLink to={isAuthenticated ? "/home" : "/"} className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                <span className="text-forest-900 font-bold text-sm">S</span>
               </div>
-              <span className="font-semibold text-lg text-forest-900 hidden sm:block">ShiftMaster</span>
+              <span className="font-semibold text-lg text-white hidden sm:block">ShiftMatch</span>
             </NavLink>
           </div>
 
           {/* Right side */}
           <div className="flex items-center gap-3">
-            <NavLink 
-              to="/notifications" 
-              className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <Bell className="w-5 h-5 text-gray-600" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              )}
-            </NavLink>
-            <NavLink 
-              to="/profile" 
-              className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <div className="w-8 h-8 bg-forest-100 rounded-full flex items-center justify-center">
-                <User className="w-4 h-4 text-forest-700" />
+            {isAuthenticated ? (
+              <>
+                <NavLink
+                  to="/notifications"
+                  className="relative p-2 hover:bg-forest-800 rounded-lg transition-colors"
+                >
+                  <Bell className="w-5 h-5 text-gray-300 hover:text-white" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </NavLink>
+                <NavLink
+                  to="/profile"
+                  className="flex items-center gap-2 p-2 hover:bg-forest-800 rounded-lg transition-colors group"
+                >
+                  <div className="w-8 h-8 bg-forest-800 rounded-full flex items-center justify-center group-hover:bg-forest-700">
+                    <User className="w-4 h-4 text-gray-300 group-hover:text-white" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-300 group-hover:text-white hidden sm:block">
+                    {user?.name || user?.ownerName || user?.storeName || 'User'}
+                  </span>
+                </NavLink>
+              </>
+            ) : (
+              <div className="flex items-center gap-2 sm:gap-4">
+                <NavLink
+                  to="/login"
+                  className="text-gray-300 hover:text-white font-medium transition-colors text-sm sm:text-base px-2"
+                >
+                  Sign In
+                </NavLink>
+                <NavLink
+                  to="/signup/applicant"
+                  className="bg-lime-200 text-forest-900 px-4 sm:px-6 py-2 rounded-full font-bold hover:bg-lime-300 transition-all text-sm sm:text-base shadow-sm active:scale-95"
+                >
+                  Get Started
+                </NavLink>
               </div>
-              <span className="text-sm font-medium text-gray-700 hidden sm:block">
-                {user?.name || 'User'}
-              </span>
-            </NavLink>
+            )}
           </div>
         </div>
       </header>
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
@@ -96,74 +115,78 @@ export function MainLayout() {
 
       <div className="flex pt-16">
         {/* Sidebar */}
-        <aside 
+        <aside
           className={cn(
             "fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-white border-r border-gray-200 z-40 flex flex-col",
-            "transition-transform duration-300 lg:translate-x-0",
+            "transition-transform duration-300 lg:translate-x-0 outline-none",
             isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           )}
         >
           {/* Main Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-            {applicantNavItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={cn(
-                  "flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors",
-                  isActive(item.to)
-                    ? 'bg-forest-50 text-forest-700'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                )}
-              >
-                <item.icon className={cn(
-                  "w-5 h-5 mr-3",
-                  isActive(item.to) ? 'text-forest-600' : 'text-gray-400'
-                )} />
-                {item.label}
-              </NavLink>
-            ))}
+            {applicantNavItems
+              .filter(item => isAuthenticated || item.to === '/jobs')
+              .map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={cn(
+                    "flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors",
+                    isActive(item.to)
+                      ? 'bg-forest-50 text-forest-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  )}
+                >
+                  <item.icon className={cn(
+                    "w-5 h-5 mr-3",
+                    isActive(item.to) ? 'text-forest-600' : 'text-gray-400'
+                  )} />
+                  {item.label}
+                </NavLink>
+              ))}
           </nav>
 
           {/* Divider */}
-          <div className="border-t border-gray-200 mx-4" />
+          {isAuthenticated && <div className="border-t border-gray-200 mx-4" />}
 
           {/* Bottom Navigation */}
-          <nav className="px-4 py-4 space-y-1">
-            {bottomNavItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={cn(
-                  "flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors",
-                  isActive(item.to)
-                    ? 'bg-forest-50 text-forest-700'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                )}
+          {isAuthenticated && (
+            <nav className="px-4 py-4 space-y-1">
+              {bottomNavItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={cn(
+                    "flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors",
+                    isActive(item.to)
+                      ? 'bg-forest-50 text-forest-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  )}
+                >
+                  <item.icon className={cn(
+                    "w-5 h-5 mr-3",
+                    isActive(item.to) ? 'text-forest-600' : 'text-gray-400'
+                  )} />
+                  <span className="flex-1">{item.label}</span>
+                  {item.badge && unreadCount > 0 && (
+                    <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </NavLink>
+              ))}
+
+              <button
+                onClick={logout}
+                className="flex items-center w-full px-4 py-3 text-sm font-medium text-red-600 rounded-xl hover:bg-red-50 transition-colors"
               >
-                <item.icon className={cn(
-                  "w-5 h-5 mr-3",
-                  isActive(item.to) ? 'text-forest-600' : 'text-gray-400'
-                )} />
-                <span className="flex-1">{item.label}</span>
-                {item.badge && unreadCount > 0 && (
-                  <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </span>
-                )}
-              </NavLink>
-            ))}
-            
-            <button
-              onClick={logout}
-              className="flex items-center w-full px-4 py-3 text-sm font-medium text-red-600 rounded-xl hover:bg-red-50 transition-colors"
-            >
-              <LogOut className="w-5 h-5 mr-3" />
-              Logout
-            </button>
-          </nav>
+                <LogOut className="w-5 h-5 mr-3" />
+                Logout
+              </button>
+            </nav>
+          )}
         </aside>
 
         {/* Main Content */}

@@ -126,6 +126,8 @@ const employerSchema = new mongoose.Schema(
         },
 
         // ── END NEW FIELDS ────────────────────────────────────────────────────
+        resetPasswordToken: String,
+        resetPasswordExpire: Date,
     },
     {
         timestamps: true,

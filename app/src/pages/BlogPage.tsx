@@ -8,7 +8,7 @@ export function BlogPage() {
             title: 'How to Land Your First Shift Job',
             excerpt: 'Learn the best tips and tricks to get hired quickly in the shift-based economy.',
             date: 'Oct 12, 2023',
-            author: 'Team ShiftMaster'
+            author: 'Team ShiftMatch'
         },
         {
             id: 2,
@@ -28,7 +28,7 @@ export function BlogPage() {
                             <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                                 <span className="text-forest-900 font-bold text-sm">S</span>
                             </div>
-                            <span className="font-semibold text-lg text-white">ShiftMaster</span>
+                            <span className="font-semibold text-lg text-white">ShiftMatch</span>
                         </NavLink>
                         <NavLink to="/" className="text-white hover:text-lime transition-colors">Home</NavLink>
                     </div>
@@ -37,7 +37,7 @@ export function BlogPage() {
 
             <main className="pt-24 pb-12 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
-                    <h1 className="text-4xl font-bold text-forest-900 mb-4">The ShiftMaster Blog</h1>
+                    <h1 className="text-4xl font-bold text-forest-900 mb-4">The ShiftMatch Blog</h1>
                     <p className="text-gray-500 text-lg">Insights, tips, and stories from the frontlines of flexible work.</p>
                 </div>
 

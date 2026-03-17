@@ -95,16 +95,16 @@ export function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-forest-900">Dashboard</h1>
-          <p className="text-gray-500">Welcome back! Here's what's happening with your business.</p>
+          <p className="text-gray-500 font-medium mt-1">Welcome back! Here's what's happening with your business.</p>
         </div>
         <NavLink
           to="/employer/jobs/new"
-          className="px-6 py-3 bg-forest-900 text-white rounded-full font-medium hover:bg-forest-800 transition-colors flex items-center gap-2"
+          className="px-6 py-3 bg-lime-200 text-forest-900 rounded-full font-bold hover:bg-lime-300 transition-all flex items-center gap-2 shadow-sm active:scale-95"
         >
-          <Briefcase className="w-4 h-4" />
+          <Briefcase className="w-5 h-5" />
           Post New Job
         </NavLink>
       </div>
@@ -144,7 +144,7 @@ export function DashboardPage() {
             label: 'Upcoming Shifts',
             value: stats.upcomingShifts,
             icon: Calendar,
-            color: 'bg-indigo-50 text-indigo-600',
+            color: 'bg-lime-100 text-forest-700',
             link: '/employer/shifts'
           },
           {
@@ -158,24 +158,27 @@ export function DashboardPage() {
           <NavLink
             key={index}
             to={stat.link}
-            className="bg-white rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-shadow"
+            className="group bg-white rounded-3xl p-6 shadow-sm border border-gray-50 hover:shadow-md transition-shadow relative overflow-hidden"
           >
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${stat.color}`}>
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 ${stat.color}`}>
               <stat.icon className="w-6 h-6" />
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</div>
-            <div className="text-sm text-gray-500">{stat.label}</div>
+            <div className="text-3xl font-bold text-forest-900 mb-1">{stat.value}</div>
+            <div className="text-sm text-gray-500 font-medium flex items-center justify-between">
+              {stat.label}
+              <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-forest-500 transition-colors" />
+            </div>
           </NavLink>
         ))}
       </div>
 
       {/* Recent Jobs */}
-      <div className="bg-white rounded-2xl p-6 shadow-card">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Recent Jobs</h2>
-          <NavLink to="/employer/jobs" className="text-sm text-forest-700 hover:text-forest-900 font-medium flex items-center gap-1">
+      <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-50">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-xl font-bold text-forest-900">Recent Jobs</h2>
+          <NavLink to="/employer/jobs" className="text-sm text-forest-700 hover:text-forest-900 font-bold flex items-center gap-1 group">
             View All
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </NavLink>
         </div>
 
@@ -185,7 +188,7 @@ export function DashboardPage() {
             <p>No jobs posted yet</p>
             <NavLink
               to="/employer/jobs/new"
-              className="inline-block mt-4 px-4 py-2 bg-forest-900 text-white rounded-full text-sm font-medium hover:bg-forest-800 transition-colors"
+              className="inline-block mt-6 px-6 py-3 bg-lime-200 text-forest-900 rounded-full font-bold hover:bg-lime-300 transition-all shadow-sm active:scale-95"
             >
               Post Your First Job
             </NavLink>
@@ -193,33 +196,34 @@ export function DashboardPage() {
         ) : (
           <div className="grid md:grid-cols-2 gap-4">
             {recentJobs.map((job) => (
-              <div
+              <NavLink
+                to={`/employer/jobs/${job._id}`}
                 key={job._id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
+                className="flex items-center justify-between p-5 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors border border-gray-100/50 hover:border-gray-200"
               >
                 <div>
-                  <h3 className="font-medium text-gray-900">{job.title}</h3>
-                  <p className="text-sm text-gray-500">
-                    {job.totalApplications} applications • {job.status}
+                  <h3 className="font-bold text-forest-900 mb-1">{job.title}</h3>
+                  <p className="text-sm text-gray-500 font-medium">
+                    {job.totalApplications} applications
                   </p>
                 </div>
-                <span className={`px-3 py-1 text-xs font-medium rounded-full ${job.status === 'open' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'
+                <span className={`px-4 py-1.5 text-xs font-bold rounded-lg border ${job.status === 'open' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-100 text-gray-600 border-gray-200'
                   }`}>
                   {job.status}
                 </span>
-              </div>
+              </NavLink>
             ))}
           </div>
         )}
       </div>
 
       {/* Upcoming Shifts */}
-      <div className="bg-white rounded-2xl p-6 shadow-card">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Upcoming Shifts</h2>
-          <NavLink to="/employer/shifts" className="text-sm text-forest-700 hover:text-forest-900 font-medium flex items-center gap-1">
+      <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-50">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-xl font-bold text-forest-900">Upcoming Shifts</h2>
+          <NavLink to="/employer/shifts" className="text-sm text-forest-700 hover:text-forest-900 font-bold flex items-center gap-1 group">
             View All
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </NavLink>
         </div>
 
@@ -229,18 +233,25 @@ export function DashboardPage() {
             <p>No upcoming shifts</p>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {upcomingShifts.map((shift) => (
               <div
                 key={shift._id}
-                className="border border-gray-100 rounded-xl p-4"
+                className="bg-gray-50 rounded-2xl p-5 border border-gray-100 hover:border-gray-200 transition-colors"
               >
-                <div className="text-sm text-gray-500 mb-2">{formatDate(shift.date)}</div>
-                <h3 className="font-semibold text-gray-900 mb-1">{shift.job.title}</h3>
-                <p className="text-sm text-gray-500 mb-3">{shift.applicant.name}</p>
+                <div className="inline-flex px-3 py-1 bg-white rounded-md text-xs text-forest-700 font-bold shadow-sm mb-4">
+                  {formatDate(shift.date)}
+                </div>
+                <h3 className="font-bold text-forest-900 text-lg mb-1 line-clamp-1">{shift.job.title}</h3>
+                <p className="text-sm text-gray-500 font-medium mb-4 flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-forest-100 flex items-center justify-center text-forest-700 font-bold text-xs uppercase">
+                    {shift.applicant.name[0]}
+                  </div>
+                  {shift.applicant.name}
+                </p>
                 <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Clock className="w-4 h-4" />
-                  {shift.startTime} - {shift.endTime}
+                  <Clock className="w-4 h-4 text-gray-400" />
+                  <span className="font-medium">{shift.startTime} - {shift.endTime}</span>
                 </div>
               </div>
             ))}

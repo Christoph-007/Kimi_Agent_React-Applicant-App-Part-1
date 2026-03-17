@@ -11,6 +11,8 @@ import { LandingPage } from '@/pages/LandingPage';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { ApplicantSignupPage } from '@/pages/auth/ApplicantSignupPage';
 import { EmployerSignupPage } from '@/pages/auth/EmployerSignupPage';
+import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage';
+import { ResetPasswordPage } from '@/pages/auth/ResetPasswordPage';
 
 // Applicant Pages
 import { HomePage } from '@/pages/applicant/HomePage';
@@ -20,7 +22,7 @@ import { MyJobsPage as ApplicantMyJobsPage } from '@/pages/applicant/MyJobsPage'
 import { ShiftsPage as ApplicantShiftsPage } from '@/pages/applicant/ShiftsPage';
 import { AttendancePage as ApplicantAttendancePage } from '@/pages/applicant/AttendancePage';
 import { ProfilePage } from '@/pages/applicant/ProfilePage';
-import { NotificationsPage } from '@/pages/applicant/NotificationsPage';
+import { NotificationsPage, ShiftDetailPage } from '@/pages';
 
 // Employer Pages
 import { DashboardPage } from '@/pages/employer/DashboardPage';
@@ -61,6 +63,8 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup/applicant" element={<ApplicantSignupPage />} />
               <Route path="/signup/employer" element={<EmployerSignupPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
             </Route>
 
             {/* Applicant Routes */}
@@ -71,6 +75,7 @@ function App() {
                 <Route path="/jobs/:id" element={<ApplicantJobDetailPage />} />
                 <Route path="/my-jobs" element={<ApplicantMyJobsPage />} />
                 <Route path="/shifts" element={<ApplicantShiftsPage />} />
+                <Route path="/shifts/:id" element={<ShiftDetailPage />} />
                 <Route path="/attendance" element={<ApplicantAttendancePage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />

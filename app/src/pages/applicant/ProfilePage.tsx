@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { 
-  Mail, 
-  Phone, 
+import {
+  Mail,
+  Phone,
   Briefcase,
   Loader2,
   Camera,
@@ -24,7 +24,7 @@ export function ProfilePage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [success, setSuccess] = useState('');
-  
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -129,7 +129,7 @@ export function ProfilePage() {
 
   const handleDeleteResume = async () => {
     if (!confirm('Are you sure you want to delete your resume?')) return;
-    
+
     try {
       await resumeApi.delete();
       setSuccess('Resume deleted successfully!');
@@ -211,16 +211,16 @@ export function ProfilePage() {
             <div className="relative inline-block mb-4">
               <div className="w-24 h-24 bg-forest-100 rounded-full flex items-center justify-center mx-auto">
                 <span className="text-3xl font-bold text-forest-700">
-                  {user?.name?.[0] || 'U'}
+                  {(user?.name || user?.ownerName || user?.storeName)?.[0]?.toUpperCase() || 'U'}
                 </span>
               </div>
               <button className="absolute bottom-0 right-0 w-8 h-8 bg-forest-900 text-white rounded-full flex items-center justify-center hover:bg-forest-800 transition-colors">
                 <Camera className="w-4 h-4" />
               </button>
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">{user?.name}</h2>
+            <h2 className="text-xl font-semibold text-gray-900">{user?.name || user?.ownerName}</h2>
             <p className="text-gray-500">{user?.type === 'applicant' ? 'Job Seeker' : 'Employer'}</p>
-            
+
             <div className="mt-6 space-y-3 text-left">
               <div className="flex items-center gap-3 text-gray-600">
                 <Mail className="w-5 h-5 text-gray-400" />
@@ -236,7 +236,7 @@ export function ProfilePage() {
           {/* Resume Card */}
           <div className="bg-white rounded-2xl p-6 shadow-card">
             <h3 className="font-semibold text-gray-900 mb-4">Resume</h3>
-            
+
             {user?.resume ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-xl">
@@ -300,7 +300,7 @@ export function ProfilePage() {
           {/* Basic Information */}
           <div className="bg-white rounded-2xl p-6 shadow-card">
             <h3 className="font-semibold text-gray-900 mb-6">Basic Information</h3>
-            
+
             {isEditing ? (
               <div className="space-y-4">
                 <div>
@@ -330,12 +330,23 @@ export function ProfilePage() {
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Experience (years)</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={formData.experience}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, experience: parseInt(e.target.value.replace(/\D/g, '')) || 0 }))}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500"
+                  />
+                </div>
               </div>
             ) : (
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Full Name</p>
-                  <p className="font-medium text-gray-900">{user?.name || 'Not provided'}</p>
+                  <p className="font-medium text-gray-900">{user?.name || user?.ownerName || user?.storeName || 'Not provided'}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Email</p>
@@ -356,7 +367,7 @@ export function ProfilePage() {
           {/* Skills */}
           <div className="bg-white rounded-2xl p-6 shadow-card">
             <h3 className="font-semibold text-gray-900 mb-4">Skills</h3>
-            
+
             {isEditing ? (
               <div className="space-y-4">
                 <div className="flex gap-2">
@@ -408,7 +419,7 @@ export function ProfilePage() {
           {/* Job Preferences */}
           <div className="bg-white rounded-2xl p-6 shadow-card">
             <h3 className="font-semibold text-gray-900 mb-4">Job Preferences</h3>
-            
+
             {isEditing ? (
               <div className="space-y-6">
                 <div>
@@ -419,11 +430,10 @@ export function ProfilePage() {
                         key={type}
                         type="button"
                         onClick={() => setFormData((prev) => ({ ...prev, preferredJobType: type }))}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                          formData.preferredJobType === type
-                            ? 'bg-forest-900 text-white'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${formData.preferredJobType === type
+                          ? 'bg-forest-900 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
                       >
                         {type.charAt(0).toUpperCase() + type.slice(1).replace('-', ' ')}
                       </button>
@@ -439,11 +449,10 @@ export function ProfilePage() {
                         key={category}
                         type="button"
                         onClick={() => toggleCategory(category)}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                          formData.jobCategories.includes(category)
-                            ? 'bg-forest-900 text-white'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${formData.jobCategories.includes(category)
+                          ? 'bg-forest-900 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
                       >
                         {category}
                       </button>
@@ -459,11 +468,10 @@ export function ProfilePage() {
                         key={type}
                         type="button"
                         onClick={() => setFormData((prev) => ({ ...prev, preferredShiftType: type }))}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                          formData.preferredShiftType === type
-                            ? 'bg-forest-900 text-white'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${formData.preferredShiftType === type
+                          ? 'bg-forest-900 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
                       >
                         {type.charAt(0).toUpperCase() + type.slice(1).replace('-', ' ')}
                       </button>
@@ -485,9 +493,11 @@ export function ProfilePage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Expected Hourly Rate (₹)</label>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={formData.expectedHourlyRate}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, expectedHourlyRate: parseInt(e.target.value) || 0 }))}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, expectedHourlyRate: parseInt(e.target.value.replace(/\D/g, '')) || 0 }))}
                     placeholder="e.g., 150"
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500"
                   />
@@ -501,11 +511,10 @@ export function ProfilePage() {
                         key={day}
                         type="button"
                         onClick={() => toggleDay(day)}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                          formData.availabilityDays.includes(day)
-                            ? 'bg-forest-900 text-white'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${formData.availabilityDays.includes(day)
+                          ? 'bg-forest-900 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
                       >
                         {day.slice(0, 3)}
                       </button>

@@ -72,7 +72,7 @@ export const mockNotifications: Notification[] = [
         recipient: 'user_1',
         recipientModel: 'User',
         type: 'info',
-        title: 'Welcome to ShiftMaster',
+        title: 'Welcome to ShiftMatch',
         message: 'Thanks for joining our platform!',
         isRead: false,
         isDismissed: false,

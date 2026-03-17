@@ -142,9 +142,8 @@ export function ApplicantSignupPage() {
       {/* Progress Steps */}
       <div className="flex items-center justify-center gap-4 mb-8">
         <div className={`flex items-center gap-2 ${step >= 1 ? 'text-forest-900' : 'text-gray-400'}`}>
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-            step >= 1 ? 'bg-forest-900 text-white' : 'bg-gray-200'
-          }`}>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${step >= 1 ? 'bg-forest-900 text-white' : 'bg-gray-200'
+            }`}>
             1
           </div>
           <span className="text-sm font-medium hidden sm:block">Basic Info</span>
@@ -153,9 +152,8 @@ export function ApplicantSignupPage() {
           <div className={`h-full bg-forest-900 transition-all ${step >= 2 ? 'w-full' : 'w-0'}`} />
         </div>
         <div className={`flex items-center gap-2 ${step >= 2 ? 'text-forest-900' : 'text-gray-400'}`}>
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-            step >= 2 ? 'bg-forest-900 text-white' : 'bg-gray-200'
-          }`}>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${step >= 2 ? 'bg-forest-900 text-white' : 'bg-gray-200'
+            }`}>
             2
           </div>
           <span className="text-sm font-medium hidden sm:block">Preferences</span>
@@ -308,11 +306,11 @@ export function ApplicantSignupPage() {
                 Years of Experience
               </label>
               <input
-                type="number"
-                min="0"
-                max="50"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={formData.experience}
-                onChange={(e) => handleChange('experience', parseInt(e.target.value) || 0)}
+                onChange={(e) => handleChange('experience', parseInt(e.target.value.replace(/\D/g, '')) || 0)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent"
               />
             </div>
@@ -328,11 +326,10 @@ export function ApplicantSignupPage() {
                     key={type}
                     type="button"
                     onClick={() => handleChange('preferredJobType', type)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                      formData.preferredJobType === type
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${formData.preferredJobType === type
                         ? 'bg-forest-900 text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
+                      }`}
                   >
                     {type.charAt(0).toUpperCase() + type.slice(1).replace('-', ' ')}
                   </button>
@@ -351,11 +348,10 @@ export function ApplicantSignupPage() {
                     key={category}
                     type="button"
                     onClick={() => toggleCategory(category)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                      formData.jobCategories.includes(category)
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${formData.jobCategories.includes(category)
                         ? 'bg-forest-900 text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
+                      }`}
                   >
                     {category}
                   </button>
@@ -374,11 +370,10 @@ export function ApplicantSignupPage() {
                     key={type}
                     type="button"
                     onClick={() => handleChange('preferredShiftType', type)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                      formData.preferredShiftType === type
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${formData.preferredShiftType === type
                         ? 'bg-forest-900 text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
+                      }`}
                   >
                     {type.charAt(0).toUpperCase() + type.slice(1).replace('-', ' ')}
                   </button>
@@ -406,10 +401,11 @@ export function ApplicantSignupPage() {
                 Expected Hourly Rate (₹)
               </label>
               <input
-                type="number"
-                min="0"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={formData.expectedHourlyRate}
-                onChange={(e) => handleChange('expectedHourlyRate', parseInt(e.target.value) || 0)}
+                onChange={(e) => handleChange('expectedHourlyRate', parseInt(e.target.value.replace(/\D/g, '')) || 0)}
                 placeholder="e.g., 150"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent"
               />
@@ -426,11 +422,10 @@ export function ApplicantSignupPage() {
                     key={day}
                     type="button"
                     onClick={() => toggleDay(day)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                      formData.availabilityDays.includes(day)
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${formData.availabilityDays.includes(day)
                         ? 'bg-forest-900 text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
+                      }`}
                   >
                     {day.slice(0, 3)}
                   </button>

@@ -6,7 +6,9 @@ const { successResponse, errorResponse } = require('../utils/responseUtils');
 const {
     notifyEmployerSignup,
     notifyApplicantSignup,
+    notifyForgotPassword,
 } = require('../services/notificationService');
+const crypto = require('crypto');
 
 // NEW: in-app notification service (does not replace the above)
 const {
@@ -87,7 +89,7 @@ const employerSignup = async (req, res) => {
 // @access  Public
 const applicantSignup = async (req, res) => {
     try {
-        const {
+        let {
             name,
             fullName,
             phone,
@@ -103,6 +105,11 @@ const applicantSignup = async (req, res) => {
             availabilityDays,
             expectedHourlyRate,
         } = req.body;
+
+        // If email is an empty string, set it to undefined to avoid violating the unique sparse index
+        if (!email || email.trim() === '') {
+            email = undefined;
+        }
 
         // Check if applicant already exists
         const query = { phone };
@@ -183,6 +190,8 @@ const login = async (req, res) => {
     try {
         const { identifier, password, userType } = req.body;
 
+        console.log('[Auth] Login attempt:', { identifier, userType, passwordLength: password?.length });
+
         let Model;
         if (userType === 'employer') {
             Model = Employer;
@@ -191,6 +200,7 @@ const login = async (req, res) => {
         } else if (userType === 'admin') {
             Model = Admin;
         } else {
+            console.log('[Auth] Invalid user type:', userType);
             return errorResponse(res, 400, 'Invalid user type');
         }
 
@@ -199,12 +209,14 @@ const login = async (req, res) => {
         }).select('+password');
 
         if (!user) {
+            console.log(`[Auth] User not found for identifier: ${identifier}`);
             return errorResponse(res, 401, 'Invalid credentials');
         }
 
         const isPasswordMatch = await user.comparePassword(password);
 
         if (!isPasswordMatch) {
+            console.log(`[Auth] Password mismatch for identifier: ${identifier}`);
             return errorResponse(res, 401, 'Invalid credentials');
         }
 
@@ -240,6 +252,12 @@ const getMe = async (req, res) => {
     try {
         const userObj = req.user.toObject ? req.user.toObject() : { ...req.user };
         userObj.type = req.userType;
+
+        // Ensure name is available for consistent display in both apps
+        if (req.userType === 'employer' && !userObj.name) {
+            userObj.name = userObj.ownerName || userObj.storeName;
+        }
+
         return successResponse(res, 200, 'User retrieved successfully', userObj);
     } catch (error) {
         return errorResponse(res, 500, 'Error retrieving user', error.message);
@@ -288,6 +306,10 @@ const updateMe = async (req, res) => {
 
         // Specialized mapping for Employer
         if (req.userType === 'employer') {
+            // Map name from profile edit to ownerName
+            if (updates.name) updates.ownerName = updates.name;
+            if (updates.fullName) updates.ownerName = updates.fullName;
+
             if (updates.city || updates.state || updates.pincode) {
                 updates.address = {
                     street: updates.address || req.user.address?.street || '',
@@ -358,6 +380,109 @@ const logout = async (req, res) => {
     }
 };
 
+// @desc    Forgot password
+// @route   POST /api/auth/forgot-password
+// @access  Public
+const forgotPassword = async (req, res) => {
+    try {
+        const { email, userType } = req.body;
+
+        if (!email || !userType) {
+            return errorResponse(res, 400, 'Please provide email and user type');
+        }
+
+        let Model;
+        if (userType === 'employer') Model = Employer;
+        else if (userType === 'applicant') Model = Applicant;
+        else if (userType === 'admin') Model = Admin;
+        else return errorResponse(res, 400, 'Invalid user type');
+
+        const user = await Model.findOne({ email });
+
+        if (!user) {
+            // Return success even if user not found for security reasons
+            return successResponse(res, 200, 'If an account with that email exists, a reset link has been sent.');
+        }
+
+        // Get reset token
+        const resetToken = crypto.randomBytes(20).toString('hex');
+
+        // Hash token and set to resetPasswordToken field
+        user.resetPasswordToken = crypto
+            .createHash('sha256')
+            .update(resetToken)
+            .digest('hex');
+
+        // Set expire (10 mins)
+        user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+        await user.save({ validateBeforeSave: false });
+
+        // Create reset url
+        const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}?type=${userType}`;
+
+        try {
+            await notifyForgotPassword(user, resetUrl);
+            return successResponse(res, 200, 'Password reset email sent');
+        } catch (err) {
+            console.error('[Auth] Reset email failed:', err.message);
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpire = undefined;
+            await user.save({ validateBeforeSave: false });
+            return errorResponse(res, 500, 'Email could not be sent');
+        }
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        return errorResponse(res, 500, 'Error in forgot password', error.message);
+    }
+};
+
+// @desc    Reset password
+// @route   POST /api/auth/reset-password/:resetToken
+// @access  Public
+const resetPassword = async (req, res) => {
+    try {
+        const { password, userType } = req.body;
+        const { resetToken } = req.params;
+
+        if (!password || !userType) {
+            return errorResponse(res, 400, 'Please provide new password and user type');
+        }
+
+        let Model;
+        if (userType === 'employer') Model = Employer;
+        else if (userType === 'applicant') Model = Applicant;
+        else if (userType === 'admin') Model = Admin;
+        else return errorResponse(res, 400, 'Invalid user type');
+
+        // Get hashed token
+        const hashedToken = crypto
+            .createHash('sha256')
+            .update(resetToken)
+            .digest('hex');
+
+        const user = await Model.findOne({
+            resetPasswordToken: hashedToken,
+            resetPasswordExpire: { $gt: Date.now() },
+        });
+
+        if (!user) {
+            return errorResponse(res, 400, 'Invalid token or token expired');
+        }
+
+        // Set new password
+        user.password = password;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+        await user.save();
+
+        return successResponse(res, 200, 'Password updated successfully');
+    } catch (error) {
+        console.error('Reset password error:', error);
+        return errorResponse(res, 500, 'Error in reset password', error.message);
+    }
+};
+
 module.exports = {
     employerSignup,
     applicantSignup,
@@ -366,4 +491,6 @@ module.exports = {
     updateMe,
     updatePassword,
     logout,
+    forgotPassword,
+    resetPassword,
 };
