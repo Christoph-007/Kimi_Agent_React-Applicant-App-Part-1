@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
+import {
   Briefcase,
   Search,
   Loader2,
@@ -13,6 +13,7 @@ import {
   Building2
 } from 'lucide-react';
 import { adminApi } from '@/api/admin';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import type { Job } from '@/types';
 
 export function JobsPage() {
@@ -30,6 +31,11 @@ export function JobsPage() {
     totalItems: 0,
   });
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{
+    open: boolean;
+    jobId: string;
+    jobTitle: string;
+  }>({ open: false, jobId: '', jobTitle: '' });
 
   const jobTypes = ['full-time', 'part-time', 'shift', 'contract'];
   const statusOptions = ['open', 'closed', 'filled'];
@@ -41,7 +47,7 @@ export function JobsPage() {
         page: pagination.currentPage,
         limit: 10,
       };
-      
+
       if (filters.search) params.search = filters.search;
       if (filters.status) params.status = filters.status;
       if (filters.jobType) params.jobType = filters.jobType;
@@ -64,12 +70,16 @@ export function JobsPage() {
     fetchJobs();
   }, [fetchJobs]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this job? This action cannot be undone.')) return;
-    
-    setIsDeleting(id);
+  const handleDeleteAttempt = (id: string, title: string) => {
+    setConfirmDelete({ open: true, jobId: id, jobTitle: title });
+  };
+
+  const handleDeleteConfirm = async () => {
+    const { jobId } = confirmDelete;
+    setConfirmDelete({ ...confirmDelete, open: false });
+    setIsDeleting(jobId);
     try {
-      await adminApi.deleteJob(id);
+      await adminApi.deleteJob(jobId);
       fetchJobs();
     } catch (error) {
       console.error('Failed to delete job:', error);
@@ -186,11 +196,10 @@ export function JobsPage() {
                         <p className="text-sm text-gray-500">{job.employer.storeName}</p>
                       </div>
                     </div>
-                    <span className={`px-3 py-1 text-xs font-medium rounded-full capitalize ${
-                      job.status === 'open' ? 'bg-green-50 text-green-700' :
-                      job.status === 'closed' ? 'bg-gray-100 text-gray-600' :
-                      'bg-blue-50 text-blue-700'
-                    }`}>
+                    <span className={`px-3 py-1 text-xs font-medium rounded-full capitalize ${job.status === 'open' ? 'bg-forest-50 text-forest-800' :
+                        job.status === 'closed' ? 'bg-gray-100 text-gray-600' :
+                          'bg-blue-50 text-blue-700'
+                      }`}>
                       {job.status}
                     </span>
                   </div>
@@ -224,7 +233,7 @@ export function JobsPage() {
                     View
                   </button>
                   <button
-                    onClick={() => handleDelete(job._id)}
+                    onClick={() => handleDeleteAttempt(job._id, job.title)}
                     disabled={isDeleting === job._id}
                     className="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors disabled:opacity-50 flex items-center gap-2"
                   >
@@ -246,7 +255,7 @@ export function JobsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                 disabled={pagination.currentPage === 1}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -256,7 +265,7 @@ export function JobsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -264,6 +273,15 @@ export function JobsPage() {
           )}
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={confirmDelete.open}
+        title="Delete Job Listing"
+        message={`Are you sure you want to delete "${confirmDelete.jobTitle}"? This action cannot be undone.`}
+        confirmLabel="Delete Permanently"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setConfirmDelete({ ...confirmDelete, open: false })}
+      />
     </div>
   );
 }

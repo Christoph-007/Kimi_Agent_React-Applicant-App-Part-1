@@ -92,7 +92,23 @@ export function CreateShiftPage() {
   };
 
   const handleJobChange = (jobId: string) => {
-    setFormData((prev) => ({ ...prev, jobId, applicantId: '' }));
+    const selectedJob = jobs.find(j => j._id === jobId);
+    
+    // Construct location string from job location
+    let locationStr = '';
+    if (selectedJob) {
+      const { address, city, state, pincode } = selectedJob.location;
+      const parts = [address, city, state, pincode].filter(Boolean);
+      locationStr = parts.join(', ');
+    }
+
+    setFormData((prev) => ({ 
+      ...prev, 
+      jobId, 
+      applicantId: '', 
+      location: locationStr || prev.location 
+    }));
+
     if (jobId) {
       fetchApplicantsForJob(jobId);
     } else {
@@ -336,7 +352,7 @@ export function CreateShiftPage() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="flex-1 py-3.5 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+            className="flex-1 py-3.5 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-[#F5F5ED] transition-colors"
           >
             Cancel
           </button>

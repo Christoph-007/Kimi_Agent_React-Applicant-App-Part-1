@@ -279,6 +279,253 @@ const forgotPasswordTemplate = (userName, resetUrl) => {
   };
 };
 
+// Email template for admin - New employer signup
+const adminNewEmployerTemplate = (employer) => {
+  return {
+    subject: 'NEW EMPLOYER REGISTRATION - Action Required',
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #333; color: white; padding: 20px; text-align: center; }
+          .content { padding: 20px; border: 1px solid #ddd; }
+          .button { display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; }
+          .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header"><h1>New Employer Signup</h1></div>
+          <div class="content">
+            <p>A new employer has registered and is waiting for approval:</p>
+            <ul>
+              <li><strong>Store Name:</strong> ${employer.storeName}</li>
+              <li><strong>Owner Name:</strong> ${employer.ownerName}</li>
+              <li><strong>Email:</strong> ${employer.email}</li>
+              <li><strong>Phone:</strong> ${employer.phone}</li>
+              <li><strong>Business Type:</strong> ${employer.businessType}</li>
+            </ul>
+            <p>Please review local details and approve/reject in the admin dashboard.</p>
+            <a href="${process.env.FRONTEND_URL}/admin/employers" class="button">Go to Admin Dashboard</a>
+          </div>
+          <div class="footer"><p>&copy; 2026 ShiftMatch Admin System.</p></div>
+        </div>
+      </body>
+      </html>
+    `,
+    text: `New Employer Registration: ${employer.storeName}\nOwner: ${employer.ownerName}\nEmail: ${employer.email}\nPhone: ${employer.phone}\nPlease review in admin dashboard.`,
+  };
+};
+
+// Email template for employer - New application received
+const employerNewApplicationTemplate = (employerName, applicantName, jobTitle) => {
+  return {
+    subject: `New Application Received: ${jobTitle}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #4CAF50; color: white; padding: 20px; text-align: center; }
+          .content { padding: 20px; background-color: #f9f9f9; }
+          .button { display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; }
+          .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header"><h1>New Application!</h1></div>
+          <div class="content">
+            <h2>Hello ${employerName},</h2>
+            <p>You have received a new application for your job posting: <strong>${jobTitle}</strong>.</p>
+            <p><strong>Applicant:</strong> ${applicantName}</p>
+            <p>Please log in to your dashboard to review the application and candidate details.</p>
+            <a href="${process.env.FRONTEND_URL}/employer/applications" class="button">View Application</a>
+          </div>
+          <div class="footer"><p>&copy; 2026 ShiftMatch. All rights reserved.</p></div>
+        </div>
+      </body>
+      </html>
+    `,
+    text: `New Application: ${applicantName} applied for ${jobTitle}.\n\nPlease review it in your dashboard.`,
+  };
+};
+
+// Email template for applicant - Account activated
+const applicantActivationTemplate = (applicantName) => {
+  return {
+    subject: 'Your ShiftMatch Account is Now Active!',
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #2196F3; color: white; padding: 20px; text-align: center; }
+          .content { padding: 20px; background-color: #f9f9f9; }
+          .button { display: inline-block; padding: 10px 20px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 5px; }
+          .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header"><h1>Your Account is Active!</h1></div>
+          <div class="content">
+            <h2>Hello ${applicantName},</h2>
+            <p>We are pleased to inform you that your ShiftMatch account has been fully activated.</p>
+            <p>You can now browse and apply for jobs, receive shift offers, and manage your work schedule.</p>
+            <a href="${process.env.FRONTEND_URL}/jobs" class="button">Find Jobs Now</a>
+          </div>
+          <div class="footer"><p>&copy; 2026 ShiftMatch. All rights reserved.</p></div>
+        </div>
+      </body>
+      </html>
+    `,
+    text: `Hello ${applicantName},\n\nYour ShiftMatch account is now active! You can now start applying for jobs and earning.\n\nGood luck!`,
+  };
+};
+
+// Email template for employer - Account blocked
+const employerBlockedTemplate = (ownerName, storeName) => {
+  return {
+    subject: `Action Required: Your ShiftMatch Employer Account has been suspended`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #f44336; color: white; padding: 20px; text-align: center; }
+          .content { padding: 20px; background-color: #f9f9f9; }
+          .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header"><h1>Account Suspended</h1></div>
+          <div class="content">
+            <h2>Hello ${ownerName},</h2>
+            <p>Your employer account for <strong>${storeName}</strong> has been suspended by an administrator.</p>
+            <p>You will no longer be able to post jobs, manage applications, or access your dashboard. If you believe this was a mistake, please contact our support team immediately.</p>
+          </div>
+          <div class="footer"><p>&copy; 2026 ShiftMatch. All rights reserved.</p></div>
+        </div>
+      </body>
+      </html>
+    `,
+    text: `Your ShiftMatch employer account for ${storeName} has been suspended by an admin. Contact support if this is a mistake.`,
+  };
+};
+
+// Email template for employer - Account unblocked
+const employerUnblockedTemplate = (ownerName, storeName) => {
+  return {
+    subject: `Great News! Your ShiftMatch Employer Account corresponds to restored access`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #4CAF50; color: white; padding: 20px; text-align: center; }
+          .content { padding: 20px; background-color: #f9f9f9; }
+          .button { display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; }
+          .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header"><h1>Account Restored</h1></div>
+          <div class="content">
+            <h2>Hello ${ownerName},</h2>
+            <p>Your employer account for <strong>${storeName}</strong> has been fully restored and unblocked by an administrator.</p>
+            <p>You can now log back into the portal and resume managing your jobs and applications.</p>
+            <a href="${process.env.FRONTEND_URL}/login" class="button">Log In Now</a>
+          </div>
+          <div class="footer"><p>&copy; 2026 ShiftMatch. All rights reserved.</p></div>
+        </div>
+      </body>
+      </html>
+    `,
+    text: `Your ShiftMatch employer account for ${storeName} has been restored and unblocked by an admin. You can now log in.`,
+  };
+};
+
+// Email template for applicant - Account deactivated
+const applicantDeactivatedTemplate = (name) => {
+  return {
+    subject: `Notice: Your ShiftMatch Applicant Account has been deactivated`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #f44336; color: white; padding: 20px; text-align: center; }
+          .content { padding: 20px; background-color: #f9f9f9; }
+          .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header"><h1>Account Deactivated</h1></div>
+          <div class="content">
+            <h2>Hello ${name},</h2>
+            <p>Your applicant account on ShiftMatch has been deactivated by an administrator.</p>
+            <p>You will no longer be able to apply for jobs or view your shifts. If you believe this is a mistake, please reach out to the our support team.</p>
+          </div>
+          <div class="footer"><p>&copy; 2026 ShiftMatch. All rights reserved.</p></div>
+        </div>
+      </body>
+      </html>
+    `,
+    text: `Your applicant account on ShiftMatch has been deactivated by an administrator. Please reach out to support for more details.`,
+  };
+};
+
+// Email template for employer - Job Deleted by Admin
+const employerJobDeletedTemplate = (ownerName, jobTitle) => {
+  return {
+    subject: `Notice: Your job posting "${jobTitle}" has been removed`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #ff9800; color: white; padding: 20px; text-align: center; }
+          .content { padding: 20px; background-color: #f9f9f9; }
+          .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header"><h1>Job Posting Removed</h1></div>
+          <div class="content">
+            <h2>Hello ${ownerName},</h2>
+            <p>Your job posting for <strong>"${jobTitle}"</strong> has been removed from ShiftMatch by an administrator.</p>
+            <p>This action usually occurs if a job posting violates our terms of service or requires content moderation.</p>
+            <p>If you believe this was a mistake or need further details, please reach out to our support team.</p>
+          </div>
+          <div class="footer"><p>&copy; 2026 ShiftMatch. All rights reserved.</p></div>
+        </div>
+      </body>
+      </html>
+    `,
+    text: `Your job posting for "${jobTitle}" has been removed from ShiftMatch by an administrator. Please reach out to support if you have questions.`,
+  };
+};
+
 module.exports = {
   employerSignupTemplate,
   employerApprovalTemplate,
@@ -286,4 +533,11 @@ module.exports = {
   applicationStatusTemplate,
   shiftAssignmentTemplate,
   forgotPasswordTemplate,
+  adminNewEmployerTemplate,
+  employerNewApplicationTemplate,
+  applicantActivationTemplate,
+  employerBlockedTemplate,
+  employerUnblockedTemplate,
+  applicantDeactivatedTemplate,
+  employerJobDeletedTemplate,
 };

@@ -394,7 +394,7 @@ export function BrowseApplicantsPage() {
           <button
             onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
             disabled={pagination.currentPage === 1}
-            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -406,7 +406,7 @@ export function BrowseApplicantsPage() {
               className={`w-10 h-10 rounded-lg font-medium ${
                 pagination.currentPage === page
                   ? 'bg-forest-900 text-white'
-                  : 'border border-gray-200 hover:bg-gray-50'
+                  : 'border border-gray-200 hover:bg-[#F5F5ED]'
               }`}
             >
               {page}
@@ -416,7 +416,7 @@ export function BrowseApplicantsPage() {
           <button
             onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
             disabled={pagination.currentPage === pagination.totalPages}
-            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
           >
             <ChevronRight className="w-5 h-5" />
           </button>

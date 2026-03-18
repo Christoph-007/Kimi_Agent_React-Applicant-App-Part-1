@@ -79,11 +79,11 @@ export function AttendancePage() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      present: 'bg-green-50 text-green-700',
+      present: 'bg-forest-50 text-forest-800',
       late: 'bg-yellow-50 text-yellow-700',
       absent: 'bg-red-50 text-red-700',
     };
-    return colors[status] || 'bg-gray-50 text-gray-700';
+    return colors[status] || 'bg-[#F5F5ED] text-gray-700';
   };
 
   const formatDate = (dateString: string) => {
@@ -121,7 +121,7 @@ export function AttendancePage() {
           { 
             label: 'Present', 
             value: attendanceRecords.filter(r => r.status === 'present').length,
-            color: 'bg-green-50 text-green-600'
+            color: 'bg-forest-50 text-forest-700'
           },
           { 
             label: 'Late', 
@@ -214,7 +214,7 @@ export function AttendancePage() {
                         {record.status}
                       </span>
                       {record.isApproved ? (
-                        <span className="px-3 py-1 text-xs font-medium rounded-full bg-green-50 text-green-700 flex items-center gap-1">
+                        <span className="px-3 py-1 text-xs font-medium rounded-full bg-forest-50 text-forest-800 flex items-center gap-1">
                           <CheckCircle className="w-3 h-3" />
                           Approved
                         </span>
@@ -227,23 +227,23 @@ export function AttendancePage() {
                   </div>
 
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                    <div className="p-4 bg-gray-50 rounded-xl">
+                    <div className="p-4 bg-[#F5F5ED] rounded-xl">
                       <p className="text-sm text-gray-500 mb-1">Date</p>
                       <p className="font-medium text-gray-900">{formatDate(record.shift.date)}</p>
                     </div>
-                    <div className="p-4 bg-gray-50 rounded-xl">
+                    <div className="p-4 bg-[#F5F5ED] rounded-xl">
                       <p className="text-sm text-gray-500 mb-1">Check In</p>
                       <p className="font-medium text-gray-900">
                         {record.checkInTime ? formatTime(record.checkInTime) : 'Not checked in'}
                       </p>
                     </div>
-                    <div className="p-4 bg-gray-50 rounded-xl">
+                    <div className="p-4 bg-[#F5F5ED] rounded-xl">
                       <p className="text-sm text-gray-500 mb-1">Check Out</p>
                       <p className="font-medium text-gray-900">
                         {record.checkOutTime ? formatTime(record.checkOutTime) : 'Not checked out'}
                       </p>
                     </div>
-                    <div className="p-4 bg-gray-50 rounded-xl">
+                    <div className="p-4 bg-[#F5F5ED] rounded-xl">
                       <p className="text-sm text-gray-500 mb-1">Total Hours</p>
                       <p className="font-medium text-gray-900">
                         {record.totalHours ? `${record.totalHours.toFixed(1)} hrs` : 'N/A'}
@@ -259,7 +259,7 @@ export function AttendancePage() {
                   )}
 
                   {record.remarks && (
-                    <div className="p-3 bg-gray-50 rounded-xl text-sm text-gray-600 mb-4">
+                    <div className="p-3 bg-[#F5F5ED] rounded-xl text-sm text-gray-600 mb-4">
                       <strong>Worker Remarks:</strong> {record.remarks}
                     </div>
                   )}
@@ -292,7 +292,7 @@ export function AttendancePage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                 disabled={pagination.currentPage === 1}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -302,7 +302,7 @@ export function AttendancePage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -320,17 +320,17 @@ export function AttendancePage() {
             </div>
 
             <div className="p-6 space-y-4">
-              <div className="p-4 bg-gray-50 rounded-xl">
+              <div className="p-4 bg-[#F5F5ED] rounded-xl">
                 <p className="text-sm text-gray-500">Worker</p>
                 <p className="font-medium text-gray-900">{selectedRecord.shift.applicant.name}</p>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-gray-50 rounded-xl">
+                <div className="p-4 bg-[#F5F5ED] rounded-xl">
                   <p className="text-sm text-gray-500">Check In</p>
                   <p className="font-medium text-gray-900">{formatTime(selectedRecord.checkInTime)}</p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-xl">
+                <div className="p-4 bg-[#F5F5ED] rounded-xl">
                   <p className="text-sm text-gray-500">Check Out</p>
                   <p className="font-medium text-gray-900">{formatTime(selectedRecord.checkOutTime)}</p>
                 </div>
@@ -355,7 +355,7 @@ export function AttendancePage() {
                     setSelectedRecord(null);
                     setEmployerRemarks('');
                   }}
-                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-[#F5F5ED] transition-colors"
                 >
                   Cancel
                 </button>

@@ -126,14 +126,14 @@ export function MyJobsPage() {
     const colors: Record<string, string> = {
       applied: 'bg-blue-50 text-blue-700',
       reviewing: 'bg-yellow-50 text-yellow-700',
-      accepted: 'bg-green-50 text-green-700',
+      accepted: 'bg-forest-50 text-forest-800',
       rejected: 'bg-red-50 text-red-700',
-      withdrawn: 'bg-gray-50 text-gray-700',
+      withdrawn: 'bg-[#F5F5ED] text-gray-700',
       sent: 'bg-blue-50 text-blue-700',
       declined: 'bg-red-50 text-red-700',
-      expired: 'bg-gray-50 text-gray-700',
+      expired: 'bg-[#F5F5ED] text-gray-700',
     };
-    return colors[status] || 'bg-gray-50 text-gray-700';
+    return colors[status] || 'bg-[#F5F5ED] text-gray-700';
   };
 
   const formatDate = (dateString: string) => {
@@ -270,7 +270,7 @@ export function MyJobsPage() {
                 <button
                   onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                   disabled={pagination.currentPage === 1}
-                  className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -280,7 +280,7 @@ export function MyJobsPage() {
                 <button
                   onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                   disabled={pagination.currentPage === pagination.totalPages}
-                  className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -336,7 +336,7 @@ export function MyJobsPage() {
                 </div>
 
                 {request.message && (
-                  <div className="p-3 bg-gray-50 rounded-xl text-sm text-gray-600 mb-4">
+                  <div className="p-3 bg-[#F5F5ED] rounded-xl text-sm text-gray-600 mb-4">
                     <strong>Message:</strong> {request.message}
                   </div>
                 )}
@@ -360,7 +360,7 @@ export function MyJobsPage() {
                 <button
                   onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                   disabled={pagination.currentPage === 1}
-                  className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -370,7 +370,7 @@ export function MyJobsPage() {
                 <button
                   onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                   disabled={pagination.currentPage === pagination.totalPages}
-                  className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -410,11 +410,11 @@ export function MyJobsPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-gray-50 rounded-xl">
+                <div className="p-4 bg-[#F5F5ED] rounded-xl">
                   <p className="text-sm text-gray-500 mb-1">Shift Type</p>
                   <p className="font-medium text-gray-900 capitalize">{selectedRequest.shiftType}</p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-xl">
+                <div className="p-4 bg-[#F5F5ED] rounded-xl">
                   <p className="text-sm text-gray-500 mb-1">Hourly Rate</p>
                   <p className="font-medium text-gray-900">₹{selectedRequest.offeredHourlyRate}</p>
                 </div>
@@ -501,7 +501,7 @@ export function MyJobsPage() {
                     setDeclineReason('');
                     setSelectedRequest(null);
                   }}
-                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-[#F5F5ED] transition-colors"
                 >
                   Cancel
                 </button>

@@ -166,7 +166,7 @@ export function HomePage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: 'Applied Jobs', value: stats.applied, icon: Briefcase, color: 'bg-blue-50 text-blue-600' },
-          { label: 'Upcoming Shifts', value: stats.upcoming, icon: Calendar, color: 'bg-green-50 text-green-600' },
+          { label: 'Upcoming Shifts', value: stats.upcoming, icon: Calendar, color: 'bg-forest-50 text-forest-700' },
           { label: 'Completed Shifts', value: stats.completed, icon: CheckCircle, color: 'bg-lime-100 text-forest-700' },
           { label: 'Pending Requests', value: stats.pending, icon: Clock, color: 'bg-orange-50 text-orange-600' },
         ].map((stat, index) => (
@@ -202,7 +202,7 @@ export function HomePage() {
                 {notifications.slice(0, 3).map((notification) => (
                   <div
                     key={notification._id}
-                    className={`flex items-start gap-4 p-5 rounded-2xl transition-colors ${notification.isRead ? 'bg-gray-50 hover:bg-gray-100' : 'bg-forest-50 hover:bg-forest-100/80'
+                    className={`flex items-start gap-4 p-5 rounded-2xl transition-colors ${notification.isRead ? 'bg-[#F5F5ED] hover:bg-gray-100' : 'bg-forest-50 hover:bg-forest-100/80'
                       }`}
                   >
                     <div className={`w-3 h-3 rounded-full mt-2 flex-shrink-0 ${notification.isRead ? 'bg-gray-300' : 'bg-lime-400 shadow-[0_0_8px_rgba(163,230,53,0.6)]'
@@ -245,14 +245,14 @@ export function HomePage() {
                     <div className="absolute top-4 right-4 flex gap-2 z-10">
                       <button
                         onClick={(e) => handleToggleSave(e, job._id)}
-                        className="p-2 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+                        className="p-2 bg-[#F5F5ED] rounded-xl hover:bg-gray-100 transition-colors"
                         title={job.isSaved ? "Remove from saved" : "Save job"}
                       >
                         <Bookmark className={`w-4 h-4 transition-colors ${job.isSaved ? 'text-forest-700 fill-forest-700' : 'text-gray-400 group-hover:text-forest-600'}`} />
                       </button>
                     </div>
 
-                    <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-xl font-bold border border-gray-100 group-hover:bg-forest-50 group-hover:border-forest-100 transition-colors mt-2 mb-4">
+                    <div className="w-12 h-12 bg-[#F5F5ED] rounded-2xl flex items-center justify-center text-xl font-bold border border-gray-100 group-hover:bg-forest-50 group-hover:border-forest-100 transition-colors mt-2 mb-4">
                       {job.employer.storeName[0]}
                     </div>
 
@@ -301,7 +301,7 @@ export function HomePage() {
               {upcomingShifts.map((shift) => (
                 <div
                   key={shift._id}
-                  className="bg-gray-50 rounded-2xl p-5 border border-gray-100 hover:border-gray-200 transition-colors"
+                  className="bg-[#F5F5ED] rounded-2xl p-5 border border-gray-100 hover:border-gray-200 transition-colors"
                 >
                   <div className="inline-flex px-3 py-1 bg-white rounded-lg text-sm text-forest-700 font-bold shadow-sm mb-4">
                     {formatDate(shift.date)}
@@ -325,7 +325,7 @@ export function HomePage() {
                   <div className="mt-4 flex gap-2">
                     <NavLink
                       to={`/shifts/${shift._id}`}
-                      className="flex-1 px-4 py-3 bg-white border border-gray-200 text-forest-900 rounded-xl text-sm font-bold text-center hover:bg-gray-50 transition-colors shadow-sm"
+                      className="flex-1 px-4 py-3 bg-white border border-gray-200 text-forest-900 rounded-xl text-sm font-bold text-center hover:bg-[#F5F5ED] transition-colors shadow-sm"
                     >
                       View Details
                     </NavLink>

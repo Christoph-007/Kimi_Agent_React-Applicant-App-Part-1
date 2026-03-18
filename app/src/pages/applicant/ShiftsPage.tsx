@@ -106,14 +106,7 @@ export function ShiftsPage() {
   };
 
   const getCurrentLocation = (): Promise<{ lat: number; lng: number }> => {
-    return new Promise((resolve) => {
-      if (!navigator.geolocation) { resolve({ lat: 0, lng: 0 }); return; }
-      navigator.geolocation.getCurrentPosition(
-        (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        () => resolve({ lat: 0, lng: 0 }),
-        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-      );
-    });
+    return Promise.resolve({ lat: 0, lng: 0 });
   };
 
   const handleClockIn = async (shiftId: string) => {
@@ -157,12 +150,12 @@ export function ShiftsPage() {
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       scheduled: 'bg-blue-50 text-blue-700',
-      confirmed: 'bg-green-50 text-green-700',
+      confirmed: 'bg-forest-50 text-forest-800',
       'in-progress': 'bg-yellow-50 text-yellow-700',
       completed: 'bg-purple-50 text-purple-700',
       cancelled: 'bg-red-50 text-red-700',
     };
-    return colors[status] || 'bg-gray-50 text-gray-700';
+    return colors[status] || 'bg-[#F5F5ED] text-gray-700';
   };
 
   const formatDate = (dateString: string) => {
@@ -271,7 +264,7 @@ export function ShiftsPage() {
                   </div>
 
                   {shift.instructions && (
-                    <div className="p-3 bg-gray-50 rounded-xl text-sm text-gray-600 mb-4">
+                    <div className="p-3 bg-[#F5F5ED] rounded-xl text-sm text-gray-600 mb-4">
                       <strong>Instructions:</strong> {shift.instructions}
                     </div>
                   )}
@@ -307,7 +300,7 @@ export function ShiftsPage() {
                     <>
                       <NavLink
                         to={`/shifts/${shift._id}`}
-                        className="px-4 py-2 bg-gray-50 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                        className="px-4 py-2 bg-[#F5F5ED] text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
                       >
                         Details
                       </NavLink>
@@ -329,7 +322,7 @@ export function ShiftsPage() {
                     <>
                       <NavLink
                         to={`/shifts/${shift._id}`}
-                        className="px-4 py-2 bg-gray-50 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                        className="px-4 py-2 bg-[#F5F5ED] text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
                       >
                         Details
                       </NavLink>
@@ -357,7 +350,7 @@ export function ShiftsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                 disabled={pagination.currentPage === 1}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -367,7 +360,7 @@ export function ShiftsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -413,7 +406,7 @@ export function ShiftsPage() {
                     setCancellationReason('');
                     setSelectedShift(null);
                   }}
-                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-[#F5F5ED] transition-colors"
                 >
                   Keep Shift
                 </button>
@@ -445,9 +438,6 @@ export function ShiftsPage() {
               </button>
             </div>
             <div className="p-6 space-y-4">
-              <div className="p-4 bg-orange-50 rounded-xl text-sm text-orange-700">
-                Your location will be recorded when you clock out.
-              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Remarks (Optional)</label>
                 <textarea
@@ -461,7 +451,7 @@ export function ShiftsPage() {
               <div className="flex gap-3">
                 <button
                   onClick={() => { setShowCheckOutModal(false); setCheckOutShiftId(null); setRemarks(''); }}
-                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50"
+                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-[#F5F5ED]"
                 >
                   Cancel
                 </button>

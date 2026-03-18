@@ -51,6 +51,28 @@ const protect = async (req, res, next) => {
             req.user = user;
             req.userType = userType;
 
+            // Check if account is deactivated or blocked
+            // EXEMPT /auth/me so that deactivated users can still check their status and refresh their session
+            const isStatusCheck = req.originalUrl.includes('/auth/me');
+
+            if (!isStatusCheck) {
+                if (userType === 'applicant' && !user.isActive) {
+                    return errorResponse(
+                        res,
+                        403,
+                        'Your account has been deactivated. Please contact support.'
+                    );
+                }
+
+                if (userType === 'employer' && user.isBlocked) {
+                    return errorResponse(
+                        res,
+                        403,
+                        'Your account has been blocked. Please contact support.'
+                    );
+                }
+            }
+
             next();
         } catch (error) {
             return errorResponse(res, 401, 'Invalid or expired token');

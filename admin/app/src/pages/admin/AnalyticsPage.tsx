@@ -116,7 +116,7 @@ export function AnalyticsPage() {
             label: 'Total Employers', 
             value: stats?.employers?.total || 0, 
             icon: Building2, 
-            color: 'bg-green-50 text-green-600',
+            color: 'bg-forest-50 text-forest-700',
             trend: '+8%'
           },
           { 
@@ -141,7 +141,7 @@ export function AnalyticsPage() {
             <div className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</div>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500">{stat.label}</span>
-              <span className="text-xs text-green-600 font-medium flex items-center">
+              <span className="text-xs text-forest-700 font-medium flex items-center">
                 <TrendingUp className="w-3 h-3 mr-0.5" />
                 {stat.trend}
               </span>
@@ -173,7 +173,7 @@ export function AnalyticsPage() {
             <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
               <FileText className="w-6 h-6 text-blue-600" />
             </div>
-            <span className="text-xs text-green-600 font-medium flex items-center">
+            <span className="text-xs text-forest-700 font-medium flex items-center">
               <TrendingUp className="w-3 h-3 mr-0.5" />
               +5%
             </span>
@@ -187,10 +187,10 @@ export function AnalyticsPage() {
         {/* Platform Health */}
         <div className="bg-white rounded-2xl p-6 shadow-card">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
-              <BarChart3 className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-forest-50 rounded-xl flex items-center justify-center">
+              <BarChart3 className="w-6 h-6 text-forest-700" />
             </div>
-            <span className="text-xs text-green-600 font-medium flex items-center">
+            <span className="text-xs text-forest-700 font-medium flex items-center">
               <TrendingUp className="w-3 h-3 mr-0.5" />
               Healthy
             </span>
@@ -322,7 +322,7 @@ export function AnalyticsPage() {
       <div className="bg-white rounded-2xl p-6 shadow-card">
         <h3 className="text-lg font-semibold text-gray-900 mb-6">Monthly Highlights</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+          <div className="p-4 bg-[#F5F5ED] rounded-xl border border-gray-100">
             <div className="flex items-center gap-2 text-gray-500 mb-2">
               <Calendar className="w-4 h-4" />
               <span className="text-sm">New This Month</span>
@@ -330,7 +330,7 @@ export function AnalyticsPage() {
             <p className="text-2xl font-bold text-gray-900">{currentMonthJobs?.jobs || 0}</p>
             <p className="text-sm text-gray-500">Jobs Posted</p>
           </div>
-          <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+          <div className="p-4 bg-[#F5F5ED] rounded-xl border border-gray-100">
             <div className="flex items-center gap-2 text-gray-500 mb-2">
               <Users className="w-4 h-4" />
               <span className="text-sm">New This Month</span>
@@ -338,7 +338,7 @@ export function AnalyticsPage() {
             <p className="text-2xl font-bold text-gray-900">{currentMonthUsers?.applicants || 0}</p>
             <p className="text-sm text-gray-500">Applicants Joined</p>
           </div>
-          <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+          <div className="p-4 bg-[#F5F5ED] rounded-xl border border-gray-100">
             <div className="flex items-center gap-2 text-gray-500 mb-2">
               <Building2 className="w-4 h-4" />
               <span className="text-sm">New This Month</span>
@@ -346,7 +346,7 @@ export function AnalyticsPage() {
             <p className="text-2xl font-bold text-gray-900">{currentMonthUsers?.employers || 0}</p>
             <p className="text-sm text-gray-500">Employers Joined</p>
           </div>
-          <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+          <div className="p-4 bg-[#F5F5ED] rounded-xl border border-gray-100">
             <div className="flex items-center gap-2 text-gray-500 mb-2">
               <FileText className="w-4 h-4" />
               <span className="text-sm">New This Month</span>

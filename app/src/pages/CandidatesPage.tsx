@@ -55,7 +55,7 @@ export function CandidatesPage() {
     });
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col">
+        <div className="min-h-screen bg-[#F5F5ED] flex flex-col">
             {/* Navigation */}
             <nav className="fixed top-0 left-0 right-0 z-50 bg-forest-900/95 backdrop-blur-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -102,7 +102,7 @@ export function CandidatesPage() {
                                             <input
                                                 type="text"
                                                 placeholder="City or State"
-                                                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-forest-500"
+                                                className="w-full pl-10 pr-4 py-2 bg-[#F5F5ED] border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-forest-500"
                                                 value={locationFilter}
                                                 onChange={(e) => setLocationFilter(e.target.value)}
                                             />
@@ -112,7 +112,7 @@ export function CandidatesPage() {
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">Job Category</label>
                                         <select
-                                            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-forest-500 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
+                                            className="w-full px-4 py-2 bg-[#F5F5ED] border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-forest-500 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
                                             value={categoryFilter}
                                             onChange={(e) => setCategoryFilter(e.target.value)}
                                         >

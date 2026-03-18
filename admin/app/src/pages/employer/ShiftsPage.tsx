@@ -93,12 +93,12 @@ export function ShiftsPage() {
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       scheduled: 'bg-blue-50 text-blue-700',
-      confirmed: 'bg-green-50 text-green-700',
+      confirmed: 'bg-forest-50 text-forest-800',
       'in-progress': 'bg-yellow-50 text-yellow-700',
       completed: 'bg-purple-50 text-purple-700',
       cancelled: 'bg-red-50 text-red-700',
     };
-    return colors[status] || 'bg-gray-50 text-gray-700';
+    return colors[status] || 'bg-[#F5F5ED] text-gray-700';
   };
 
   const formatDate = (dateString: string) => {
@@ -214,7 +214,7 @@ export function ShiftsPage() {
                         </div>
 
                         {shift.instructions && (
-                          <div className="p-3 bg-gray-50 rounded-xl text-sm text-gray-600">
+                          <div className="p-3 bg-[#F5F5ED] rounded-xl text-sm text-gray-600">
                             <strong>Instructions:</strong> {shift.instructions}
                           </div>
                         )}
@@ -269,7 +269,7 @@ export function ShiftsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                 disabled={pagination.currentPage === 1}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -279,7 +279,7 @@ export function ShiftsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

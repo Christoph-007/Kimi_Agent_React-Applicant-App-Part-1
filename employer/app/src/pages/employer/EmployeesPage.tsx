@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   Users,
-  Phone,
   Mail,
   Loader2,
   Search,
@@ -10,7 +9,8 @@ import {
   ChevronRight,
   UserCheck,
   Calendar,
-  ClipboardList
+  ClipboardList,
+  Phone
 } from 'lucide-react';
 import { applicationsApi } from '@/api/applications';
 import type { Application } from '@/types';
@@ -122,12 +122,12 @@ export function EmployeesPage() {
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-forest-100 rounded-3xl flex items-center justify-center group-hover:scale-110 transition-transform">
                     <span className="text-forest-700 font-bold text-2xl uppercase">
-                      {employee.applicant.name[0]}
+                      {(employee.applicant?.name || 'U')[0]}
                     </span>
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900 text-lg leading-tight group-hover:text-forest-700 transition-colors">
-                      {employee.applicant.name}
+                      {employee.applicant?.name || 'Unknown Worker'}
                     </h3>
                     <p className="text-sm text-forest-600 font-medium mt-0.5">{employee.job?.title || 'Team Member'}</p>
                   </div>
@@ -136,21 +136,21 @@ export function EmployeesPage() {
 
               <div className="space-y-3 mb-6">
                 <div className="flex items-center gap-3 text-sm text-gray-500">
-                  <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-[#F5F5ED] flex items-center justify-center">
                     <Phone className="w-4 h-4" />
                   </div>
-                  {employee.applicant.phone}
+                  {employee.applicant?.phone || 'No Phone'}
                 </div>
                 {employee.applicant.email && (
                   <div className="flex items-center gap-3 text-sm text-gray-500">
-                    <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-[#F5F5ED] flex items-center justify-center">
                       <Mail className="w-4 h-4" />
                     </div>
                     {employee.applicant.email}
                   </div>
                 )}
                 <div className="flex items-center gap-3 text-sm text-gray-500">
-                  <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-[#F5F5ED] flex items-center justify-center">
                     <Calendar className="w-4 h-4" />
                   </div>
                   Joined {formatDate(employee.createdAt)}
@@ -161,7 +161,7 @@ export function EmployeesPage() {
                 <div className="flex gap-3">
                   <NavLink
                     to={`/employer/applicants/${employee.applicant._id}`}
-                    className="flex-1 text-center py-2.5 bg-gray-50 text-gray-700 rounded-2xl text-sm font-bold hover:bg-forest-100 hover:text-forest-900 transition-all border border-transparent hover:border-forest-200"
+                    className="flex-1 text-center py-2.5 bg-[#F5F5ED] text-gray-700 rounded-2xl text-sm font-bold hover:bg-forest-100 hover:text-forest-900 transition-all border border-transparent hover:border-forest-200"
                   >
                     Profile
                   </NavLink>
@@ -191,7 +191,7 @@ export function EmployeesPage() {
           <button
             onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
             disabled={pagination.currentPage === 1}
-            className="p-3 rounded-2xl border border-gray-100 bg-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors shadow-sm"
+            className="p-3 rounded-2xl border border-gray-100 bg-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#F5F5ED] transition-colors shadow-sm"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -201,7 +201,7 @@ export function EmployeesPage() {
           <button
             onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
             disabled={pagination.currentPage === pagination.totalPages}
-            className="p-3 rounded-2xl border border-gray-100 bg-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors shadow-sm"
+            className="p-3 rounded-2xl border border-gray-100 bg-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#F5F5ED] transition-colors shadow-sm"
           >
             <ChevronRight className="w-5 h-5" />
           </button>

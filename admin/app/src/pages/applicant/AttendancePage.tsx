@@ -52,25 +52,7 @@ export function AttendancePage() {
   };
 
   const getCurrentLocation = (): Promise<{ lat: number; lng: number }> => {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        reject(new Error('Geolocation is not supported'));
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          resolve({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          reject(error);
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-      );
-    });
+    return Promise.resolve({ lat: 0, lng: 0 });
   };
 
   const handleCheckIn = async (shiftId: string) => {
@@ -84,7 +66,7 @@ export function AttendancePage() {
       fetchAttendanceHistory();
     } catch (error) {
       console.error('Failed to check in:', error);
-      alert('Failed to check in. Please ensure location services are enabled.');
+      alert('Failed to check in. Please try again.');
     } finally {
       setIsCheckingIn(false);
     }
@@ -107,7 +89,7 @@ export function AttendancePage() {
       fetchAttendanceHistory();
     } catch (error) {
       console.error('Failed to check out:', error);
-      alert('Failed to check out. Please ensure location services are enabled.');
+      alert('Failed to check out. Please try again.');
     } finally {
       setIsCheckingOut(false);
     }
@@ -115,11 +97,11 @@ export function AttendancePage() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      present: 'bg-green-50 text-green-700',
+      present: 'bg-forest-50 text-forest-800',
       late: 'bg-yellow-50 text-yellow-700',
       absent: 'bg-red-50 text-red-700',
     };
-    return colors[status] || 'bg-gray-50 text-gray-700';
+    return colors[status] || 'bg-[#F5F5ED] text-gray-700';
   };
 
   const formatDate = (dateString: string) => {
@@ -166,7 +148,7 @@ export function AttendancePage() {
           { 
             label: 'Present', 
             value: attendanceRecords.filter(r => r.status === 'present').length,
-            color: 'bg-green-50 text-green-600'
+            color: 'bg-forest-50 text-forest-700'
           },
           { 
             label: 'Late', 
@@ -223,29 +205,29 @@ export function AttendancePage() {
                   </div>
 
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                    <div className="p-4 bg-gray-50 rounded-xl">
+                    <div className="p-4 bg-[#F5F5ED] rounded-xl">
                       <p className="text-sm text-gray-500 mb-1">Check In</p>
                       <p className="font-medium text-gray-900">
                         {record.checkInTime ? formatTime(record.checkInTime) : 'Not checked in'}
                       </p>
                     </div>
-                    <div className="p-4 bg-gray-50 rounded-xl">
+                    <div className="p-4 bg-[#F5F5ED] rounded-xl">
                       <p className="text-sm text-gray-500 mb-1">Check Out</p>
                       <p className="font-medium text-gray-900">
                         {record.checkOutTime ? formatTime(record.checkOutTime) : 'Not checked out'}
                       </p>
                     </div>
-                    <div className="p-4 bg-gray-50 rounded-xl">
+                    <div className="p-4 bg-[#F5F5ED] rounded-xl">
                       <p className="text-sm text-gray-500 mb-1">Total Hours</p>
                       <p className="font-medium text-gray-900">
                         {record.totalHours ? `${record.totalHours.toFixed(1)} hrs` : 'N/A'}
                       </p>
                     </div>
-                    <div className="p-4 bg-gray-50 rounded-xl">
+                    <div className="p-4 bg-[#F5F5ED] rounded-xl">
                       <p className="text-sm text-gray-500 mb-1">Approved</p>
                       <p className="font-medium text-gray-900">
                         {record.isApproved ? (
-                          <span className="flex items-center gap-1 text-green-600">
+                          <span className="flex items-center gap-1 text-forest-700">
                             <CheckCircle className="w-4 h-4" />
                             Yes
                           </span>
@@ -264,7 +246,7 @@ export function AttendancePage() {
                   )}
 
                   {record.remarks && (
-                    <div className="p-3 bg-gray-50 rounded-xl text-sm text-gray-600">
+                    <div className="p-3 bg-[#F5F5ED] rounded-xl text-sm text-gray-600">
                       <strong>Your Remarks:</strong> {record.remarks}
                     </div>
                   )}
@@ -313,7 +295,7 @@ export function AttendancePage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                 disabled={pagination.currentPage === 1}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -323,7 +305,7 @@ export function AttendancePage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -344,7 +326,7 @@ export function AttendancePage() {
             </div>
 
             <div className="p-6 space-y-4">
-              <div className="p-4 bg-gray-50 rounded-xl">
+              <div className="p-4 bg-[#F5F5ED] rounded-xl">
                 <p className="text-sm text-gray-500 mb-1">Shift</p>
                 <p className="font-medium text-gray-900">{selectedRecord.shift.job.title}</p>
               </div>
@@ -362,9 +344,6 @@ export function AttendancePage() {
                 />
               </div>
 
-              <p className="text-sm text-gray-500 text-center">
-                Your location will be recorded for verification
-              </p>
 
               <div className="flex gap-4">
                 <button
@@ -373,7 +352,7 @@ export function AttendancePage() {
                     setSelectedRecord(null);
                     setRemarks('');
                   }}
-                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-[#F5F5ED] transition-colors"
                 >
                   Cancel
                 </button>

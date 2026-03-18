@@ -121,10 +121,10 @@ export function JobApplicationsPage() {
     const colors: Record<string, string> = {
       applied: 'bg-blue-50 text-blue-700',
       reviewing: 'bg-yellow-50 text-yellow-700',
-      accepted: 'bg-green-50 text-green-700',
+      accepted: 'bg-forest-50 text-forest-800',
       rejected: 'bg-red-50 text-red-700',
     };
-    return colors[status] || 'bg-gray-50 text-gray-700';
+    return colors[status] || 'bg-[#F5F5ED] text-gray-700';
   };
 
   const formatDate = (dateString: string) => {
@@ -265,7 +265,7 @@ export function JobApplicationsPage() {
                   )}
 
                   {application.coverLetter && (
-                    <div className="p-4 bg-gray-50 rounded-xl mb-4">
+                    <div className="p-4 bg-[#F5F5ED] rounded-xl mb-4">
                       <p className="text-sm text-gray-600 italic">"{application.coverLetter}"</p>
                     </div>
                   )}
@@ -329,7 +329,7 @@ export function JobApplicationsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                 disabled={pagination.currentPage === 1}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -339,7 +339,7 @@ export function JobApplicationsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -381,7 +381,7 @@ export function JobApplicationsPage() {
                     setSelectedApplication(null);
                     setRejectionReason('');
                   }}
-                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-[#F5F5ED] transition-colors"
                 >
                   Cancel
                 </button>

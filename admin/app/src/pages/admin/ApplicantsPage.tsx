@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { 
+import {
   Users,
   Search,
   Loader2,
@@ -12,6 +12,7 @@ import {
   Briefcase
 } from 'lucide-react';
 import { adminApi } from '@/api/admin';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import type { User } from '@/types';
 
 export function ApplicantsPage() {
@@ -27,6 +28,12 @@ export function ApplicantsPage() {
     totalItems: 0,
   });
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean;
+    applicantId: string;
+    applicantName: string;
+    action: 'activate' | 'deactivate';
+  }>({ open: false, applicantId: '', applicantName: '', action: 'deactivate' });
 
   const fetchApplicants = useCallback(async () => {
     try {
@@ -35,7 +42,7 @@ export function ApplicantsPage() {
         page: pagination.currentPage,
         limit: 10,
       };
-      
+
       if (filters.search) params.search = filters.search;
       if (filters.isActive !== '') params.isActive = filters.isActive === 'true';
 
@@ -57,29 +64,22 @@ export function ApplicantsPage() {
     fetchApplicants();
   }, [fetchApplicants]);
 
-  const handleDeactivate = async (id: string) => {
-    if (!confirm('Are you sure you want to deactivate this applicant?')) return;
-    
-    setIsProcessing(id);
-    try {
-      await adminApi.deactivateApplicant(id);
-      fetchApplicants();
-    } catch (error) {
-      console.error('Failed to deactivate applicant:', error);
-    } finally {
-      setIsProcessing(null);
-    }
+  const handleActionAttempt = (id: string, name: string, action: 'activate' | 'deactivate') => {
+    setConfirmModal({ open: true, applicantId: id, applicantName: name, action });
   };
 
-  const handleActivate = async (id: string) => {
-    if (!confirm('Are you sure you want to activate this applicant?')) return;
-    
-    setIsProcessing(id);
+  const handleActionConfirm = async () => {
+    const { applicantId, action } = confirmModal;
+    setConfirmModal({ ...confirmModal, open: false });
+    setIsProcessing(applicantId);
+
     try {
-      await adminApi.activateApplicant(id);
+      if (action === 'activate') await adminApi.activateApplicant(applicantId);
+      else await adminApi.deactivateApplicant(applicantId);
+
       fetchApplicants();
     } catch (error) {
-      console.error('Failed to activate applicant:', error);
+      console.error(`Failed to ${action} applicant:`, error);
     } finally {
       setIsProcessing(null);
     }
@@ -185,7 +185,7 @@ export function ApplicantsPage() {
                           Inactive
                         </span>
                       ) : (
-                        <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full">
+                        <span className="px-3 py-1 bg-forest-50 text-forest-800 text-xs font-medium rounded-full">
                           Active
                         </span>
                       )}
@@ -226,9 +226,9 @@ export function ApplicantsPage() {
                 <div className="flex gap-2">
                   {applicant.isActive === false ? (
                     <button
-                      onClick={() => handleActivate(applicant._id)}
+                      onClick={() => handleActionAttempt(applicant._id, applicant.name || '', 'activate')}
                       disabled={isProcessing === applicant._id}
-                      className="px-4 py-2 bg-green-50 text-green-600 rounded-lg text-sm font-medium hover:bg-green-100 transition-colors disabled:opacity-50 flex items-center gap-2"
+                      className="px-4 py-2 bg-forest-50 text-forest-700 rounded-lg text-sm font-medium hover:bg-forest-100 transition-colors disabled:opacity-50 flex items-center gap-2"
                     >
                       {isProcessing === applicant._id ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -239,7 +239,7 @@ export function ApplicantsPage() {
                     </button>
                   ) : (
                     <button
-                      onClick={() => handleDeactivate(applicant._id)}
+                      onClick={() => handleActionAttempt(applicant._id, applicant.name || '', 'deactivate')}
                       disabled={isProcessing === applicant._id}
                       className="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors disabled:opacity-50 flex items-center gap-2"
                     >
@@ -262,7 +262,7 @@ export function ApplicantsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                 disabled={pagination.currentPage === 1}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -272,7 +272,7 @@ export function ApplicantsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -280,6 +280,20 @@ export function ApplicantsPage() {
           )}
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={confirmModal.open}
+        title={`${confirmModal.action.charAt(0).toUpperCase() + confirmModal.action.slice(1)} Applicant`}
+        message={
+          confirmModal.action === 'deactivate'
+            ? `Are you sure you want to deactivate "${confirmModal.applicantName}"?`
+            : `Are you sure you want to activate "${confirmModal.applicantName}"?`
+        }
+        confirmLabel={confirmModal.action === 'deactivate' ? 'Deactivate' : 'Activate'}
+        variant={confirmModal.action === 'deactivate' ? 'danger' : 'warning'}
+        onConfirm={handleActionConfirm}
+        onCancel={() => setConfirmModal({ ...confirmModal, open: false })}
+      />
     </div>
   );
 }

@@ -58,7 +58,12 @@ const employerSchema = new mongoose.Schema(
             enum: [
                 'restaurant',
                 'retail',
+                'retail store',
+                'warehouse',
+                'hotel',
+                'hospital',
                 'logistics',
+                'manufacturing',
                 'healthcare',
                 'hospitality',
                 'other',

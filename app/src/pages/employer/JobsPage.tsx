@@ -109,11 +109,11 @@ export function JobsPage() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      open: 'bg-green-50 text-green-700',
-      closed: 'bg-gray-50 text-gray-700',
+      open: 'bg-forest-50 text-forest-800',
+      closed: 'bg-[#F5F5ED] text-gray-700',
       filled: 'bg-blue-50 text-blue-700',
     };
-    return colors[status] || 'bg-gray-50 text-gray-700';
+    return colors[status] || 'bg-[#F5F5ED] text-gray-700';
   };
 
   return (
@@ -215,7 +215,7 @@ export function JobsPage() {
                                 navigate(`/employer/jobs/${job._id}/applications`);
                                 setShowActions(null);
                               }}
-                              className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                              className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#F5F5ED] flex items-center gap-2"
                             >
                               <Eye className="w-4 h-4" />
                               View Applications
@@ -225,7 +225,7 @@ export function JobsPage() {
                                 navigate(`/employer/jobs/${job._id}/edit`);
                                 setShowActions(null);
                               }}
-                              className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                              className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#F5F5ED] flex items-center gap-2"
                             >
                               <Edit className="w-4 h-4" />
                               Edit Job
@@ -236,7 +236,7 @@ export function JobsPage() {
                                   handleCloseJob(job._id);
                                   setShowActions(null);
                                 }}
-                                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#F5F5ED] flex items-center gap-2"
                               >
                                 <X className="w-4 h-4" />
                                 Close Job
@@ -247,7 +247,7 @@ export function JobsPage() {
                                   handleReopenJob(job._id);
                                   setShowActions(null);
                                 }}
-                                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#F5F5ED] flex items-center gap-2"
                               >
                                 <RotateCcw className="w-4 h-4" />
                                 Reopen Job
@@ -306,7 +306,7 @@ export function JobsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                 disabled={pagination.currentPage === 1}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -318,7 +318,7 @@ export function JobsPage() {
                   className={`w-10 h-10 rounded-lg font-medium ${
                     pagination.currentPage === page
                       ? 'bg-forest-900 text-white'
-                      : 'border border-gray-200 hover:bg-gray-50'
+                      : 'border border-gray-200 hover:bg-[#F5F5ED]'
                   }`}
                 >
                   {page}
@@ -328,7 +328,7 @@ export function JobsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

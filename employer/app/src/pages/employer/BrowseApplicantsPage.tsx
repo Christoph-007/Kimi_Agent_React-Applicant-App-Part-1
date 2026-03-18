@@ -311,7 +311,7 @@ export function BrowseApplicantsPage() {
             <div key={applicant._id} className="bg-white rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div className="w-14 h-14 bg-forest-100 rounded-full flex items-center justify-center">
-                  <span className="text-forest-700 font-bold text-lg">{applicant.name[0]}</span>
+                  <span className="text-forest-700 font-bold text-lg">{(applicant.name || 'U')[0]}</span>
                 </div>
                 <button
                   onClick={() => handleShortlist(applicant._id)}
@@ -325,7 +325,7 @@ export function BrowseApplicantsPage() {
                 </button>
               </div>
 
-              <h3 className="font-semibold text-gray-900 text-lg mb-1">{applicant.name}</h3>
+              <h3 className="font-semibold text-gray-900 text-lg mb-1">{applicant.name || 'Unknown Applicant'}</h3>
               
               <div className="space-y-2 text-sm text-gray-500 mb-4">
                 <div className="flex items-center gap-2">
@@ -394,7 +394,7 @@ export function BrowseApplicantsPage() {
           <button
             onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
             disabled={pagination.currentPage === 1}
-            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -406,7 +406,7 @@ export function BrowseApplicantsPage() {
               className={`w-10 h-10 rounded-lg font-medium ${
                 pagination.currentPage === page
                   ? 'bg-forest-900 text-white'
-                  : 'border border-gray-200 hover:bg-gray-50'
+                  : 'border border-gray-200 hover:bg-[#F5F5ED]'
               }`}
             >
               {page}
@@ -416,7 +416,7 @@ export function BrowseApplicantsPage() {
           <button
             onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
             disabled={pagination.currentPage === pagination.totalPages}
-            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
           >
             <ChevronRight className="w-5 h-5" />
           </button>

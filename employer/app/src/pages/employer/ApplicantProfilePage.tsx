@@ -163,7 +163,7 @@ export function ApplicantProfilePage() {
               </button>
               <button
                 onClick={handleViewResume}
-                className="w-full py-3 border-2 border-gray-200 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 border-2 border-gray-200 text-gray-700 rounded-full font-medium hover:bg-[#F5F5ED] transition-colors flex items-center justify-center gap-2"
               >
                 <FileText className="w-4 h-4" />
                 View Resume
@@ -180,21 +180,21 @@ export function ApplicantProfilePage() {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {applicant.experience !== undefined && (
-                <div className="p-4 bg-gray-50 rounded-xl">
+                <div className="p-4 bg-[#F5F5ED] rounded-xl">
                   <Briefcase className="w-5 h-5 text-gray-400 mb-2" />
                   <p className="text-sm text-gray-500">Experience</p>
                   <p className="font-medium text-gray-900">{applicant.experience} years</p>
                 </div>
               )}
               {applicant.expectedHourlyRate && (
-                <div className="p-4 bg-gray-50 rounded-xl">
+                <div className="p-4 bg-[#F5F5ED] rounded-xl">
                   <DollarSign className="w-5 h-5 text-gray-400 mb-2" />
                   <p className="text-sm text-gray-500">Expected Rate</p>
                   <p className="font-medium text-gray-900">₹{applicant.expectedHourlyRate}/hr</p>
                 </div>
               )}
               {applicant.preferredShiftType && (
-                <div className="p-4 bg-gray-50 rounded-xl">
+                <div className="p-4 bg-[#F5F5ED] rounded-xl">
                   <Clock className="w-5 h-5 text-gray-400 mb-2" />
                   <p className="text-sm text-gray-500">Preferred Shift</p>
                   <p className="font-medium text-gray-900 capitalize">
@@ -203,7 +203,7 @@ export function ApplicantProfilePage() {
                 </div>
               )}
               {applicant.preferredJobType && (
-                <div className="p-4 bg-gray-50 rounded-xl">
+                <div className="p-4 bg-[#F5F5ED] rounded-xl">
                   <Calendar className="w-5 h-5 text-gray-400 mb-2" />
                   <p className="text-sm text-gray-500">Job Type</p>
                   <p className="font-medium text-gray-900 capitalize">

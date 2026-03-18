@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { 
+import {
   Building2,
   Search,
   Loader2,
@@ -11,6 +11,7 @@ import {
   Mail
 } from 'lucide-react';
 import { adminApi } from '@/api/admin';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import type { User } from '@/types';
 
 export function EmployersPage() {
@@ -28,6 +29,12 @@ export function EmployersPage() {
     totalItems: 0,
   });
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean;
+    employerId: string;
+    storeName: string;
+    action: 'approve' | 'block' | 'unblock';
+  }>({ open: false, employerId: '', storeName: '', action: 'approve' });
 
   const businessTypes = ['Restaurant', 'Retail', 'Hotel', 'Warehouse', 'Healthcare', 'Logistics', 'Security', 'Other'];
 
@@ -38,7 +45,7 @@ export function EmployersPage() {
         page: pagination.currentPage,
         limit: 10,
       };
-      
+
       if (filters.search) params.search = filters.search;
       if (filters.isApproved !== '') params.isApproved = filters.isApproved === 'true';
       if (filters.isBlocked !== '') params.isBlocked = filters.isBlocked === 'true';
@@ -62,37 +69,35 @@ export function EmployersPage() {
     fetchEmployers();
   }, [fetchEmployers]);
 
-  const handleApprove = async (id: string) => {
-    setIsProcessing(id);
-    try {
-      await adminApi.approveEmployer(id);
-      fetchEmployers();
-    } catch (error) {
-      console.error('Failed to approve employer:', error);
-    } finally {
-      setIsProcessing(null);
-    }
+  const handleActionAttempt = (id: string, storeName: string, action: 'approve' | 'block' | 'unblock') => {
+    setConfirmModal({ open: true, employerId: id, storeName, action });
   };
 
-  const handleBlock = async (id: string) => {
-    setIsProcessing(id);
-    try {
-      await adminApi.blockEmployer(id);
-      fetchEmployers();
-    } catch (error) {
-      console.error('Failed to block employer:', error);
-    } finally {
-      setIsProcessing(null);
-    }
-  };
+  const handleActionConfirm = async () => {
+    const { employerId, action } = confirmModal;
+    setConfirmModal({ ...confirmModal, open: false });
+    setIsProcessing(employerId);
 
-  const handleUnblock = async (id: string) => {
-    setIsProcessing(id);
+    // Optimistic UI update — reflect change immediately
+    setEmployers(prev => prev.map(emp => {
+      if (emp._id !== employerId) return emp;
+      if (action === 'approve') return { ...emp, isApproved: true };
+      if (action === 'block') return { ...emp, isBlocked: true };
+      if (action === 'unblock') return { ...emp, isBlocked: false };
+      return emp;
+    }));
+
     try {
-      await adminApi.unblockEmployer(id);
+      if (action === 'approve') await adminApi.approveEmployer(employerId);
+      else if (action === 'block') await adminApi.blockEmployer(employerId);
+      else if (action === 'unblock') await adminApi.unblockEmployer(employerId);
+
+      // Refresh in background to sync with server
       fetchEmployers();
     } catch (error) {
-      console.error('Failed to unblock employer:', error);
+      console.error(`Failed to ${action} employer:`, error);
+      // Revert optimistic update on failure
+      fetchEmployers();
     } finally {
       setIsProcessing(null);
     }
@@ -223,7 +228,7 @@ export function EmployersPage() {
                         </span>
                       )}
                       {employer.isApproved && !employer.isBlocked && (
-                        <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full">
+                        <span className="px-3 py-1 bg-forest-50 text-forest-800 text-xs font-medium rounded-full">
                           Active
                         </span>
                       )}
@@ -251,7 +256,7 @@ export function EmployersPage() {
                 <div className="flex gap-2">
                   {!employer.isApproved && (
                     <button
-                      onClick={() => handleApprove(employer._id)}
+                      onClick={() => handleActionAttempt(employer._id, employer.storeName || '', 'approve')}
                       disabled={isProcessing === employer._id}
                       className="px-4 py-2 bg-forest-900 text-white rounded-lg text-sm font-medium hover:bg-forest-800 transition-colors disabled:opacity-50 flex items-center gap-2"
                     >
@@ -265,15 +270,15 @@ export function EmployersPage() {
                   )}
                   {employer.isBlocked ? (
                     <button
-                      onClick={() => handleUnblock(employer._id)}
+                      onClick={() => handleActionAttempt(employer._id, employer.storeName || '', 'unblock')}
                       disabled={isProcessing === employer._id}
-                      className="px-4 py-2 bg-green-50 text-green-700 rounded-lg text-sm font-medium hover:bg-green-100 transition-colors disabled:opacity-50"
+                      className="px-4 py-2 bg-forest-50 text-forest-800 rounded-lg text-sm font-medium hover:bg-forest-100 transition-colors disabled:opacity-50"
                     >
                       Unblock
                     </button>
                   ) : (
                     <button
-                      onClick={() => handleBlock(employer._id)}
+                      onClick={() => handleActionAttempt(employer._id, employer.storeName || '', 'block')}
                       disabled={isProcessing === employer._id}
                       className="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors disabled:opacity-50"
                     >
@@ -291,7 +296,7 @@ export function EmployersPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                 disabled={pagination.currentPage === 1}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -301,7 +306,7 @@ export function EmployersPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -309,6 +314,25 @@ export function EmployersPage() {
           )}
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={confirmModal.open}
+        title={`${confirmModal.action.charAt(0).toUpperCase() + confirmModal.action.slice(1)} Employer`}
+        message={
+          confirmModal.action === 'block'
+            ? `Are you sure you want to block "${confirmModal.storeName}"? They will no longer be able to post jobs.`
+            : confirmModal.action === 'unblock'
+            ? `Are you sure you want to unblock "${confirmModal.storeName}"?`
+            : `Are you sure you want to approve "${confirmModal.storeName}"?`
+        }
+        confirmLabel={
+          confirmModal.action === 'block' ? 'Block' : 
+          confirmModal.action === 'unblock' ? 'Unblock' : 'Approve'
+        }
+        variant={confirmModal.action === 'block' ? 'danger' : 'warning'}
+        onConfirm={handleActionConfirm}
+        onCancel={() => setConfirmModal({ ...confirmModal, open: false })}
+      />
     </div>
   );
 }

@@ -12,11 +12,13 @@ import {
 import { employerApi } from '@/api/employer';
 import { jobRequestsApi } from '@/api/jobRequests';
 import { jobsApi } from '@/api/jobs';
+import { useAuth } from '@/contexts/AuthContext';
 import type { Applicant, Job } from '@/types';
 
 export function SendJobRequestPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const [applicant, setApplicant] = useState<Applicant | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -62,11 +64,18 @@ export function SendJobRequestPage() {
   const handleJobSelect = (jobId: string) => {
     setSelectedJobId(jobId);
     if (jobId === 'custom') {
+      let locationStr = '';
+      if (user?.address) {
+        const { street, city, state, pincode } = user.address;
+        const parts = [street, city, state, pincode].filter(Boolean);
+        locationStr = parts.join(', ');
+      }
+
       setFormData({
         jobTitle: '',
         jobDescription: '',
         shiftType: 'full-time',
-        location: '',
+        location: locationStr,
         offeredHourlyRate: '',
         message: formData.message,
       });
@@ -202,7 +211,7 @@ export function SendJobRequestPage() {
         </div>
       )}
       {success && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 flex items-center gap-2">
+        <div className="p-4 bg-forest-50 border border-forest-200 rounded-xl text-forest-800 flex items-center gap-2">
           <CheckCircle className="w-5 h-5" />
           {success}
         </div>
@@ -323,7 +332,7 @@ export function SendJobRequestPage() {
           />
         </div>
 
-        <div className="p-4 bg-gray-50 rounded-xl">
+        <div className="p-4 bg-[#F5F5ED] rounded-xl">
           <p className="text-sm text-gray-600">
             <strong>Note:</strong> This job request will expire in 7 days if not responded to.
           </p>
@@ -333,7 +342,7 @@ export function SendJobRequestPage() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="flex-1 py-3.5 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+            className="flex-1 py-3.5 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-[#F5F5ED] transition-colors"
           >
             Cancel
           </button>

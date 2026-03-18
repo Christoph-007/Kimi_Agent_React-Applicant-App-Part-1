@@ -32,7 +32,7 @@ export function JobsPage() {
   const [showFilters, setShowFilters] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
@@ -187,7 +187,7 @@ export function JobsPage() {
       {/* Search Bar */}
       <div className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100">
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 relative bg-gray-50 rounded-2xl flex items-center px-4">
+          <div className="flex-1 relative bg-[#F5F5ED] rounded-2xl flex items-center px-4">
             <Search className="w-5 h-5 text-gray-400 mr-2" />
             <input
               type="text"
@@ -225,7 +225,7 @@ export function JobsPage() {
             </select>
             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
           </div>
-          <div className="flex-1 relative bg-gray-50 rounded-2xl flex items-center px-4">
+          <div className="flex-1 relative bg-[#F5F5ED] rounded-2xl flex items-center px-4">
             <Briefcase className="w-5 h-5 text-gray-400 mr-2" />
             <input
               type="text"
@@ -351,21 +351,21 @@ export function JobsPage() {
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-lg border border-green-100">
+                  <span className="px-3 py-1 bg-forest-50 text-forest-800 text-xs font-bold rounded-lg border border-forest-100">
                     {job.status}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 z-10" onClick={e => e.stopPropagation()}>
                   <button
                     onClick={(e) => handleToggleSave(e, job._id)}
-                    className="p-2 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
+                    className="p-2 bg-[#F5F5ED] hover:bg-gray-100 rounded-xl transition-colors"
                     title={job.isSaved ? "Remove from saved" : "Save job"}
                   >
                     <Bookmark className={`w-5 h-5 transition-colors ${job.isSaved ? 'text-forest-700 fill-forest-700' : 'text-gray-400 group-hover:text-forest-600'}`} />
                   </button>
                   <button
                     onClick={(e) => handleShare(e, job)}
-                    className="p-2 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
+                    className="p-2 bg-[#F5F5ED] hover:bg-gray-100 rounded-xl transition-colors"
                     title="Share job"
                   >
                     <Share2 className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
@@ -373,7 +373,7 @@ export function JobsPage() {
                 </div>
               </div>
 
-              <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-2xl font-bold border border-gray-100 group-hover:bg-forest-50 group-hover:border-forest-100 transition-colors mb-6">
+              <div className="w-14 h-14 bg-[#F5F5ED] rounded-2xl flex items-center justify-center text-2xl font-bold border border-gray-100 group-hover:bg-forest-50 group-hover:border-forest-100 transition-colors mb-6">
                 {job.employer.storeName[0]}
               </div>
 
@@ -407,28 +407,32 @@ export function JobsPage() {
                   }}
                   className={cn(
                     "flex-1 py-4 rounded-2xl font-bold text-base shadow-sm transition-all duration-300",
-                    'bg-forest-900 text-white hover:bg-forest-800 hover:shadow-lg'
+                    user?.type === 'employer' || user?.type === 'admin' 
+                      ? 'bg-forest-900 text-white hover:bg-forest-800 hover:shadow-lg w-full'
+                      : 'bg-forest-900 text-white hover:bg-forest-800 hover:shadow-lg'
                   )}
                 >
                   View Details
                 </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!isAuthenticated) {
-                      navigate('/login', { state: { from: window.location.pathname } });
-                      toast.info('Please sign in to apply for this job');
-                    } else {
-                      navigate(`/jobs/${job._id}?apply=true`);
-                    }
-                  }}
-                  className={cn(
-                    "flex-1 py-4 rounded-2xl font-bold text-base shadow-sm transition-all duration-300",
-                    'bg-lime-200 text-forest-900 hover:bg-lime-300 hover:shadow-md'
-                  )}
-                >
-                  Apply Now
-                </button>
+                {(!user || user.type === 'applicant') && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!isAuthenticated) {
+                        navigate('/login', { state: { from: window.location.pathname } });
+                        toast.info('Please sign in to apply for this job');
+                      } else {
+                        navigate(`/jobs/${job._id}?apply=true`);
+                      }
+                    }}
+                    className={cn(
+                      "flex-1 py-4 rounded-2xl font-bold text-base shadow-sm transition-all duration-300",
+                      'bg-lime-200 text-forest-900 hover:bg-lime-300 hover:shadow-md'
+                    )}
+                  >
+                    Apply Now
+                  </button>
+                )}
               </div>
             </div>
           ))}
@@ -441,7 +445,7 @@ export function JobsPage() {
           <button
             onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
             disabled={pagination.currentPage === 1}
-            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -452,7 +456,7 @@ export function JobsPage() {
               onClick={() => setPagination((prev) => ({ ...prev, currentPage: page }))}
               className={`w-10 h-10 rounded-lg font-medium ${pagination.currentPage === page
                 ? 'bg-forest-900 text-white'
-                : 'border border-gray-200 hover:bg-gray-50'
+                : 'border border-gray-200 hover:bg-[#F5F5ED]'
                 }`}
             >
               {page}
@@ -462,7 +466,7 @@ export function JobsPage() {
           <button
             onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
             disabled={pagination.currentPage === pagination.totalPages}
-            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
           >
             <ChevronRight className="w-5 h-5" />
           </button>

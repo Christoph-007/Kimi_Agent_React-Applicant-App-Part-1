@@ -118,7 +118,7 @@ export function JobDetailPage() {
 
       {/* Success Message */}
       {success && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 flex items-center gap-2">
+        <div className="p-4 bg-forest-50 border border-forest-200 rounded-xl text-forest-800 flex items-center gap-2">
           <CheckCircle className="w-5 h-5" />
           {success}
         </div>
@@ -152,7 +152,7 @@ export function JobDetailPage() {
             </div>
 
             <div className="flex flex-wrap gap-4 mb-6">
-              <span className="px-4 py-2 bg-green-50 text-green-700 text-sm font-medium rounded-full capitalize">
+              <span className="px-4 py-2 bg-forest-50 text-forest-800 text-sm font-medium rounded-full capitalize">
                 {job.status}
               </span>
               <span className="px-4 py-2 bg-blue-50 text-blue-700 text-sm font-medium rounded-full capitalize">
@@ -161,7 +161,7 @@ export function JobDetailPage() {
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+              <div className="flex items-center gap-3 p-4 bg-[#F5F5ED] rounded-xl">
                 <MapPin className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-500">Location</p>
@@ -170,21 +170,21 @@ export function JobDetailPage() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+              <div className="flex items-center gap-3 p-4 bg-[#F5F5ED] rounded-xl">
                 <DollarSign className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-500">Salary</p>
                   <p className="font-medium text-gray-900">{formatSalary(job)}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+              <div className="flex items-center gap-3 p-4 bg-[#F5F5ED] rounded-xl">
                 <Briefcase className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-500">Business Type</p>
                   <p className="font-medium text-gray-900">{job.employer.businessType}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+              <div className="flex items-center gap-3 p-4 bg-[#F5F5ED] rounded-xl">
                 <Calendar className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-500">Posted On</p>
@@ -264,21 +264,21 @@ export function JobDetailPage() {
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Working Hours</h2>
               <div className="grid sm:grid-cols-3 gap-4">
                 {job.workingHours.hoursPerDay && (
-                  <div className="p-4 bg-gray-50 rounded-xl">
+                  <div className="p-4 bg-[#F5F5ED] rounded-xl">
                     <Clock className="w-5 h-5 text-gray-400 mb-2" />
                     <p className="text-sm text-gray-500">Hours per Day</p>
                     <p className="font-medium text-gray-900">{job.workingHours.hoursPerDay} hours</p>
                   </div>
                 )}
                 {job.workingHours.daysPerWeek && (
-                  <div className="p-4 bg-gray-50 rounded-xl">
+                  <div className="p-4 bg-[#F5F5ED] rounded-xl">
                     <Calendar className="w-5 h-5 text-gray-400 mb-2" />
                     <p className="text-sm text-gray-500">Days per Week</p>
                     <p className="font-medium text-gray-900">{job.workingHours.daysPerWeek} days</p>
                   </div>
                 )}
                 {job.workingHours.shiftTiming && (
-                  <div className="p-4 bg-gray-50 rounded-xl">
+                  <div className="p-4 bg-[#F5F5ED] rounded-xl">
                     <Clock className="w-5 h-5 text-gray-400 mb-2" />
                     <p className="text-sm text-gray-500">Shift Timing</p>
                     <p className="font-medium text-gray-900">{job.workingHours.shiftTiming}</p>
@@ -317,15 +317,15 @@ export function JobDetailPage() {
             </div>
 
             {job.hasApplied ? (
-              <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-center">
-                <CheckCircle className="w-8 h-8 mx-auto mb-2 text-green-600" />
-                <p className="font-medium text-green-700">Already Applied</p>
-                <p className="text-sm text-green-600 mt-1">
+              <div className="p-4 bg-forest-50 border border-forest-200 rounded-xl text-center">
+                <CheckCircle className="w-8 h-8 mx-auto mb-2 text-forest-700" />
+                <p className="font-medium text-forest-800">Already Applied</p>
+                <p className="text-sm text-forest-700 mt-1">
                   Check your applications for status updates
                 </p>
                 <NavLink
                   to="/my-jobs"
-                  className="inline-block mt-4 px-6 py-2 bg-green-600 text-white rounded-full text-sm font-medium hover:bg-green-700 transition-colors"
+                  className="inline-block mt-4 px-6 py-2 bg-forest-900 text-white rounded-full text-sm font-medium hover:bg-forest-800 transition-colors"
                 >
                   View Application
                 </NavLink>
@@ -404,7 +404,7 @@ export function JobDetailPage() {
                 <button
                   type="button"
                   onClick={() => setShowApplyModal(false)}
-                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-[#F5F5ED] transition-colors"
                 >
                   Cancel
                 </button>

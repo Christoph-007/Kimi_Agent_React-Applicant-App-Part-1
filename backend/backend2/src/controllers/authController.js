@@ -7,6 +7,7 @@ const {
     notifyEmployerSignup,
     notifyApplicantSignup,
     notifyForgotPassword,
+    notifyAdminOfEmployerSignup,
 } = require('../services/notificationService');
 const crypto = require('crypto');
 
@@ -64,7 +65,7 @@ const employerSignup = async (req, res) => {
             phone,
             password,
             address: addressObj,
-            businessType: businessType || 'other',
+            businessType: businessType?.toLowerCase() || 'other',
             businessDescription: description || businessDescription || '',
             isApproved: false,
         });
@@ -72,6 +73,7 @@ const employerSignup = async (req, res) => {
         // Send welcome email (graceful failure)
         try {
             await notifyEmployerSignup(employer);
+            await notifyAdminOfEmployerSignup(employer);
         } catch (err) {
             console.error('[Auth] Welcome email failed:', err.message);
         }
@@ -188,25 +190,54 @@ const applicantSignup = async (req, res) => {
 // @access  Public
 const login = async (req, res) => {
     try {
-        const { identifier, password, userType } = req.body;
+        let { identifier, password, userType } = req.body;
+        
+        // Trim inputs
+        identifier = identifier?.trim();
+        password = password?.trim();
 
-        console.log('[Auth] Login attempt:', { identifier, userType, passwordLength: password?.length });
+        console.log('[Auth] Login attempt:', { 
+            identifier, 
+            userType, 
+            passwordLength: password?.length 
+        });
 
-        let Model;
-        if (userType === 'employer') {
-            Model = Employer;
-        } else if (userType === 'applicant') {
-            Model = Applicant;
-        } else if (userType === 'admin') {
-            Model = Admin;
+        let user = null;
+        let detectedUserType = userType;
+
+        if (userType) {
+            let Model;
+            if (userType === 'employer') Model = Employer;
+            else if (userType === 'applicant') Model = Applicant;
+            else if (userType === 'admin') Model = Admin;
+            
+            if (Model) {
+              user = await Model.findOne({
+                  $or: [{ email: identifier }, { phone: identifier }],
+              }).select('+password');
+            }
         } else {
-            console.log('[Auth] Invalid user type:', userType);
-            return errorResponse(res, 400, 'Invalid user type');
-        }
+            // Auto-detect by searching all models
+            // Priority: Admin -> Employer -> Applicant
+            user = await Admin.findOne({
+                $or: [{ email: identifier }, { phone: identifier }],
+            }).select('+password');
+            if (user) detectedUserType = 'admin';
 
-        const user = await Model.findOne({
-            $or: [{ email: identifier }, { phone: identifier }],
-        }).select('+password');
+            if (!user) {
+                user = await Employer.findOne({
+                    $or: [{ email: identifier }, { phone: identifier }],
+                }).select('+password');
+                if (user) detectedUserType = 'employer';
+            }
+
+            if (!user) {
+                user = await Applicant.findOne({
+                    $or: [{ email: identifier }, { phone: identifier }],
+                }).select('+password');
+                if (user) detectedUserType = 'applicant';
+            }
+        }
 
         if (!user) {
             console.log(`[Auth] User not found for identifier: ${identifier}`);
@@ -220,25 +251,25 @@ const login = async (req, res) => {
             return errorResponse(res, 401, 'Invalid credentials');
         }
 
-        if (userType === 'employer' && user.isBlocked) {
+        if (detectedUserType === 'employer' && user.isBlocked) {
             return errorResponse(res, 403, 'Your account has been blocked.');
         }
 
-        if (userType === 'applicant' && !user.isActive) {
+        if (detectedUserType === 'applicant' && !user.isActive) {
             return errorResponse(res, 403, 'Your account has been deactivated.');
         }
 
-        if (userType === 'admin' && !user.isActive) {
+        if (detectedUserType === 'admin' && !user.isActive) {
             return errorResponse(res, 403, 'Your admin account has been deactivated.');
         }
 
-        if (userType === 'admin') {
+        if (detectedUserType === 'admin') {
             user.lastLogin = new Date();
             await user.save();
         }
 
         user.password = undefined;
-        sendTokenResponse(user, 200, res, userType);
+        sendTokenResponse(user, 200, res, detectedUserType);
     } catch (error) {
         console.error('Login error:', error);
         return errorResponse(res, 500, 'Error logging in', error.message);

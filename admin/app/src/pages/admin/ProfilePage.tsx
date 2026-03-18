@@ -126,7 +126,7 @@ export function ProfilePage() {
 
       {/* Success Message */}
       {success && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 flex items-center gap-2">
+        <div className="p-4 bg-forest-50 border border-forest-200 rounded-xl text-forest-800 flex items-center gap-2">
           <CheckCircle className="w-5 h-5" />
           {success}
         </div>
@@ -187,7 +187,7 @@ export function ProfilePage() {
                       setIsEditing(false);
                       fetchUserProfile();
                     }}
-                    className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+                    className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-[#F5F5ED] transition-colors"
                   >
                     Cancel
                   </button>

@@ -1,42 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Design Tokens from Reference Screenshots ─────────────── */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 10%;
-    --card: 0 0% 100%;
+    /* Shadcn UI HSL vars */
+    --background: 60 18% 95%;          /* #F5F5ED cream */
+    --foreground: 0 0% 10%;            /* #1A1A1A near-black */
+    --card: 0 0% 100%;                 /* #FFFFFF white */
     --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
-    --primary: 155 52% 11%;
+    --primary: 152 55% 11%;            /* #0D2B1A forest */
     --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 96%;
+    --secondary: 60 18% 95%;           /* cream */
     --secondary-foreground: 0 0% 10%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 40%;
-    --accent: 73 90% 61%;
+    --muted: 60 14% 91%;
+    --muted-foreground: 0 0% 48%;
+    --accent: 78 88% 58%;              /* #C8F435 lime */
     --accent-foreground: 0 0% 10%;
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 349 71% 58%;        /* #E84B6C pink-red */
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 155 52% 11%;
-    --radius: 0.625rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 26%;
-    --sidebar-primary: 155 52% 11%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 96%;
-    --sidebar-accent-foreground: 0 0% 10%;
-    --sidebar-border: 0 0% 91%;
-    --sidebar-ring: 155 52% 11%;
+    --border: 60 9% 87%;               /* #E0E0D8 warm grey */
+    --input: 60 9% 87%;
+    --ring: 78 88% 58%;                /* lime focus ring */
+    --radius: 0.75rem;
+
+    /* Sidebar vars */
+    --sidebar-background: 152 55% 11%; /* dark forest */
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 78 88% 58%;     /* lime active */
+    --sidebar-primary-foreground: 0 0% 10%;
+    --sidebar-accent: 152 45% 16%;     /* slightly lighter forest */
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 152 45% 16%;
+    --sidebar-ring: 78 88% 58%;
   }
 }
 
+/* ─── Base Resets ──────────────────────────────────────────── */
 @layer base {
   * {
     @apply border-border;
@@ -44,10 +49,16 @@
 
   html {
     @apply antialiased;
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-cream-100 text-gray-900 font-sans;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tighter;
   }
 
   /* Hide number input spinners */
@@ -57,44 +68,155 @@
     appearance: none;
     margin: 0;
   }
-
   input[type=number] {
     -moz-appearance: textfield;
   }
 }
 
+/* ─── Component Utilities ──────────────────────────────────── */
 @layer components {
+
+  /* Primary button – dark forest green pill */
   .btn-primary {
-    @apply bg-forest-900 text-white px-6 py-3 rounded-full font-medium hover:bg-forest-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center gap-2
+           bg-forest-900 text-white
+           px-6 py-3 rounded-full
+           font-semibold text-sm
+           hover:bg-forest-800
+           active:scale-95
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-forest-500 focus:ring-offset-2;
   }
 
+  /* Lime/accent button – bright yellow-green pill */
   .btn-accent {
-    @apply bg-lime text-forest-900 px-6 py-3 rounded-full font-medium hover:bg-lime-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-lime focus:ring-offset-2;
+    @apply inline-flex items-center justify-center gap-2
+           bg-lime text-forest-900
+           px-6 py-3 rounded-full
+           font-semibold text-sm
+           hover:brightness-105 hover:scale-[1.02]
+           active:scale-95
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-lime focus:ring-offset-2;
   }
 
+  /* Outline button – lime border, transparent bg */
   .btn-outline {
-    @apply border-2 border-forest-900 text-forest-900 px-6 py-3 rounded-full font-medium hover:bg-forest-900 hover:text-white transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-2
+           border-2 border-lime text-white
+           px-6 py-3 rounded-full
+           font-semibold text-sm
+           hover:bg-lime hover:text-forest-900
+           active:scale-95
+           transition-all duration-200;
   }
 
+  /* Card – white, rounded, soft shadow with hover lift */
   .card {
-    @apply bg-white rounded-2xl shadow-card p-6 hover:shadow-card-hover transition-shadow duration-200;
+    @apply bg-white rounded-2xl shadow-card p-6
+           hover:shadow-card-hover hover:-translate-y-0.5
+           transition-all duration-200;
   }
 
+  /* Dark panel card – forest green */
+  .card-dark {
+    @apply bg-forest-900 text-white rounded-3xl p-6
+           shadow-card;
+  }
+
+  /* Standard input field */
   .input-field {
-    @apply w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent placeholder:text-gray-400;
+    @apply w-full px-4 py-3
+           rounded-xl border border-gray-200 bg-white
+           text-gray-900 placeholder:text-gray-400
+           focus:outline-none focus:ring-2 focus:ring-lime-300 focus:border-lime-300
+           transition-colors duration-150;
   }
 
+  /* Search pill input (hero style) */
+  .input-search {
+    @apply w-full px-5 py-3
+           rounded-full border-2 border-lime bg-white/10 backdrop-blur-sm
+           text-white placeholder:text-white/60
+           focus:outline-none focus:bg-white/15
+           transition-all duration-150;
+  }
+
+  /* Section headings */
   .section-title {
-    @apply text-3xl md:text-4xl font-bold text-forest-900;
+    @apply text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tighter;
+  }
+
+  .section-title-dark {
+    @apply text-3xl md:text-4xl font-extrabold text-white tracking-tighter;
   }
 
   .section-subtitle {
-    @apply text-gray-500 text-lg;
+    @apply text-gray-500 text-base md:text-lg font-normal;
+  }
+
+  /* Badge / tag pill */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .badge-dark {
+    @apply badge bg-forest-900 text-white;
+  }
+
+  .badge-lime {
+    @apply badge bg-lime text-forest-900;
+  }
+
+  .badge-outline {
+    @apply badge border border-gray-300 text-gray-600;
+  }
+
+  .badge-green {
+    @apply badge bg-green-50 text-green-700;
+  }
+
+  .badge-red {
+    @apply badge bg-red-50 text-red-700;
+  }
+
+  .badge-yellow {
+    @apply badge bg-yellow-50 text-yellow-700;
+  }
+
+  /* Page fade-up animation wrapper */
+  .animate-page {
+    @apply animate-fade-up;
+  }
+
+  /* Nav link hover */
+  .nav-link {
+    @apply text-gray-300 hover:text-white font-medium transition-colors duration-200;
+  }
+
+  .nav-link-active {
+    @apply text-white font-semibold;
   }
 }
 
+/* ─── Custom scrollbar ─────────────────────────────────────── */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #C8F435 transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #C8F435;
+    border-radius: 9999px;
   }
 }

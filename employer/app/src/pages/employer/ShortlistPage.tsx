@@ -204,12 +204,12 @@ export function ShortlistPage() {
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 bg-forest-100 rounded-full flex items-center justify-center">
                         <span className="text-forest-700 font-bold text-lg">
-                          {item.applicant.name[0]}
+                          {(item.applicant?.name || 'U')[0]}
                         </span>
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-gray-900 text-lg">{item.applicant.name}</h3>
+                          <h3 className="font-semibold text-gray-900 text-lg">{item.applicant?.name || 'Unknown Candidate'}</h3>
                           <Star className="w-5 h-5 text-yellow-500 fill-current" />
                         </div>
                         {item.label && (
@@ -247,7 +247,7 @@ export function ShortlistPage() {
 
                   {/* Edit Notes */}
                   {editingItem === item._id ? (
-                    <div className="space-y-3 p-4 bg-gray-50 rounded-xl">
+                    <div className="space-y-3 p-4 bg-[#F5F5ED] rounded-xl">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Label</label>
                         <select
@@ -340,7 +340,7 @@ export function ShortlistPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                 disabled={pagination.currentPage === 1}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -350,7 +350,7 @@ export function ShortlistPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

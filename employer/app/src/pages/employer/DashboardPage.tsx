@@ -133,7 +133,7 @@ export function DashboardPage() {
             label: 'Active Jobs',
             value: stats.activeJobs,
             icon: TrendingUp,
-            color: 'bg-green-50 text-green-600',
+            color: 'bg-forest-50 text-forest-700',
             link: '/employer/jobs'
           },
           {
@@ -216,7 +216,7 @@ export function DashboardPage() {
               <NavLink
                 to={`/employer/jobs/${job._id}`}
                 key={job._id}
-                className="flex items-center justify-between p-5 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors border border-gray-100/50 hover:border-gray-200"
+                className="flex items-center justify-between p-5 bg-[#F5F5ED] rounded-2xl hover:bg-gray-100 transition-colors border border-gray-100/50 hover:border-gray-200"
               >
                 <div>
                   <h3 className="font-bold text-forest-900 mb-1">{job.title}</h3>
@@ -224,7 +224,7 @@ export function DashboardPage() {
                     {job.totalApplications} applications
                   </p>
                 </div>
-                <span className={`px-4 py-1.5 text-xs font-bold rounded-lg border ${job.status === 'open' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-100 text-gray-600 border-gray-200'
+                <span className={`px-4 py-1.5 text-xs font-bold rounded-lg border ${job.status === 'open' ? 'bg-forest-50 text-forest-800 border-forest-200' : 'bg-gray-100 text-gray-600 border-gray-200'
                   }`}>
                   {job.status}
                 </span>
@@ -254,7 +254,7 @@ export function DashboardPage() {
             {upcomingShifts.map((shift) => (
               <div
                 key={shift._id}
-                className="bg-gray-50 rounded-2xl p-5 border border-gray-100 hover:border-gray-200 transition-colors"
+                className="bg-[#F5F5ED] rounded-2xl p-5 border border-gray-100 hover:border-gray-200 transition-colors"
               >
                 <div className="inline-flex px-3 py-1 bg-white rounded-md text-xs text-forest-700 font-bold shadow-sm mb-4">
                   {formatDate(shift.date)}
@@ -262,9 +262,9 @@ export function DashboardPage() {
                 <h3 className="font-bold text-forest-900 text-lg mb-1 line-clamp-1">{shift.job.title}</h3>
                 <p className="text-sm text-gray-500 font-medium mb-4 flex items-center gap-2">
                   <div className="w-6 h-6 rounded-full bg-forest-100 flex items-center justify-center text-forest-700 font-bold text-xs uppercase">
-                    {shift.applicant.name[0]}
+                    {(shift.applicant?.name || 'U')[0]}
                   </div>
-                  {shift.applicant.name}
+                  {shift.applicant?.name || 'Unknown Worker'}
                 </p>
                 <div className="flex items-center gap-2 text-sm text-gray-500">
                   <Clock className="w-4 h-4 text-gray-400" />

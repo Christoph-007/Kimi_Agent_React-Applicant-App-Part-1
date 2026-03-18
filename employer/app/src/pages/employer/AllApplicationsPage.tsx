@@ -118,10 +118,10 @@ export function AllApplicationsPage() {
     const colors: Record<string, string> = {
       applied: 'bg-blue-50 text-blue-700',
       reviewing: 'bg-yellow-50 text-yellow-700',
-      accepted: 'bg-green-50 text-green-700',
+      accepted: 'bg-forest-50 text-forest-800',
       rejected: 'bg-red-50 text-red-700',
     };
-    return colors[status] || 'bg-gray-50 text-gray-700';
+    return colors[status] || 'bg-[#F5F5ED] text-gray-700';
   };
 
   const formatDate = (dateString: string) => {
@@ -194,11 +194,11 @@ export function AllApplicationsPage() {
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 bg-forest-100 rounded-full flex items-center justify-center">
                         <span className="text-forest-700 font-bold text-lg">
-                          {application.applicant.name[0]}
+                          {(application.applicant?.name || 'U')[0]}
                         </span>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 text-lg">{application.applicant.name}</h3>
+                        <h3 className="font-semibold text-gray-900 text-lg">{application.applicant?.name || 'Unknown Applicant'}</h3>
                         <div className="flex flex-wrap gap-3 text-sm text-gray-500 mt-1">
                           <span className="flex items-center gap-1">
                             <Briefcase className="w-4 h-4 text-forest-600" />
@@ -206,7 +206,7 @@ export function AllApplicationsPage() {
                           </span>
                           <span className="flex items-center gap-1">
                             <Phone className="w-4 h-4" />
-                            {application.applicant.phone}
+                            {application.applicant?.phone || 'No Phone'}
                           </span>
                         </div>
                       </div>
@@ -298,7 +298,7 @@ export function AllApplicationsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                 disabled={pagination.currentPage === 1}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -308,7 +308,7 @@ export function AllApplicationsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -350,7 +350,7 @@ export function AllApplicationsPage() {
                     setSelectedApplication(null);
                     setRejectionReason('');
                   }}
-                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-[#F5F5ED] transition-colors"
                 >
                   Cancel
                 </button>

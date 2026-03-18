@@ -11,7 +11,7 @@ interface AuthContextType {
   login: (identifier: string, password: string, userType: UserType) => Promise<void>;
   signup: (data: SignupData, userType: Exclude<UserType, 'admin'>) => Promise<void>;
   logout: () => void;
-  refreshUser: () => Promise<void>;
+  refreshUser: () => Promise<User | null>;
   fetchUnreadCount: () => Promise<void>;
   forgotPassword: (email: string, userType: UserType) => Promise<void>;
   resetPassword: (token: string, password: string, userType: UserType) => Promise<void>;
@@ -35,14 +35,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const checkAuth = async () => {
-    const token = localStorage.getItem('token');
+    // Cross-port session transfer support
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get('token');
+    
+    if (urlToken) {
+      localStorage.setItem('token_applicant', urlToken);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    const token = localStorage.getItem('token_applicant');
     if (token) {
       try {
         const response = await authApi.getMe();
-        setUser(response.data);
-        fetchUnreadCount();
+        const userData = response.data;
+
+        setUser(userData);
+        if (!(userData.type === 'applicant' && userData.isActive === false) &&
+            !(userData.type === 'employer' && userData.isBlocked === true)) {
+          fetchUnreadCount();
+        }
       } catch {
-        localStorage.removeItem('token');
+        localStorage.removeItem('token_applicant');
       }
     }
     setIsLoading(false);
@@ -52,37 +67,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
-  const login = async (identifier: string, password: string, userType: UserType) => {
-    const response = await authApi.login({ identifier, password, userType });
-    localStorage.setItem('token', response.token);
+  const login = async (identifier: string, password: string, userType?: UserType | string) => {
+    const response = await authApi.login({ identifier, password, userType: userType || '' });
+    
+    // The backend now detects the user's type automatically
+    const actualUserType = response.user.type;
+
+    // Check if account is deactivated or blocked
+    if (actualUserType === 'applicant' && response.user.isActive === false) {
+      throw new Error('This account has been deactivated. Please contact support.');
+    }
+    if (actualUserType === 'employer' && response.user.isBlocked === true) {
+      throw new Error('This account has been blocked. Please contact support.');
+    }
+
+    localStorage.setItem('token_applicant', response.token);
     setUser(response.user);
 
-    // Admin users should use the dedicated admin app
-    if (userType === 'admin') {
-      window.location.href = 'http://localhost:5175/login';
+    // If employer or admin, redirect to their dedicated apps with token transfer
+    if (actualUserType === 'admin') {
+      window.location.href = `http://localhost:5175/admin/dashboard?token=${response.token}`;
+      return;
+    }
+    
+    if (actualUserType === 'employer') {
+      window.location.href = `http://localhost:5174/employer/dashboard?token=${response.token}`;
       return;
     }
 
-    // Navigate based on user type
-    const routes: Record<Exclude<UserType, 'admin'>, string> = {
-      applicant: '/home',
-      employer: '/employer/dashboard',
-    };
-
-    navigate(routes[userType as Exclude<UserType, 'admin'>]);
+    navigate('/home');
   };
 
   const signup = async (data: SignupData, userType: Exclude<UserType, 'admin'>) => {
     const response = await authApi.signup(data, userType);
-    localStorage.setItem('token', response.token);
+    localStorage.setItem('token_applicant', response.token);
     setUser(response.user);
 
-    const route = userType === 'employer' ? '/employer/dashboard' : '/home';
-    navigate(route);
+    if (userType === 'employer') {
+      window.location.href = `http://localhost:5174/employer/dashboard?token=${response.token}`;
+      return;
+    }
+    
+    navigate('/home');
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('token_applicant');
     setUser(null);
     setUnreadCount(0);
     navigate('/login');
@@ -91,9 +121,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshUser = async () => {
     try {
       const response = await authApi.getMe();
-      setUser(response.data);
-    } catch {
-      // Ignore error
+      const userData = response.data;
+
+      setUser(userData);
+      return userData;
+    } catch (error) {
+      if ((error as any)?.response?.status === 401) {
+        localStorage.removeItem('token');
+        setUser(null);
+      }
+      throw error;
     }
   };
 

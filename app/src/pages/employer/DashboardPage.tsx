@@ -124,7 +124,7 @@ export function DashboardPage() {
             label: 'Active Jobs',
             value: stats.activeJobs,
             icon: TrendingUp,
-            color: 'bg-green-50 text-green-600',
+            color: 'bg-forest-50 text-forest-700',
             link: '/employer/jobs'
           },
           {
@@ -196,7 +196,7 @@ export function DashboardPage() {
             {recentJobs.map((job) => (
               <div
                 key={job._id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
+                className="flex items-center justify-between p-4 bg-[#F5F5ED] rounded-xl"
               >
                 <div>
                   <h3 className="font-medium text-gray-900">{job.title}</h3>
@@ -204,7 +204,7 @@ export function DashboardPage() {
                     {job.totalApplications} applications • {job.status}
                   </p>
                 </div>
-                <span className={`px-3 py-1 text-xs font-medium rounded-full ${job.status === 'open' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'
+                <span className={`px-3 py-1 text-xs font-medium rounded-full ${job.status === 'open' ? 'bg-forest-50 text-forest-800' : 'bg-gray-100 text-gray-600'
                   }`}>
                   {job.status}
                 </span>

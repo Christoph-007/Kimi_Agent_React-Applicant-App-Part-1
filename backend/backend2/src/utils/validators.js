@@ -77,11 +77,11 @@ const loginSchema = Joi.object({
         'any.required': 'Password is required',
     }),
     userType: Joi.string()
-        .valid('employer', 'applicant', 'admin')
-        .required()
+        .valid('employer', 'applicant', 'admin', '')
+        .allow(null, '')
+        .optional()
         .messages({
             'any.only': 'Invalid user type',
-            'any.required': 'User type is required',
         }),
 });
 

@@ -133,7 +133,7 @@ export function HomePage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: 'Applied Jobs', value: stats.applied, icon: Briefcase, color: 'bg-blue-50 text-blue-600' },
-          { label: 'Upcoming Shifts', value: stats.upcoming, icon: Calendar, color: 'bg-green-50 text-green-600' },
+          { label: 'Upcoming Shifts', value: stats.upcoming, icon: Calendar, color: 'bg-forest-50 text-forest-700' },
           { label: 'Completed Shifts', value: stats.completed, icon: CheckCircle, color: 'bg-purple-50 text-purple-600' },
           { label: 'Pending Requests', value: stats.pending, icon: Clock, color: 'bg-orange-50 text-orange-600' },
         ].map((stat, index) => (
@@ -170,7 +170,7 @@ export function HomePage() {
                   <div
                     key={notification._id}
                     className={`flex items-start gap-4 p-4 rounded-xl ${
-                      notification.isRead ? 'bg-gray-50' : 'bg-forest-50'
+                      notification.isRead ? 'bg-[#F5F5ED]' : 'bg-forest-50'
                     }`}
                   >
                     <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${

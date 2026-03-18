@@ -111,7 +111,7 @@ export function DashboardPage() {
             label: 'Total Employers', 
             value: stats?.employers?.total || 0, 
             icon: Building2, 
-            color: 'bg-green-50 text-green-600',
+            color: 'bg-forest-50 text-forest-700',
             href: '/admin/employers'
           },
           { 
@@ -172,7 +172,7 @@ export function DashboardPage() {
               {stats.recentJobs.slice(0, 5).map((job) => (
                 <div
                   key={job._id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
+                  className="flex items-center justify-between p-4 bg-[#F5F5ED] rounded-xl"
                 >
                   <div>
                     <h3 className="font-medium text-gray-900">{job.title}</h3>
@@ -182,7 +182,7 @@ export function DashboardPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className={`px-3 py-1 text-xs font-medium rounded-full ${
-                      job.status === 'open' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'
+                      job.status === 'open' ? 'bg-forest-50 text-forest-800' : 'bg-gray-100 text-gray-600'
                     }`}>
                       {job.status}
                     </span>
@@ -214,7 +214,7 @@ export function DashboardPage() {
               {stats.recentApplications.slice(0, 5).map((app) => (
                 <div
                   key={app._id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
+                  className="flex items-center justify-between p-4 bg-[#F5F5ED] rounded-xl"
                 >
                   <div>
                     <h3 className="font-medium text-gray-900">{app.applicant.name}</h3>
@@ -226,7 +226,7 @@ export function DashboardPage() {
                     <span className={`px-3 py-1 text-xs font-medium rounded-full capitalize ${
                       app.status === 'applied' ? 'bg-blue-50 text-blue-700' :
                       app.status === 'reviewing' ? 'bg-yellow-50 text-yellow-700' :
-                      app.status === 'accepted' ? 'bg-green-50 text-green-700' :
+                      app.status === 'accepted' ? 'bg-forest-50 text-forest-800' :
                       'bg-red-50 text-red-700'
                     }`}>
                       {app.status}

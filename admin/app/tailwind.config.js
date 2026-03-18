@@ -48,34 +48,49 @@ module.exports = {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Custom design tokens from inspiration images
+        // ── Design tokens extracted from reference screenshots ──────────────
+        // Deep forest green: navbar, dark sections, primary buttons
         forest: {
-          50: '#e8f5f0',
-          100: '#c5e8d9',
-          200: '#9dd6bf',
-          300: '#75c4a5',
-          400: '#56b691',
-          500: '#37a87d',
-          600: '#2e8f6b',
-          700: '#257559',
-          800: '#1c5c47',
-          900: '#0d2a1f',
+          50:  '#eaf3ed',
+          100: '#c7e2ce',
+          200: '#9ecbad',
+          300: '#75b48c',
+          400: '#55a373',
+          500: '#35925a',
+          600: '#2c7a4c',
+          700: '#22623d',
+          800: '#184a2e',
+          900: '#0D2B1A',  // ← exact dark bg from screenshots
+          950: '#081810',
         },
+        // Lime/yellow-green: CTA buttons, active tags, search icon, accents
         lime: {
-          DEFAULT: '#d4f542',
-          50: '#f7fee7',
-          100: '#ecfccb',
-          200: '#d9f99d',
-          300: '#d4f542',
-          400: '#a3e635',
-          500: '#84cc16',
-          600: '#65a30d',
-          700: '#4d7c0f',
-          800: '#3f6212',
-          900: '#365314',
+          DEFAULT: '#C8F435',
+          50:  '#f7ffe0',
+          100: '#eeffc0',
+          200: '#deff87',
+          300: '#C8F435',  // ← exact lime from screenshots
+          400: '#b0e020',
+          500: '#8fc410',
+          600: '#6ea008',
+          700: '#507c06',
+          800: '#3a5c08',
+          900: '#283f08',
+        },
+        // Warm cream: light section backgrounds
+        cream: {
+          DEFAULT: '#F5F5ED',
+          50: '#FAFAF5',
+          100: '#F5F5ED',  // ← exact cream bg from screenshots
+          200: '#EAEADF',
+          300: '#DEDED0',
+        },
+        // Hot pink/coral: floating decorative badge accent
+        pink: {
+          accent: '#E84B6C',
         },
         gray: {
-          50: '#f8f9fa',
+          50:  '#f8f9fa',
           100: '#f5f5f5',
           200: '#e5e5e5',
           300: '#d4d4d4',
@@ -88,22 +103,39 @@ module.exports = {
         },
       },
       borderRadius: {
-        xl: "calc(var(--radius) + 4px)",
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-        xs: "calc(var(--radius) - 6px)",
-        '2xl': '1rem',
-        '3xl': '1.5rem',
-        '4xl': '2rem',
+        xl:  "calc(var(--radius) + 4px)",
+        lg:  "var(--radius)",
+        md:  "calc(var(--radius) - 2px)",
+        sm:  "calc(var(--radius) - 4px)",
+        xs:  "calc(var(--radius) - 6px)",
+        '2xl': '1rem',     // cards
+        '3xl': '1.25rem',  // dark panels
+        '4xl': '1.5rem',   // hero image
+        full: '9999px',    // buttons, inputs, badges (pill)
       },
       boxShadow: {
-        xs: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-        'card': '0 4px 20px rgba(0, 0, 0, 0.08)',
-        'card-hover': '0 8px 30px rgba(0, 0, 0, 0.12)',
+        xs:           "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        card:         "0 2px 12px rgba(0,0,0,0.06)",
+        'card-hover': "0 8px 32px rgba(0,0,0,0.12)",
+        'btn':        "0 2px 8px rgba(13,43,26,0.15)",
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+      },
+      fontSize: {
+        'display': ['3rem', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '800' }],
+        'h1':      ['3rem', { lineHeight: '1.15', letterSpacing: '-0.02em', fontWeight: '800' }],
+        'h2':      ['2.25rem', { lineHeight: '1.2', letterSpacing: '-0.01em', fontWeight: '700' }],
+        'h3':      ['1.125rem', { lineHeight: '1.4', fontWeight: '600' }],
+      },
+      letterSpacing: {
+        tightest: '-0.02em',
+        tighter:  '-0.01em',
+      },
+      transitionDuration: {
+        '150': '150ms',
+        '200': '200ms',
+        '300': '300ms',
       },
       keyframes: {
         "accordion-down": {
@@ -118,11 +150,21 @@ module.exports = {
           "0%,70%,100%": { opacity: "1" },
           "20%,50%": { opacity: "0" },
         },
+        "fade-up": {
+          "0%": { opacity: "0", transform: "translateY(12px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "caret-blink": "caret-blink 1.25s ease-out infinite",
+        "accordion-down":  "accordion-down 0.2s ease-out",
+        "accordion-up":    "accordion-up 0.2s ease-out",
+        "caret-blink":     "caret-blink 1.25s ease-out infinite",
+        "fade-up":         "fade-up 0.3s ease-out",
+        "fade-in":         "fade-in 0.3s ease-out",
       },
     },
   },

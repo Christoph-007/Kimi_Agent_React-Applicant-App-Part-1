@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 
 export function ContactPage() {
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col">
+        <div className="min-h-screen bg-[#F5F5ED] flex flex-col">
             <nav className="fixed top-0 left-0 right-0 z-50 bg-forest-900/95 backdrop-blur-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
@@ -73,7 +73,7 @@ export function ContactPage() {
                                         <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
                                         <input
                                             type="text"
-                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-500"
+                                            className="w-full px-4 py-3 bg-[#F5F5ED] border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-500"
                                             placeholder="Your first name"
                                         />
                                     </div>
@@ -81,7 +81,7 @@ export function ContactPage() {
                                         <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
                                         <input
                                             type="text"
-                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-500"
+                                            className="w-full px-4 py-3 bg-[#F5F5ED] border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-500"
                                             placeholder="Your last name"
                                         />
                                     </div>
@@ -89,14 +89,14 @@ export function ContactPage() {
                                         <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
                                         <input
                                             type="email"
-                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-500"
+                                            className="w-full px-4 py-3 bg-[#F5F5ED] border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-500"
                                             placeholder="your.email@example.com"
                                         />
                                     </div>
                                     <div className="col-span-2">
                                         <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
                                         <textarea
-                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl h-32 focus:outline-none focus:ring-2 focus:ring-forest-500"
+                                            className="w-full px-4 py-3 bg-[#F5F5ED] border border-gray-200 rounded-xl h-32 focus:outline-none focus:ring-2 focus:ring-forest-500"
                                             placeholder="How can we help you?"
                                         ></textarea>
                                     </div>

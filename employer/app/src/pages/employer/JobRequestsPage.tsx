@@ -74,11 +74,11 @@ export function JobRequestsPage() {
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       sent: 'bg-blue-50 text-blue-700',
-      accepted: 'bg-green-50 text-green-700',
+      accepted: 'bg-forest-50 text-forest-800',
       declined: 'bg-red-50 text-red-700',
-      expired: 'bg-gray-50 text-gray-700',
+      expired: 'bg-[#F5F5ED] text-gray-700',
     };
-    return colors[status] || 'bg-gray-50 text-gray-700';
+    return colors[status] || 'bg-[#F5F5ED] text-gray-700';
   };
 
   const getStatusIcon = (status: string) => {
@@ -192,12 +192,12 @@ export function JobRequestsPage() {
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-forest-100 rounded-full flex items-center justify-center">
                           <span className="text-forest-700 font-bold">
-                            {request.applicant.name[0]}
+                            {(request.applicant?.name || 'U')[0]}
                           </span>
                         </div>
                         <div>
                           <h3 className="font-semibold text-gray-900">{request.jobTitle}</h3>
-                          <p className="text-sm text-gray-500">To: {request.applicant.name}</p>
+                          <p className="text-sm text-gray-500">To: {request.applicant?.name || 'Unknown'}</p>
                         </div>
                       </div>
                       <span className={`px-3 py-1 text-xs font-medium rounded-full capitalize flex items-center gap-1 ${getStatusColor(request.status)}`}>
@@ -221,7 +221,7 @@ export function JobRequestsPage() {
                       </span>
                     </div>
 
-                    <div className="p-3 bg-gray-50 rounded-xl text-sm text-gray-600 mb-4">
+                    <div className="p-3 bg-[#F5F5ED] rounded-xl text-sm text-gray-600 mb-4">
                       {request.jobDescription}
                     </div>
 
@@ -258,7 +258,7 @@ export function JobRequestsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                 disabled={pagination.currentPage === 1}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -268,7 +268,7 @@ export function JobRequestsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

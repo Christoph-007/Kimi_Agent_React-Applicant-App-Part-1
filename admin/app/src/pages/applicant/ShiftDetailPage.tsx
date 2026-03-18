@@ -96,12 +96,12 @@ export function ShiftDetailPage() {
     const getStatusColor = (status: string) => {
         const colors: Record<string, string> = {
             scheduled: 'bg-blue-50 text-blue-700',
-            confirmed: 'bg-green-50 text-green-700',
+            confirmed: 'bg-forest-50 text-forest-800',
             'in-progress': 'bg-yellow-50 text-yellow-700',
             completed: 'bg-purple-50 text-purple-700',
             cancelled: 'bg-red-50 text-red-700',
         };
-        return colors[status] || 'bg-gray-50 text-gray-700';
+        return colors[status] || 'bg-[#F5F5ED] text-gray-700';
     };
 
     const formatDate = (dateString: string) => {
@@ -177,7 +177,7 @@ export function ShiftDetailPage() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-green-50 text-green-600 rounded-xl flex items-center justify-center">
+                                <div className="w-10 h-10 bg-forest-50 text-forest-700 rounded-xl flex items-center justify-center">
                                     <Clock className="w-5 h-5" />
                                 </div>
                                 <div>
@@ -223,12 +223,12 @@ export function ShiftDetailPage() {
                     {attendance && (
                         <div className="bg-white rounded-2xl p-6 shadow-card">
                             <div className="flex items-center gap-2 mb-6">
-                                <CheckCircle className="w-5 h-5 text-green-600" />
+                                <CheckCircle className="w-5 h-5 text-forest-700" />
                                 <h2 className="text-lg font-semibold text-gray-900">Attendance Log</h2>
                             </div>
 
                             <div className="space-y-4">
-                                <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+                                <div className="flex justify-between items-center p-4 bg-[#F5F5ED] rounded-xl">
                                     <div>
                                         <p className="text-sm text-gray-500">Check In</p>
                                         <p className="font-medium text-gray-900">
@@ -236,11 +236,11 @@ export function ShiftDetailPage() {
                                         </p>
                                     </div>
                                     {attendance.checkInTime && (
-                                        <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-lg">Verified</span>
+                                        <span className="text-xs font-medium px-2 py-1 bg-forest-100 text-forest-800 rounded-lg">Verified</span>
                                     )}
                                 </div>
 
-                                <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+                                <div className="flex justify-between items-center p-4 bg-[#F5F5ED] rounded-xl">
                                     <div>
                                         <p className="text-sm text-gray-500">Check Out</p>
                                         <p className="font-medium text-gray-900">
@@ -248,7 +248,7 @@ export function ShiftDetailPage() {
                                         </p>
                                     </div>
                                     {attendance.checkOutTime && (
-                                        <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-lg">Verified</span>
+                                        <span className="text-xs font-medium px-2 py-1 bg-forest-100 text-forest-800 rounded-lg">Verified</span>
                                     )}
                                 </div>
 
@@ -313,7 +313,7 @@ export function ShiftDetailPage() {
 
                             <button
                                 onClick={handleAddToCalendar}
-                                className="w-full py-3 border-2 border-gray-100 text-gray-600 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+                                className="w-full py-3 border-2 border-gray-100 text-gray-600 rounded-full font-semibold hover:bg-[#F5F5ED] transition-colors"
                             >
                                 Add to Calendar
                             </button>

@@ -34,6 +34,16 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
     return <Navigate to="/unauthorized" replace />;
   }
 
+  // Check if applicant is deactivated
+  if (user?.type === 'applicant' && user.isActive === false) {
+    return <Navigate to="/unauthorized" state={{ message: 'Account deactivated. Please contact support.' }} replace />;
+  }
+
+  // Check if employer is blocked
+  if (user?.type === 'employer' && user.isBlocked === true) {
+    return <Navigate to="/unauthorized" state={{ message: 'Account blocked. Please contact support.' }} replace />;
+  }
+
   // Check employer approval status
   if (user?.type === 'employer' && !user.isApproved) {
     // Allow access only to dashboard and settings

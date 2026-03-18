@@ -212,6 +212,5 @@ attendanceSchema.methods.checkIfLate = function (expectedStartTime) {
 // Index for efficient queries
 attendanceSchema.index({ applicant: 1, createdAt: -1 });
 attendanceSchema.index({ employer: 1, createdAt: -1 });
-attendanceSchema.index({ shift: 1 });
 
 module.exports = mongoose.model('Attendance', attendanceSchema);

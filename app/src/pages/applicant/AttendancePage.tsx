@@ -111,23 +111,7 @@ export function AttendancePage() {
   }, [pagination.currentPage]);
 
   const getCurrentLocation = (): Promise<{ lat: number; lng: number }> => {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        reject(new Error('Geolocation is not supported'));
-        return;
-      }
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          resolve({ lat: position.coords.latitude, lng: position.coords.longitude });
-        },
-        (error) => {
-          console.warn('Geolocation error:', error);
-          // Allow check-in even without location
-          resolve({ lat: 0, lng: 0 });
-        },
-        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-      );
-    });
+    return Promise.resolve({ lat: 0, lng: 0 });
   };
 
   const handleCheckIn = async (shiftId: string) => {
@@ -187,12 +171,12 @@ export function AttendancePage() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      present: 'bg-green-50 text-green-700',
+      present: 'bg-forest-50 text-forest-800',
       late: 'bg-yellow-50 text-yellow-700',
       absent: 'bg-red-50 text-red-700',
       'half-day': 'bg-orange-50 text-orange-700',
     };
-    return colors[status] || 'bg-gray-50 text-gray-700';
+    return colors[status] || 'bg-[#F5F5ED] text-gray-700';
   };
 
   const formatDate = (dateString: string) => {
@@ -275,13 +259,13 @@ export function AttendancePage() {
                     <div className="flex items-start gap-4">
                       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
                         hasCheckedIn && !hasCheckedOut
-                          ? 'bg-green-100'
+                          ? 'bg-forest-100'
                           : hasCheckedOut
                           ? 'bg-purple-100'
                           : 'bg-forest-100'
                       }`}>
                         {hasCheckedIn && !hasCheckedOut ? (
-                          <LogOut className="w-6 h-6 text-green-600" />
+                          <LogOut className="w-6 h-6 text-forest-700" />
                         ) : hasCheckedOut ? (
                           <CheckCircle className="w-6 h-6 text-purple-600" />
                         ) : (
@@ -310,13 +294,13 @@ export function AttendancePage() {
                         {attendance && (
                           <div className="flex gap-3 mt-3 text-xs">
                             <span className={`flex items-center gap-1 px-2 py-1 rounded-lg font-medium ${
-                              hasCheckedIn ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-500'
+                              hasCheckedIn ? 'bg-forest-50 text-forest-800' : 'bg-[#F5F5ED] text-gray-500'
                             }`}>
                               <LogIn className="w-3 h-3" />
                               In: {hasCheckedIn ? formatTime(attendance.checkInTime) : 'Not yet'}
                             </span>
                             <span className={`flex items-center gap-1 px-2 py-1 rounded-lg font-medium ${
-                              hasCheckedOut ? 'bg-purple-50 text-purple-700' : 'bg-gray-50 text-gray-500'
+                              hasCheckedOut ? 'bg-purple-50 text-purple-700' : 'bg-[#F5F5ED] text-gray-500'
                             }`}>
                               <LogOut className="w-3 h-3" />
                               Out: {hasCheckedOut ? formatTime(attendance.checkOutTime) : 'Not yet'}
@@ -383,7 +367,7 @@ export function AttendancePage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {[
             { label: 'Total Records', value: pagination.totalItems, color: 'bg-blue-50 text-blue-600' },
-            { label: 'Present', value: attendanceRecords.filter(r => r.status === 'present').length, color: 'bg-green-50 text-green-600' },
+            { label: 'Present', value: attendanceRecords.filter(r => r.status === 'present').length, color: 'bg-forest-50 text-forest-700' },
             { label: 'Late', value: attendanceRecords.filter(r => r.status === 'late').length, color: 'bg-yellow-50 text-yellow-600' },
             { label: 'Absent', value: attendanceRecords.filter(r => r.status === 'absent').length, color: 'bg-red-50 text-red-600' },
           ].map((stat, index) => (
@@ -428,7 +412,7 @@ export function AttendancePage() {
                           {record.status}
                         </span>
                         {record.isApproved ? (
-                          <span className="px-3 py-1 text-xs font-medium rounded-full bg-green-50 text-green-700 flex items-center gap-1">
+                          <span className="px-3 py-1 text-xs font-medium rounded-full bg-forest-50 text-forest-800 flex items-center gap-1">
                             <CheckCircle className="w-3 h-3" />
                             Approved
                           </span>
@@ -441,14 +425,14 @@ export function AttendancePage() {
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="p-3 bg-gray-50 rounded-xl">
+                      <div className="p-3 bg-[#F5F5ED] rounded-xl">
                         <p className="text-xs text-gray-400 mb-0.5 flex items-center justify-between">
                           Check In
                           {record.checkInStatus === 'early' && (
                             <span className="text-[10px] font-bold px-1.5 bg-blue-100 text-blue-700 rounded uppercase ml-1">Early</span>
                           )}
                           {record.checkInStatus === 'on-time' && (
-                            <span className="text-[10px] font-bold px-1.5 bg-green-100 text-green-700 rounded uppercase ml-1">On Time</span>
+                            <span className="text-[10px] font-bold px-1.5 bg-forest-100 text-forest-800 rounded uppercase ml-1">On Time</span>
                           )}
                           {record.checkInStatus === 'late' && (
                             <span className="text-[10px] font-bold px-1.5 bg-red-100 text-red-700 rounded uppercase ml-1">Late</span>
@@ -458,19 +442,19 @@ export function AttendancePage() {
                           {record.checkInTime ? formatTime(record.checkInTime) : '—'}
                         </p>
                       </div>
-                      <div className="p-3 bg-gray-50 rounded-xl">
+                      <div className="p-3 bg-[#F5F5ED] rounded-xl">
                         <p className="text-xs text-gray-400 mb-0.5">Check Out</p>
                         <p className="font-semibold text-sm text-gray-900">
                           {record.checkOutTime ? formatTime(record.checkOutTime) : '—'}
                         </p>
                       </div>
-                      <div className="p-3 bg-gray-50 rounded-xl">
+                      <div className="p-3 bg-[#F5F5ED] rounded-xl">
                         <p className="text-xs text-gray-400 mb-0.5">Total Hours</p>
                         <p className="font-semibold text-sm text-gray-900">
                           {record.totalHours ? `${record.totalHours.toFixed(1)} hrs` : '—'}
                         </p>
                       </div>
-                      <div className="p-3 bg-gray-50 rounded-xl">
+                      <div className="p-3 bg-[#F5F5ED] rounded-xl">
                         <p className="text-xs text-gray-400 mb-0.5">Date</p>
                         <p className="font-semibold text-sm text-gray-900">
                           {new Date(record.shift.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
@@ -493,7 +477,7 @@ export function AttendancePage() {
                     )}
 
                     {record.remarks && (
-                      <div className="mt-2 p-3 bg-gray-50 rounded-xl text-sm text-gray-600">
+                      <div className="mt-2 p-3 bg-[#F5F5ED] rounded-xl text-sm text-gray-600">
                         <strong>Your Remarks:</strong> {record.remarks}
                       </div>
                     )}
@@ -514,7 +498,7 @@ export function AttendancePage() {
                 <button
                   onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                   disabled={pagination.currentPage === 1}
-                  className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -524,7 +508,7 @@ export function AttendancePage() {
                 <button
                   onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                   disabled={pagination.currentPage === pagination.totalPages}
-                  className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -552,12 +536,6 @@ export function AttendancePage() {
             </div>
 
             <div className="p-6 space-y-4">
-              <div className="p-4 bg-orange-50 border border-orange-100 rounded-xl flex items-center gap-3">
-                <LogOut className="w-5 h-5 text-orange-600 flex-shrink-0" />
-                <p className="text-sm text-orange-700 font-medium">
-                  Your location will be recorded when you clock out.
-                </p>
-              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -579,7 +557,7 @@ export function AttendancePage() {
                     setCheckOutShiftId(null);
                     setRemarks('');
                   }}
-                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-[#F5F5ED] transition-colors"
                 >
                   Cancel
                 </button>

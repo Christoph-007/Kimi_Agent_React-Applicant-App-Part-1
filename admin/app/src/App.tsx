@@ -4,6 +4,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { MainLayout, AuthLayout, EmployerLayout, AdminLayout } from '@/layouts';
+import { UnauthorizedPage } from './pages/error/UnauthorizedPage';
 
 // Pages
 import { LandingPage } from '@/pages/LandingPage';
@@ -123,21 +124,11 @@ function App() {
             </Route>
 
             {/* Unauthorized Page */}
-            <Route path="/unauthorized" element={
-              <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                  <h1 className="text-4xl font-bold text-gray-900 mb-4">Unauthorized</h1>
-                  <p className="text-gray-500 mb-6">You don't have permission to access this page.</p>
-                  <a href="/" className="text-forest-700 hover:text-forest-900 font-medium">
-                    Go back home
-                  </a>
-                </div>
-              </div>
-            } />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
             {/* 404 Page */}
             <Route path="*" element={
-              <div className="min-h-screen flex items-center justify-center bg-gray-50">
+              <div className="min-h-screen flex items-center justify-center bg-[#F5F5ED]">
                 <div className="text-center">
                   <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
                   <p className="text-gray-500 mb-6">Page not found.</p>

@@ -99,10 +99,10 @@ export function NotificationsPage() {
   const getNotificationColor = (type: string) => {
     const colors: Record<string, string> = {
       application: 'bg-blue-50 text-blue-600',
-      shift: 'bg-green-50 text-green-600',
+      shift: 'bg-forest-50 text-forest-700',
       job_request: 'bg-purple-50 text-purple-600',
       attendance: 'bg-orange-50 text-orange-600',
-      default: 'bg-gray-50 text-gray-600',
+      default: 'bg-[#F5F5ED] text-gray-600',
     };
     return colors[type] || colors.default;
   };
@@ -246,7 +246,7 @@ export function NotificationsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                 disabled={pagination.currentPage === 1}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -256,7 +256,7 @@ export function NotificationsPage() {
               <button
                 onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

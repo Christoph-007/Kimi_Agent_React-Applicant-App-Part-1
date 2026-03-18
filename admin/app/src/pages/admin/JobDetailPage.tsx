@@ -17,6 +17,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { adminApi } from '@/api/admin';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import type { Job } from '@/types';
 
 export function JobDetailPage() {
@@ -26,6 +27,7 @@ export function JobDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   useEffect(() => {
     if (id) fetchJob(id);
@@ -45,9 +47,13 @@ export function JobDetailPage() {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeleteAttempt = () => {
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
     if (!job) return;
-    if (!confirm('Are you sure you want to delete this job? This action cannot be undone.')) return;
+    setIsConfirmModalOpen(false);
 
     setIsDeleting(true);
     try {
@@ -55,7 +61,6 @@ export function JobDetailPage() {
       navigate('/admin/jobs');
     } catch (err) {
       console.error('Failed to delete job:', err);
-      alert('Failed to delete job. Please try again.');
     } finally {
       setIsDeleting(false);
     }
@@ -75,7 +80,7 @@ export function JobDetailPage() {
   };
 
   const statusConfig = {
-    open: { label: 'Open', bg: 'bg-green-50', text: 'text-green-700', icon: CheckCircle },
+    open: { label: 'Open', bg: 'bg-forest-50', text: 'text-forest-800', icon: CheckCircle },
     closed: { label: 'Closed', bg: 'bg-gray-100', text: 'text-gray-600', icon: AlertCircle },
     filled: { label: 'Filled', bg: 'bg-blue-50', text: 'text-blue-700', icon: CheckCircle },
   };
@@ -121,7 +126,7 @@ export function JobDetailPage() {
 
         <div className="flex gap-2">
           <button
-            onClick={handleDelete}
+            onClick={handleDeleteAttempt}
             disabled={isDeleting}
             className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl font-medium hover:bg-red-100 transition-colors disabled:opacity-50"
           >
@@ -172,8 +177,8 @@ export function JobDetailPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-green-600" />
+            <div className="w-10 h-10 bg-forest-50 rounded-xl flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-forest-700" />
             </div>
             <div>
               <p className="text-xs text-gray-400">Salary</p>
@@ -274,7 +279,7 @@ export function JobDetailPage() {
                 {job.benefits.map((benefit: string) => (
                   <span
                     key={benefit}
-                    className="px-3 py-1.5 bg-green-50 text-green-700 text-sm font-medium rounded-full"
+                    className="px-3 py-1.5 bg-forest-50 text-forest-800 text-sm font-medium rounded-full"
                   >
                     {benefit}
                   </span>
@@ -381,6 +386,15 @@ export function JobDetailPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={isConfirmModalOpen}
+        title="Delete Job Listing"
+        message={`Are you sure you want to delete "${job.title}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setIsConfirmModalOpen(false)}
+      />
     </div>
   );
 }

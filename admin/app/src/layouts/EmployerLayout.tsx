@@ -42,7 +42,7 @@ export function EmployerLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F5F5ED]">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50">
         <div className="h-full px-4 lg:px-6 flex items-center justify-between">
@@ -120,7 +120,7 @@ export function EmployerLayout() {
                   "flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors",
                   isActive(item.to)
                     ? 'bg-forest-50 text-forest-700'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    : 'text-gray-600 hover:bg-[#F5F5ED] hover:text-gray-900'
                 )}
               >
                 <item.icon className={cn(
@@ -146,7 +146,7 @@ export function EmployerLayout() {
                   "flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors",
                   isActive(item.to)
                     ? 'bg-forest-50 text-forest-700'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    : 'text-gray-600 hover:bg-[#F5F5ED] hover:text-gray-900'
                 )}
               >
                 <item.icon className={cn(

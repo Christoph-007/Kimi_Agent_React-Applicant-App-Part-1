@@ -2,7 +2,7 @@ const Application = require('../models/Application');
 const Job = require('../models/Job');
 const Applicant = require('../models/Applicant');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseUtils');
-const { notifyApplicationStatus } = require('../services/notificationService');
+const { notifyApplicationStatus, notifyEmployerOfNewApplication } = require('../services/notificationService');
 
 // @desc    Apply for a job
 // @route   POST /api/applications/:jobId
@@ -50,6 +50,7 @@ const applyForJob = async (req, res) => {
         // Update job stats
         await Job.findByIdAndUpdate(jobId, {
             $inc: { totalApplications: 1 },
+            $push: { applicants: req.user._id },
         });
 
         // Update applicant stats
@@ -59,8 +60,15 @@ const applyForJob = async (req, res) => {
 
         const populatedApplication = await Application.findById(application._id)
             .populate('job', 'title jobType salary location')
-            .populate('employer', 'storeName')
+            .populate('employer', 'storeName email phone')
             .populate('applicant', 'name phone email');
+
+        // Send notification to employer (graceful failure)
+        try {
+            await notifyEmployerOfNewApplication(populatedApplication.employer, populatedApplication.applicant, populatedApplication.job);
+        } catch (err) {
+            console.error('[Application] Employer notification failed:', err.message);
+        }
 
         return successResponse(
             res,

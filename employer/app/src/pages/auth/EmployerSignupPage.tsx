@@ -71,6 +71,8 @@ export function EmployerSignupPage() {
     if (!formData.ownerName.trim()) return 'Owner name is required';
     if (!formData.phone.trim()) return 'Phone number is required';
     if (formData.phone.length !== 10) return 'Phone number must be 10 digits';
+    if (!formData.email.trim()) return 'Email address is required';
+    if (!/^\S+@\S+\.\S+$/.test(formData.email)) return 'Please enter a valid email address';
     if (!formData.password) return 'Password is required';
     if (formData.password.length < 6) return 'Password must be at least 6 characters';
     if (formData.password !== formData.confirmPassword) return 'Passwords do not match';
@@ -216,14 +218,15 @@ export function EmployerSignupPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
+                Email Address <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleChange('email', e.target.value)}
-                placeholder="Enter your email (optional)"
+                placeholder="Enter your email"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent"
+                required
               />
             </div>
 
@@ -378,7 +381,7 @@ export function EmployerSignupPage() {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="flex-1 py-3.5 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                className="flex-1 py-3.5 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-[#F5F5ED] transition-colors flex items-center justify-center gap-2"
               >
                 <ChevronLeft className="w-5 h-5" />
                 Back

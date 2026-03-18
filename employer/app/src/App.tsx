@@ -5,10 +5,12 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/shared/ProtectedRoute';
 import { MainLayout, AuthLayout, EmployerLayout } from '@/layouts';
+import { UnauthorizedPage } from './pages/error/UnauthorizedPage';
 
 // Pages
 import { LandingPage } from '@/pages/LandingPage';
 import { LoginPage } from '@/pages/auth/LoginPage';
+import { SignupPage } from '@/pages/auth/SignupPage';
 import { ApplicantSignupPage } from '@/pages/auth/ApplicantSignupPage';
 import { EmployerSignupPage } from '@/pages/auth/EmployerSignupPage';
 import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage';
@@ -63,6 +65,7 @@ function App() {
             {/* Auth Routes */}
             <Route element={<AuthLayout />}>
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
               <Route path="/signup/applicant" element={<ApplicantSignupPage />} />
               <Route path="/signup/employer" element={<EmployerSignupPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -115,21 +118,11 @@ function App() {
             </Route>
 
             {/* Unauthorized Page */}
-            <Route path="/unauthorized" element={
-              <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                  <h1 className="text-4xl font-bold text-gray-900 mb-4">Unauthorized</h1>
-                  <p className="text-gray-500 mb-6">You don't have permission to access this page.</p>
-                  <a href="/" className="text-forest-700 hover:text-forest-900 font-medium">
-                    Go back home
-                  </a>
-                </div>
-              </div>
-            } />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
             {/* 404 Page */}
             <Route path="*" element={
-              <div className="min-h-screen flex items-center justify-center bg-gray-50">
+              <div className="min-h-screen flex items-center justify-center bg-[#F5F5ED]">
                 <div className="text-center">
                   <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
                   <p className="text-gray-500 mb-6">Page not found.</p>

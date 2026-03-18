@@ -270,7 +270,7 @@ export function JobsPage() {
                     {job.employer.storeName[0]}
                   </span>
                 </div>
-                <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full">
+                <span className="px-3 py-1 bg-forest-50 text-forest-800 text-xs font-medium rounded-full">
                   {job.status}
                 </span>
               </div>
@@ -311,7 +311,7 @@ export function JobsPage() {
           <button
             onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
             disabled={pagination.currentPage === 1}
-            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -323,7 +323,7 @@ export function JobsPage() {
               className={`w-10 h-10 rounded-lg font-medium ${
                 pagination.currentPage === page
                   ? 'bg-forest-900 text-white'
-                  : 'border border-gray-200 hover:bg-gray-50'
+                  : 'border border-gray-200 hover:bg-[#F5F5ED]'
               }`}
             >
               {page}
@@ -333,7 +333,7 @@ export function JobsPage() {
           <button
             onClick={() => setPagination((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
             disabled={pagination.currentPage === pagination.totalPages}
-            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            className="p-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F5F5ED]"
           >
             <ChevronRight className="w-5 h-5" />
           </button>

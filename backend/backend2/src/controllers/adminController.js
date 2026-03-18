@@ -5,7 +5,14 @@ const Job = require('../models/Job');
 const Application = require('../models/Application');
 const Shift = require('../models/Shift');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseUtils');
-const { notifyEmployerApproval } = require('../services/notificationService');
+const {
+    notifyEmployerApproval,
+    notifyApplicantActivation,
+    notifyEmployerBlocked,
+    notifyEmployerUnblocked,
+    notifyApplicantDeactivated,
+    notifyEmployerJobDeleted,
+} = require('../services/notificationService');
 
 // @desc    Get analytics chart data (monthly trends)
 // @route   GET /api/admin/analytics/charts
@@ -364,6 +371,13 @@ const blockEmployer = async (req, res) => {
         employer.isBlocked = true;
         await employer.save();
 
+        // Notify employer of suspension
+        try {
+            await notifyEmployerBlocked(employer);
+        } catch (err) {
+            console.error('[Admin] Employer block notification failed:', err.message);
+        }
+
         return successResponse(res, 200, 'Employer blocked successfully', employer);
     } catch (error) {
         console.error('Block employer error:', error);
@@ -388,6 +402,13 @@ const unblockEmployer = async (req, res) => {
 
         employer.isBlocked = false;
         await employer.save();
+
+        // Notify employer of restoration
+        try {
+            await notifyEmployerUnblocked(employer);
+        } catch (err) {
+            console.error('[Admin] Employer unblock notification failed:', err.message);
+        }
 
         return successResponse(res, 200, 'Employer unblocked successfully', employer);
     } catch (error) {
@@ -478,6 +499,13 @@ const deactivateApplicant = async (req, res) => {
         applicant.isActive = false;
         await applicant.save();
 
+        // Notify applicant of deactivation
+        try {
+            await notifyApplicantDeactivated(applicant);
+        } catch (err) {
+            console.error('[Admin] Applicant deactivation notification failed:', err.message);
+        }
+
         return successResponse(res, 200, 'Applicant deactivated successfully', applicant);
     } catch (error) {
         console.error('Deactivate applicant error:', error);
@@ -490,18 +518,29 @@ const deactivateApplicant = async (req, res) => {
 // @access  Private (Admin)
 const activateApplicant = async (req, res) => {
     try {
+        console.log(`[Admin] Activating applicant with ID: ${req.params.id}`);
         const applicant = await Applicant.findById(req.params.id);
 
         if (!applicant) {
+            console.log(`[Admin] Applicant not found with ID: ${req.params.id}`);
             return errorResponse(res, 404, 'Applicant not found');
         }
 
         if (applicant.isActive) {
+            console.log(`[Admin] Applicant ${req.params.id} is already active`);
             return errorResponse(res, 400, 'Applicant is already active');
         }
 
         applicant.isActive = true;
         await applicant.save();
+        console.log(`[Admin] Applicant ${req.params.id} activated successfully. New state:`, applicant.isActive);
+
+        // Notify applicant of account activation
+        try {
+            await notifyApplicantActivation(applicant);
+        } catch (err) {
+            console.error('[Admin] Applicant activation notification failed:', err.message);
+        }
 
         return successResponse(res, 200, 'Applicant activated successfully', applicant);
     } catch (error) {
@@ -528,6 +567,16 @@ const deleteJob = async (req, res) => {
             await Employer.findByIdAndUpdate(job.employer, {
                 $inc: { activeJobs: -1 },
             });
+        }
+
+        // Notify employer of job deletion
+        try {
+            const tempEmployer = await Employer.findById(job.employer);
+            if (tempEmployer) {
+                await notifyEmployerJobDeleted(tempEmployer, job);
+            }
+        } catch (err) {
+            console.error('[Admin] Employer job deletion notification failed:', err.message);
         }
 
         return successResponse(res, 200, 'Job deleted successfully');

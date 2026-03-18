@@ -314,7 +314,7 @@ export function CreateShiftPage() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="flex-1 py-3.5 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+            className="flex-1 py-3.5 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-[#F5F5ED] transition-colors"
           >
             Cancel
           </button>
