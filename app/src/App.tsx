@@ -1,5 +1,5 @@
 import { Toaster } from '@/components/ui/sonner';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -110,10 +110,24 @@ function App() {
               </Route>
             </Route>
 
-            {/* Admin Routes - Placeholder for Part 3 */}
-            <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-              <Route path="/admin/*" element={<Navigate to="/login" />} />
-            </Route>
+            {/* Admin Routes - redirect to dedicated admin portal */}
+            <Route
+              path="/admin/*"
+              element={
+                <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Admin Portal</h1>
+                    <p className="text-gray-500 mb-6">Please use the dedicated admin app to access the admin dashboard.</p>
+                    <a
+                      href="http://localhost:5175"
+                      className="px-6 py-3 bg-green-900 text-white rounded-full font-semibold hover:bg-green-800 transition-colors"
+                    >
+                      Open Admin App →
+                    </a>
+                  </div>
+                </div>
+              }
+            />
 
             {/* Unauthorized Page */}
             <Route path="/unauthorized" element={

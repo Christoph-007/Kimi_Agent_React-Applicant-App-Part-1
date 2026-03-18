@@ -45,6 +45,9 @@ export const attendanceApi = {
   approve: (id: string, employerRemarks?: string) =>
     apiClient.put(`/attendance/${id}/approve`, { employerRemarks }),
 
+  decline: (id: string, declineReason?: string) =>
+    apiClient.put(`/attendance/${id}/decline`, { declineReason }),
+
   markManual: (data: {
     shiftId: string;
     checkInTime: string;

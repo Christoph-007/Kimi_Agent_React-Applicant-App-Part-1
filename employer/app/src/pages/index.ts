@@ -32,3 +32,5 @@ export { CreateShiftPage } from './employer/CreateShiftPage';
 export { AttendancePage as EmployerAttendancePage } from './employer/AttendancePage';
 export { JobRequestsPage } from './employer/JobRequestsPage';
 export { SettingsPage } from './employer/SettingsPage';
+export { AllApplicationsPage } from './employer/AllApplicationsPage';
+export { EmployeesPage } from './employer/EmployeesPage';

@@ -231,10 +231,27 @@ export function ShiftDetailPage() {
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
                                     <div>
-                                        <p className="text-sm text-gray-500">Check In</p>
+                                        <div className="flex items-center gap-2 mb-0.5">
+                                            <p className="text-sm text-gray-500">Check In</p>
+                                            {attendance.checkInStatus === 'early' && (
+                                                <span className="text-[10px] font-bold px-1.5 bg-blue-100 text-blue-700 rounded uppercase">Early</span>
+                                            )}
+                                            {attendance.checkInStatus === 'on-time' && (
+                                                <span className="text-[10px] font-bold px-1.5 bg-green-100 text-green-700 rounded uppercase">On Time</span>
+                                            )}
+                                            {attendance.checkInStatus === 'late' && (
+                                                <span className="text-[10px] font-bold px-1.5 bg-red-100 text-red-700 rounded uppercase">Late</span>
+                                            )}
+                                        </div>
                                         <p className="font-medium text-gray-900">
                                             {attendance.checkInTime ? new Date(attendance.checkInTime).toLocaleTimeString() : 'Not Yet'}
                                         </p>
+                                        {attendance.checkInStatus === 'late' && attendance.lateBy && (
+                                            <p className="text-[10px] text-red-600 font-medium">Lateness: {attendance.lateBy} mins</p>
+                                        )}
+                                        {attendance.checkInStatus === 'early' && attendance.earlyByMinutes && (
+                                            <p className="text-[10px] text-blue-600 font-medium">Arrived early: {attendance.earlyByMinutes} mins</p>
+                                        )}
                                     </div>
                                     {attendance.checkInTime && (
                                         <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-lg">Verified</span>

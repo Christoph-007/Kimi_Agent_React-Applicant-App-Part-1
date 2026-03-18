@@ -38,6 +38,8 @@ import { CreateShiftPage } from '@/pages/employer/CreateShiftPage';
 import { AttendancePage as EmployerAttendancePage } from '@/pages/employer/AttendancePage';
 import { JobRequestsPage } from '@/pages/employer/JobRequestsPage';
 import { SettingsPage } from '@/pages/employer/SettingsPage';
+import { AllApplicationsPage } from '@/pages/employer/AllApplicationsPage';
+import { EmployeesPage } from '@/pages/employer/EmployeesPage';
 
 // Create Query Client
 const queryClient = new QueryClient({
@@ -88,8 +90,11 @@ function App() {
                 <Route path="/employer/dashboard" element={<DashboardPage />} />
                 <Route path="/employer/jobs" element={<EmployerJobsPage />} />
                 <Route path="/employer/jobs/new" element={<JobFormPage />} />
+                <Route path="/employer/jobs/:id" element={<JobApplicationsPage />} />
                 <Route path="/employer/jobs/:id/edit" element={<JobFormPage />} />
                 <Route path="/employer/jobs/:id/applications" element={<JobApplicationsPage />} />
+                <Route path="/employer/applications" element={<AllApplicationsPage />} />
+                <Route path="/employer/employees" element={<EmployeesPage />} />
                 <Route path="/employer/applicants" element={<BrowseApplicantsPage />} />
                 <Route path="/employer/applicants/:id" element={<ApplicantProfilePage />} />
                 <Route path="/employer/applicants/:id/request" element={<SendJobRequestPage />} />
@@ -100,6 +105,7 @@ function App() {
                 <Route path="/employer/attendance" element={<EmployerAttendancePage />} />
                 <Route path="/employer/requests" element={<JobRequestsPage />} />
                 <Route path="/employer/settings" element={<SettingsPage />} />
+                <Route path="/employer/notifications" element={<NotificationsPage />} />
               </Route>
             </Route>
 

@@ -2,24 +2,14 @@ import { NavLink } from 'react-router-dom';
 import {
   Search,
   ArrowRight,
-  CheckCircle,
-  Briefcase,
-  Clock,
-  ChevronDown,
-  ChevronUp,
-  MapPin,
-  DollarSign,
-  Calendar
+  CheckCircle
 } from 'lucide-react';
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
+import { useState, useEffect } from 'react';
+import { jobsApi } from '@/api/jobs';
 
 // Hero Section
 function HeroSection() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All Categories');
-
-  const categories = ['All Categories', 'Food Service', 'Retail', 'Logistics', 'Healthcare', 'Hospitality'];
 
   return (
     <section className="relative bg-forest-900 min-h-[600px] flex items-center">
@@ -69,17 +59,33 @@ function HeroSection() {
 
 // Stats Section
 function StatsSection() {
-  const stats = [
-    { value: '45k+', label: 'Active Job Seekers', description: 'Find your next opportunity' },
-    { value: '15min+', label: 'Quick Application', description: 'Apply in minutes, not hours' },
-    { value: '2000+', label: 'Partner Employers', description: 'Top companies hiring now' },
+  const [stats, setStats] = useState({ totalSeekers: '0', avgResponse: '15min+', totalCompanies: '0' });
+
+  useEffect(() => {
+    jobsApi.getLandingStats()
+      .then(res => {
+        if (res?.success) {
+          setStats({
+            totalSeekers: res.data.totalSeekers || '0',
+            avgResponse: res.data.avgResponse || '15min+',
+            totalCompanies: res.data.totalCompanies || '0'
+          });
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  const statsList = [
+    { value: stats.totalSeekers, label: 'Active Job Seekers', description: 'Find your next opportunity' },
+    { value: stats.avgResponse, label: 'Quick Application', description: 'Apply in minutes, not hours' },
+    { value: stats.totalCompanies, label: 'Partner Employers', description: 'Top companies hiring now' },
   ];
 
   return (
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-3 gap-8">
-          {stats.map((stat, index) => (
+          {statsList.map((stat, index) => (
             <div key={index} className="text-center">
               <div className="text-4xl sm:text-5xl font-bold text-forest-900 mb-2">{stat.value}</div>
               <div className="text-lg font-semibold text-gray-900 mb-1">{stat.label}</div>
@@ -147,325 +153,7 @@ function HowItWorksSection() {
   );
 }
 
-// Featured Jobs Section
-function FeaturedJobsSection() {
-  const jobs = [
-    {
-      title: 'Sr. User Interface Designer',
-      company: 'Apple Inc.',
-      location: 'London, UK',
-      type: 'Full Time',
-      category: 'Web Development',
-      salary: '$45k-$55k',
-      posted: '05 Hours Ago',
-      logo: '🍎',
-    },
-    {
-      title: 'PHP Developer',
-      company: 'Fiverr',
-      location: 'London, UK',
-      type: 'Full Time',
-      category: 'Graphics',
-      salary: '$45k-$55k',
-      posted: '05 Hours Ago',
-      logo: 'F',
-      featured: true,
-    },
-    {
-      title: 'Sr. Software Engineer',
-      company: 'Behance',
-      location: 'London, UK',
-      type: 'Full Time',
-      category: 'Themeforest',
-      salary: '$45k-$55k',
-      posted: '05 Hours Ago',
-      logo: 'Be',
-    },
-    {
-      title: 'UX Researcher',
-      company: 'Apple Inc.',
-      location: 'London, UK',
-      type: 'Full Time',
-      category: 'Web Development',
-      salary: '$45k-$55k',
-      posted: '05 Hours Ago',
-      logo: '🍎',
-    },
-    {
-      title: 'Project Manager',
-      company: 'Apple Inc.',
-      location: 'London, UK',
-      type: 'Full Time',
-      category: 'Web Development',
-      salary: '$45k-$55k',
-      posted: '05 Hours Ago',
-      logo: '🍎',
-    },
-    {
-      title: 'Products Designer',
-      company: 'Behance',
-      location: 'London, UK',
-      type: 'Full Time',
-      category: 'Themeforest',
-      salary: '$45k-$55k',
-      posted: '05 Hours Ago',
-      logo: 'Be',
-    },
-  ];
 
-  const categories = ['Designer', 'Web Developer', 'Software Engineer', 'Doctors', 'Marketing'];
-
-  return (
-    <section className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row gap-12">
-          {/* Left Column - Jobs */}
-          <div className="flex-1">
-            <h2 className="text-3xl sm:text-4xl font-bold text-forest-900 mb-8">
-              Featured Job Circulars
-            </h2>
-
-            {/* Search & Filter */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search Your Needs"
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-full outline-none focus:ring-2 focus:ring-forest-500"
-                />
-              </div>
-
-              <button className="bg-lime text-forest-900 p-3 rounded-full hover:bg-lime-400 transition-colors">
-                <Search className="w-5 h-5" />
-              </button>
-            </div>
-
-
-
-            {/* Jobs Grid */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {jobs.map((job, index) => (
-                <div
-                  key={index}
-                  className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-card-hover transition-shadow"
-                >
-                  <h3 className="font-semibold text-gray-900 mb-2">{job.title}</h3>
-                  <div className="flex items-center text-gray-500 text-sm mb-4">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    {job.location}
-                  </div>
-
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center text-sm font-bold">
-                      {job.logo}
-                    </div>
-                    <span className="font-medium text-gray-900">{job.company}</span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2 text-sm text-gray-500 mb-6">
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      {job.posted}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Briefcase className="w-4 h-4" />
-                      {job.type}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      {job.category}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="w-4 h-4" />
-                      {job.salary}
-                    </div>
-                  </div>
-
-                  <button
-                    className={cn(
-                      "w-full py-2.5 rounded-full font-medium transition-colors",
-                      job.featured
-                        ? 'bg-lime text-forest-900 hover:bg-lime-400'
-                        : 'bg-forest-900 text-white hover:bg-forest-800'
-                    )}
-                  >
-                    Apply Now
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            {/* Load More */}
-            <button className="w-full mt-8 py-4 bg-lime text-forest-900 rounded-full font-semibold hover:bg-lime-400 transition-colors">
-              Load More
-            </button>
-          </div>
-
-          {/* Right Column - Sidebar */}
-          <div className="lg:w-80 space-y-6">
-            {/* CTA Card */}
-            <div className="bg-forest-900 rounded-2xl p-6 text-white">
-              <h3 className="text-xl font-bold mb-4">
-                Your Next Great Hire is Just a Click Away!
-              </h3>
-              <p className="text-gray-300 text-sm mb-6">
-                Post your job today and quickly connect with top talent. Our user-friendly platform streamlines hiring, making it easy to find skilled professionals ready to join.
-              </p>
-              <button className="w-full py-3 bg-lime text-forest-900 rounded-full font-semibold hover:bg-lime-400 transition-colors">
-                Post Job On ShiftMaster
-              </button>
-            </div>
-
-            {/* Featured Companies */}
-            <div className="bg-white border border-gray-100 rounded-2xl p-6">
-              <h3 className="font-semibold text-gray-900 mb-6">Featured Company</h3>
-              <div className="space-y-4">
-                {[
-                  { name: 'Behance', location: 'London, UK', color: 'bg-blue-500' },
-                  { name: 'Microsoft', location: 'USA', color: 'bg-green-500' },
-                  { name: 'Fiverr', location: 'London, UK', color: 'bg-green-400' },
-                  { name: 'Behance', location: 'London, UK', color: 'bg-pink-500' },
-                  { name: 'Intel', location: 'London, UK', color: 'bg-blue-600' },
-                ].map((company, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold", company.color)}>
-                      {company.name[0]}
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">{company.name}</div>
-                      <div className="text-sm text-gray-500 flex items-center">
-                        <MapPin className="w-3 h-3 mr-1" />
-                        {company.location}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// Testimonials Section
-function TestimonialsSection() {
-  const testimonials = [
-    {
-      text: "The career page we've built in ShiftMaster gives candidates a great first impression of the company.",
-      author: 'Aminul Islam',
-      role: 'Co-Founder, GC Innovation Hub',
-    },
-    {
-      text: "It's really easy to use. It makes us look professional and I love the way you can customize your job posts and make them your own. Simple to use and straightforward.",
-      author: 'Saiful Talukdar',
-      role: 'Co-Founder, GC Innovation Hub',
-    },
-  ];
-
-  return (
-    <section className="py-20 bg-lime-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-forest-900 mb-4">
-            Why teams love ShiftMaster's Hiring Software
-          </h2>
-          <p className="text-gray-500 max-w-2xl mx-auto">
-            ShiftMaster's Customers share a passion for nurturing company culture. We all agree hiring can be more meaningful and personal.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {testimonials.map((testimonial, index) => (
-            <div key={index} className="bg-white rounded-2xl p-8 shadow-card">
-              <p className="text-gray-600 mb-6 leading-relaxed">{testimonial.text}</p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-forest-100 rounded-full flex items-center justify-center">
-                  <span className="text-forest-700 font-bold">{testimonial.author[0]}</span>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900">{testimonial.author}</div>
-                  <div className="text-sm text-gray-500">{testimonial.role}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// FAQ Section
-function FAQSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(1);
-
-  const faqs = [
-    {
-      question: 'Where can I view store locations and hours?',
-      answer: 'You can view all store locations and their operating hours on our platform. Each job listing includes detailed location information and shift timings.',
-    },
-    {
-      question: 'Where is my order?',
-      answer: "Depending on the delivery option you selected at checkout, we'll email you a tracking link after your order has been shipped. Follow this link to check the status of your order. We can also send you notifications about any important updates regarding your order – just make sure you've opted into notifications.",
-    },
-    {
-      question: 'How do I apply for a job?',
-      answer: 'Simply create an account, complete your profile, and browse available jobs. Click "Apply Now" on any job listing to submit your application.',
-    },
-    {
-      question: 'What documents do I need?',
-      answer: 'Most employers require a valid ID, proof of address, and relevant certifications for the role. Check the job description for specific requirements.',
-    },
-    {
-      question: 'How do I get paid?',
-      answer: 'Payments are processed directly through our platform. Once you complete a shift and your attendance is approved, payment will be transferred to your registered account.',
-    },
-  ];
-
-  return (
-    <section className="py-20 bg-white">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-forest-900 mb-4">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-gray-500">
-            Onboard your own talent pool to ShiftMaster, invite them to projects, sign contracts and kick off the projects simpler than ever.
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          {faqs.map((faq, index) => (
-            <div
-              key={index}
-              className="border border-gray-200 rounded-xl overflow-hidden"
-            >
-              <button
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors"
-              >
-                <span className="font-medium text-gray-900">{faq.question}</span>
-                {openIndex === index ? (
-                  <ChevronUp className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                )}
-              </button>
-              {openIndex === index && (
-                <div className="px-5 pb-5">
-                  <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 // CTA Section
 function CTASection() {
@@ -621,9 +309,6 @@ export function LandingPage() {
         <HeroSection />
         <StatsSection />
         <HowItWorksSection />
-        <FeaturedJobsSection />
-        <TestimonialsSection />
-        <FAQSection />
         <CTASection />
         <Footer />
       </div>

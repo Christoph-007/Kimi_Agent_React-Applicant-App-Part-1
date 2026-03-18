@@ -41,6 +41,8 @@ export function JobsPage() {
     minSalary: '',
     maxSalary: '',
     category: searchParams.get('category') || '',
+    skills: searchParams.get('skills') || '',
+    locationSearch: searchParams.get('locationSearch') || '',
   });
 
   // Sync URL params to filters
@@ -49,13 +51,17 @@ export function JobsPage() {
     const jobType = searchParams.get('jobType') || '';
     const city = searchParams.get('city') || '';
     const category = searchParams.get('category') || '';
+    const skills = searchParams.get('skills') || '';
+    const locationSearch = searchParams.get('locationSearch') || '';
 
     setFilters(prev => ({
       ...prev,
       search,
       jobType,
       city,
-      category
+      category,
+      skills,
+      locationSearch
     }));
   }, [searchParams]);
 
@@ -77,6 +83,8 @@ export function JobsPage() {
       if (filters.minSalary) params.minSalary = parseInt(filters.minSalary);
       if (filters.maxSalary) params.maxSalary = parseInt(filters.maxSalary);
       if (filters.category) params.category = filters.category;
+      if (filters.skills) params.skills = filters.skills;
+      if (filters.locationSearch) params.locationSearch = filters.locationSearch;
 
       const response = await jobsApi.getAll(params);
       setJobs(response.data || []);
@@ -150,6 +158,8 @@ export function JobsPage() {
       minSalary: '',
       maxSalary: '',
       category: '',
+      skills: '',
+      locationSearch: '',
     });
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
@@ -215,6 +225,16 @@ export function JobsPage() {
             </select>
             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
           </div>
+          <div className="flex-1 relative bg-gray-50 rounded-2xl flex items-center px-4">
+            <Briefcase className="w-5 h-5 text-gray-400 mr-2" />
+            <input
+              type="text"
+              placeholder="Filter by skills (e.g. cooking, driving)..."
+              value={filters.skills}
+              onChange={(e) => handleFilterChange('skills', e.target.value)}
+              className="w-full py-3 bg-transparent outline-none text-gray-700 font-medium"
+            />
+          </div>
         </div>
       </div>
 
@@ -267,9 +287,9 @@ export function JobsPage() {
         <div className="flex-1 flex items-center gap-4">
           <input
             type="text"
-            placeholder="Filter by city..."
-            value={filters.city}
-            onChange={(e) => handleFilterChange('city', e.target.value)}
+            placeholder="City or location..."
+            value={filters.locationSearch || filters.city}
+            onChange={(e) => handleFilterChange('locationSearch', e.target.value)}
             className="w-48 px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500"
           />
           <input

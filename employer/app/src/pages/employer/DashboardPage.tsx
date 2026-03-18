@@ -9,7 +9,8 @@ import {
   Loader2,
   TrendingUp,
   Clock,
-  AlertCircle
+  AlertCircle,
+  UserCheck
 } from 'lucide-react';
 import { employerApi } from '@/api/employer';
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,6 +26,7 @@ export function DashboardPage() {
     pendingApplications: 0,
     upcomingShifts: 0,
     totalShortlisted: 0,
+    totalEmployees: 0,
   });
   const [recentJobs, setRecentJobs] = useState<Job[]>([]);
   const [upcomingShifts, setUpcomingShifts] = useState<Shift[]>([]);
@@ -43,7 +45,15 @@ export function DashboardPage() {
       // Fetch dashboard stats
       const statsResponse = await employerApi.getDashboardStats();
       if (statsResponse.data) {
-        setStats(statsResponse.data);
+        setStats({
+          totalJobs: statsResponse.data.totalJobs || 0,
+          activeJobs: statsResponse.data.activeJobs || 0,
+          totalApplications: statsResponse.data.totalApplications || 0,
+          pendingApplications: statsResponse.data.pendingApplications || 0,
+          upcomingShifts: statsResponse.data.upcomingShifts || 0,
+          totalShortlisted: statsResponse.data.totalShortlisted || 0,
+          totalEmployees: statsResponse.data.totalEmployees || 0,
+        });
       }
 
       // Fetch recent jobs
@@ -131,14 +141,14 @@ export function DashboardPage() {
             value: stats.totalApplications,
             icon: Users,
             color: 'bg-purple-50 text-purple-600',
-            link: '/employer/jobs'
+            link: '/employer/applications'
           },
           {
             label: 'Pending Review',
             value: stats.pendingApplications,
             icon: Clock,
             color: 'bg-orange-50 text-orange-600',
-            link: '/employer/jobs'
+            link: '/employer/applications'
           },
           {
             label: 'Upcoming Shifts',
@@ -146,6 +156,13 @@ export function DashboardPage() {
             icon: Calendar,
             color: 'bg-lime-100 text-forest-700',
             link: '/employer/shifts'
+          },
+          {
+            label: 'Employees',
+            value: stats.totalEmployees,
+            icon: UserCheck,
+            color: 'bg-emerald-50 text-emerald-600',
+            link: '/employer/employees'
           },
           {
             label: 'Shortlisted',

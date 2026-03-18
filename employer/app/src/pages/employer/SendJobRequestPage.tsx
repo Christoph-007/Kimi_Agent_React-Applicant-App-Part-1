@@ -11,13 +11,16 @@ import {
 } from 'lucide-react';
 import { employerApi } from '@/api/employer';
 import { jobRequestsApi } from '@/api/jobRequests';
-import type { Applicant } from '@/types';
+import { jobsApi } from '@/api/jobs';
+import type { Applicant, Job } from '@/types';
 
 export function SendJobRequestPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   
   const [applicant, setApplicant] = useState<Applicant | null>(null);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [selectedJobId, setSelectedJobId] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState('');
@@ -36,19 +39,51 @@ export function SendJobRequestPage() {
 
   useEffect(() => {
     if (id) {
-      fetchApplicant();
+      fetchData();
     }
   }, [id]);
 
-  const fetchApplicant = async () => {
+  const fetchData = async () => {
     try {
       setIsLoading(true);
-      const response = await employerApi.getApplicantById(id!);
-      setApplicant(response.data);
+      const [applicantRes, jobsRes] = await Promise.all([
+        employerApi.getApplicantById(id!),
+        jobsApi.getEmployerJobs()
+      ]);
+      setApplicant(applicantRes.data);
+      setJobs(jobsRes.data || []);
     } catch (error) {
-      console.error('Failed to fetch applicant:', error);
+      console.error('Failed to fetch data:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleJobSelect = (jobId: string) => {
+    setSelectedJobId(jobId);
+    if (jobId === 'custom') {
+      setFormData({
+        jobTitle: '',
+        jobDescription: '',
+        shiftType: 'full-time',
+        location: '',
+        offeredHourlyRate: '',
+        message: formData.message,
+      });
+      return;
+    }
+    
+    const job = jobs.find(j => j._id === jobId);
+    if (job) {
+      setFormData({
+        jobTitle: job.title,
+        jobDescription: job.description,
+        shiftType: job.jobType === 'full-time' ? 'full-time' : 
+                   job.jobType === 'part-time' ? 'part-time' : 'flexible',
+        location: `${job.location.city}, ${job.location.state}`,
+        offeredHourlyRate: job.salary.amount.toString(),
+        message: formData.message,
+      });
     }
   };
 
@@ -85,6 +120,7 @@ export function SendJobRequestPage() {
         location: formData.location,
         offeredHourlyRate: parseInt(formData.offeredHourlyRate),
         message: formData.message.trim() || undefined,
+        jobId: selectedJobId !== 'custom' ? selectedJobId : undefined,
       });
       
       setSuccess('Job request sent successfully!');
@@ -174,6 +210,28 @@ export function SendJobRequestPage() {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 shadow-card space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Select Representative Job <span className="text-gray-400 font-normal">(Optional)</span>
+          </label>
+          <select
+            value={selectedJobId}
+            onChange={(e) => handleJobSelect(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent"
+          >
+            <option value="">-- Choose a job to auto-fill --</option>
+            <option value="custom">Custom Job Entry</option>
+            {jobs.map((job) => (
+              <option key={job._id} value={job._id}>
+                {job.title}
+              </option>
+            ))}
+          </select>
+          <p className="mt-1 text-xs text-gray-400">Selecting a job will automatically fill the details below.</p>
+        </div>
+
+        <div className="h-px bg-gray-100 my-2" />
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Job Title <span className="text-red-500">*</span>

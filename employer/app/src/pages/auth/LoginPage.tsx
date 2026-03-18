@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Building2, User, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Building2, User, Eye, EyeOff, Loader2, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import type { UserType } from '@/types';
 
 export function LoginPage() {
-  const [selectedType, setSelectedType] = useState<Exclude<UserType, 'admin'>>('applicant');
+  const [selectedType, setSelectedType] = useState<UserType>('applicant');
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -40,24 +40,35 @@ export function LoginPage() {
         <button
           type="button"
           onClick={() => setSelectedType('applicant')}
-          className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all ${selectedType === 'applicant'
+          className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-2xl border-2 transition-all ${selectedType === 'applicant'
               ? 'border-forest-900 bg-forest-50 text-forest-900'
               : 'border-gray-200 hover:border-gray-300 text-gray-600'
             }`}
         >
-          <User className="w-5 h-5" />
-          <span className="font-medium">Applicant</span>
+          <User className="w-4 h-4" />
+          <span className="font-medium text-sm">Applicant</span>
         </button>
         <button
           type="button"
           onClick={() => setSelectedType('employer')}
-          className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all ${selectedType === 'employer'
+          className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-2xl border-2 transition-all ${selectedType === 'employer'
               ? 'border-forest-900 bg-forest-50 text-forest-900'
               : 'border-gray-200 hover:border-gray-300 text-gray-600'
             }`}
         >
-          <Building2 className="w-5 h-5" />
-          <span className="font-medium">Employer</span>
+          <Building2 className="w-4 h-4" />
+          <span className="font-medium text-sm">Employer</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setSelectedType('admin')}
+          className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-2xl border-2 transition-all ${selectedType === 'admin'
+              ? 'border-forest-900 bg-forest-50 text-forest-900'
+              : 'border-gray-200 hover:border-gray-300 text-gray-600'
+            }`}
+        >
+          <ShieldCheck className="w-4 h-4" />
+          <span className="font-medium text-sm">Admin</span>
         </button>
       </div>
 
@@ -134,15 +145,17 @@ export function LoginPage() {
       </form>
 
       {/* Sign Up Link */}
-      <p className="mt-8 text-center text-gray-600">
-        Don't have an account?{' '}
-        <NavLink
-          to={`/signup/${selectedType}`}
-          className="text-forest-700 hover:text-forest-900 font-medium"
-        >
-          Sign up
-        </NavLink>
-      </p>
+      {selectedType !== 'admin' && (
+        <p className="mt-8 text-center text-gray-600">
+          Don't have an account?{' '}
+          <NavLink
+            to={`/signup/${selectedType}`}
+            className="text-forest-700 hover:text-forest-900 font-medium"
+          >
+            Sign up
+          </NavLink>
+        </p>
+      )}
     </div>
   );
 }

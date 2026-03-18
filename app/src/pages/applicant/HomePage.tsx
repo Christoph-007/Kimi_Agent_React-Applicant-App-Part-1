@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import {
   Search,
   Briefcase,
@@ -31,6 +31,8 @@ export function HomePage() {
   const [recommendedJobs, setRecommendedJobs] = useState<Job[]>([]);
   const [upcomingShifts, setUpcomingShifts] = useState<Shift[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchDashboardData();
@@ -135,16 +137,29 @@ export function HomePage() {
           <input
             type="text"
             placeholder="Search jobs by title, skills, or company..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && searchQuery.trim()) {
+                navigate(`/jobs?search=${encodeURIComponent(searchQuery)}`);
+              }
+            }}
             className="flex-1 outline-none text-gray-700 placeholder:text-gray-400 font-medium bg-transparent"
           />
         </div>
-        <NavLink
-          to="/jobs"
+        <button
+          onClick={() => {
+            if (searchQuery.trim()) {
+              navigate(`/jobs?search=${encodeURIComponent(searchQuery)}`);
+            } else {
+              navigate('/jobs');
+            }
+          }}
           className="bg-lime-200 text-forest-900 px-8 py-3 rounded-full font-bold hover:bg-lime-300 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"
         >
           Search Jobs
           <ArrowRight className="w-4 h-4" />
-        </NavLink>
+        </button>
       </div>
 
       {/* Quick Stats */}

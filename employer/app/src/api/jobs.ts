@@ -47,4 +47,7 @@ export const jobsApi = {
 
   apply: (jobId: string, data: ApplyData) =>
     apiClient.post(`/applications/${jobId}`, data),
+
+  getLandingStats: () =>
+    apiClient.get<ApiResponse<{ totalJobs: string; totalCompanies: string; totalSeekers: string; avgResponse: string }>>('/jobs/stats/landing'),
 };

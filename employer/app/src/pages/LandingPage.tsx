@@ -1,18 +1,14 @@
 import { NavLink } from 'react-router-dom';
 import {
   ArrowRight,
-  ChevronDown,
-  ChevronUp,
   Search
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { jobsApi } from '@/api/jobs';
 
 // Hero Section
 function HeroSection() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All Categories');
-
-  const categories = ['All Categories', 'Food Service', 'Retail', 'Logistics', 'Healthcare', 'Hospitality'];
 
   return (
     <section className="relative bg-forest-900 min-h-[600px] flex items-center">
@@ -62,17 +58,33 @@ function HeroSection() {
 
 // Stats Section
 function StatsSection() {
-  const stats = [
-    { value: '45k+', label: 'Active Job Seekers', description: 'Find your next opportunity' },
-    { value: '15min+', label: 'Quick Application', description: 'Apply in minutes, not hours' },
-    { value: '2000+', label: 'Partner Employers', description: 'Top companies hiring now' },
+  const [stats, setStats] = useState({ totalSeekers: '0', avgResponse: '15min+', totalCompanies: '0' });
+
+  useEffect(() => {
+    jobsApi.getLandingStats()
+      .then(res => {
+        if (res?.success) {
+          setStats({
+            totalSeekers: res.data.totalSeekers || '0',
+            avgResponse: res.data.avgResponse || '15min+',
+            totalCompanies: res.data.totalCompanies || '0'
+          });
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  const statsList = [
+    { value: stats.totalSeekers, label: 'Active Job Seekers', description: 'Find your next opportunity' },
+    { value: stats.avgResponse, label: 'Quick Application', description: 'Apply in minutes, not hours' },
+    { value: stats.totalCompanies, label: 'Partner Employers', description: 'Top companies hiring now' },
   ];
 
   return (
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-3 gap-8">
-          {stats.map((stat, index) => (
+          {statsList.map((stat, index) => (
             <div key={index} className="text-center">
               <div className="text-4xl sm:text-5xl font-bold text-forest-900 mb-2">{stat.value}</div>
               <div className="text-lg font-semibold text-gray-900 mb-1">{stat.label}</div>
@@ -84,6 +96,7 @@ function StatsSection() {
     </section>
   );
 }
+
 
 // How It Works Section
 function HowItWorksSection() {
@@ -130,124 +143,6 @@ function HowItWorksSection() {
               {index < steps.length - 1 && (
                 <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
                   <ArrowRight className="w-8 h-8 text-gray-300" />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-
-// Testimonials Section
-function TestimonialsSection() {
-  const testimonials = [
-    {
-      text: "The career page we've built in ShiftMatch gives candidates a great first impression of the company.",
-      author: 'Aminul Islam',
-      role: 'Co-Founder, GC Innovation Hub',
-    },
-    {
-      text: "It's really easy to use. It makes us look professional and I love the way you can customize your job posts and make them your own. Simple to use and straightforward.",
-      author: 'Saiful Talukdar',
-      role: 'Co-Founder, GC Innovation Hub',
-    },
-  ];
-
-  return (
-    <section className="py-20 bg-lime-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-forest-900 mb-4">
-            Why teams love ShiftMatch's Hiring Software
-          </h2>
-          <p className="text-gray-500 max-w-2xl mx-auto">
-            ShiftMatch's Customers share a passion for nurturing company culture. We all agree hiring can be more meaningful and personal.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {testimonials.map((testimonial, index) => (
-            <div key={index} className="bg-white rounded-2xl p-8 shadow-card">
-              <p className="text-gray-600 mb-6 leading-relaxed">{testimonial.text}</p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-forest-100 rounded-full flex items-center justify-center">
-                  <span className="text-forest-700 font-bold">{testimonial.author[0]}</span>
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900">{testimonial.author}</div>
-                  <div className="text-sm text-gray-500">{testimonial.role}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// FAQ Section
-function FAQSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(1);
-
-  const faqs = [
-    {
-      question: 'Where can I view store locations and hours?',
-      answer: 'You can view all store locations and their operating hours on our platform. Each job listing includes detailed location information and shift timings.',
-    },
-    {
-      question: 'Where is my order?',
-      answer: "Depending on the delivery option you selected at checkout, we'll email you a tracking link after your order has been shipped. Follow this link to check the status of your order. We can also send you notifications about any important updates regarding your order – just make sure you've opted into notifications.",
-    },
-    {
-      question: 'How do I apply for a job?',
-      answer: 'Simply create an account, complete your profile, and browse available jobs. Click "Apply Now" on any job listing to submit your application.',
-    },
-    {
-      question: 'What documents do I need?',
-      answer: 'Most employers require a valid ID, proof of address, and relevant certifications for the role. Check the job description for specific requirements.',
-    },
-    {
-      question: 'How do I get paid?',
-      answer: 'Payments are processed directly through our platform. Once you complete a shift and your attendance is approved, payment will be transferred to your registered account.',
-    },
-  ];
-
-  return (
-    <section className="py-20 bg-white">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-forest-900 mb-4">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-gray-500">
-            Onboard your own talent pool to ShiftMatch, invite them to projects, sign contracts and kick off the projects simpler than ever.
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          {faqs.map((faq, index) => (
-            <div
-              key={index}
-              className="border border-gray-200 rounded-xl overflow-hidden"
-            >
-              <button
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors"
-              >
-                <span className="font-medium text-gray-900">{faq.question}</span>
-                {openIndex === index ? (
-                  <ChevronUp className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                )}
-              </button>
-              {openIndex === index && (
-                <div className="px-5 pb-5">
-                  <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
                 </div>
               )}
             </div>
@@ -366,8 +261,6 @@ export function LandingPage() {
         <HeroSection />
         <StatsSection />
         <HowItWorksSection />
-        <TestimonialsSection />
-        <FAQSection />
         <Footer />
       </div>
     </div>

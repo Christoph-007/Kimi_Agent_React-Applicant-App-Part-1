@@ -25,7 +25,7 @@ export function NotificationsPage() {
     totalItems: 0,
   });
   const [activeFilter, setActiveFilter] = useState<'all' | 'unread'>('all');
-  const { fetchUnreadCount } = useAuth();
+  const { fetchUnreadCount, user } = useAuth();
 
   useEffect(() => {
     fetchNotifications();
@@ -241,7 +241,7 @@ export function NotificationsPage() {
                       <div className="mt-4 flex gap-2">
                         {notification.type === 'application' && (notification.data as { applicationId?: string }).applicationId && (
                           <NavLink
-                            to="/my-jobs"
+                            to={user?.type === 'employer' ? `/employer/jobs/${(notification.data as { jobId?: string }).jobId}/applications` : "/my-jobs"}
                             className="px-4 py-2 bg-forest-50 text-forest-700 rounded-lg text-sm font-medium hover:bg-forest-100 transition-colors"
                           >
                             View Application
@@ -249,7 +249,7 @@ export function NotificationsPage() {
                         )}
                         {notification.type === 'shift' && (notification.data as { shiftId?: string }).shiftId && (
                           <NavLink
-                            to="/shifts"
+                            to={user?.type === 'employer' ? "/employer/shifts" : "/shifts"}
                             className="px-4 py-2 bg-forest-50 text-forest-700 rounded-lg text-sm font-medium hover:bg-forest-100 transition-colors"
                           >
                             View Shift
@@ -257,10 +257,18 @@ export function NotificationsPage() {
                         )}
                         {notification.type === 'job_request' && (notification.data as { requestId?: string }).requestId && (
                           <NavLink
-                            to="/my-jobs"
+                            to={user?.type === 'employer' ? "/employer/requests" : "/my-jobs"}
                             className="px-4 py-2 bg-forest-50 text-forest-700 rounded-lg text-sm font-medium hover:bg-forest-100 transition-colors"
                           >
                             View Request
+                          </NavLink>
+                        )}
+                        {notification.type === 'attendance' && (notification.data as { shiftId?: string }).shiftId && (
+                          <NavLink
+                            to={user?.type === 'employer' ? "/employer/attendance" : "/attendance"}
+                            className="px-4 py-2 bg-forest-50 text-forest-700 rounded-lg text-sm font-medium hover:bg-forest-100 transition-colors"
+                          >
+                            View Attendance
                           </NavLink>
                         )}
                       </div>

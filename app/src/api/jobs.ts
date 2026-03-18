@@ -53,4 +53,7 @@ export const jobsApi = {
 
   getSaved: () =>
     apiClient.get<ApiResponse<Job[]>>('/jobs/applicant/saved'),
+
+  getLandingStats: () =>
+    apiClient.get<ApiResponse<{ totalJobs: string; totalCompanies: string; totalSeekers: string; avgResponse: string }>>('/jobs/stats/landing'),
 };

@@ -110,6 +110,7 @@ export const employerApi = {
       totalShifts: number;
       upcomingShifts: number;
       totalShortlisted: number;
+      totalEmployees: number;
     }>>('/employer/dashboard-stats'),
 
   // Recent Activity

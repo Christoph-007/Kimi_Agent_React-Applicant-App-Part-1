@@ -155,7 +155,26 @@ export interface Shift {
 // Attendance Types
 export interface Attendance {
   _id: string;
-  shift: Shift;
+  shift: Shift & {
+    job?: { _id: string; title: string };
+    applicant?: { _id: string; name: string; phone?: string; email?: string };
+  };
+  // Top-level populated fields (returned directly from backend query populates)
+  applicant?: {
+    _id: string;
+    name: string;
+    phone?: string;
+    email?: string;
+  };
+  job?: {
+    _id: string;
+    title: string;
+    jobType?: string;
+  };
+  employer?: {
+    _id: string;
+    storeName: string;
+  };
   checkInTime?: string;
   checkOutTime?: string;
   checkInLocation?: {
@@ -167,11 +186,18 @@ export interface Attendance {
     longitude: number;
   };
   totalHours?: number;
-  status: 'present' | 'late' | 'absent';
+  status: 'present' | 'late' | 'absent' | 'half-day';
+  checkInStatus?: 'early' | 'on-time' | 'late';
   lateBy?: number;
+  earlyByMinutes?: number;
   remarks?: string;
   isApproved: boolean;
+  approvedAt?: string;
   employerRemarks?: string;
+  isDeclined?: boolean;
+  declinedAt?: string;
+  declineReason?: string;
+  createdAt?: string;
 }
 
 // Job Request Types

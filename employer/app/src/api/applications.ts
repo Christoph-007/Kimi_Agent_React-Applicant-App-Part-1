@@ -22,6 +22,9 @@ export const applicationsApi = {
   getJobApplications: (jobId: string, params?: ApplicationFilters) =>
     apiClient.get<ApplicationsResponse>(`/applications/job/${jobId}`, { params }),
 
+  getAllEmployerApplications: (params?: ApplicationFilters) =>
+    apiClient.get<ApplicationsResponse>('/applications/employer/all', { params }),
+
   getById: (id: string) =>
     apiClient.get<ApiResponse<Application>>(`/applications/${id}`),
 

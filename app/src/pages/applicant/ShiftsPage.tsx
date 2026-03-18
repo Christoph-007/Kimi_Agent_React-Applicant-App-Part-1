@@ -9,10 +9,15 @@ import {
   AlertCircle,
   ChevronLeft,
   ChevronRight,
-  X
+  X,
+  LogIn,
+  LogOut,
+  CheckCircle
 } from 'lucide-react';
 import { shiftsApi } from '@/api/shifts';
+import { attendanceApi } from '@/api/attendance';
 import type { Shift } from '@/types';
+import { toast } from 'sonner';
 
 export function ShiftsPage() {
   const [shifts, setShifts] = useState<Shift[]>([]);
@@ -26,7 +31,10 @@ export function ShiftsPage() {
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancellationReason, setCancellationReason] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingShiftId, setProcessingShiftId] = useState<string | null>(null);
+  const [showCheckOutModal, setShowCheckOutModal] = useState(false);
+  const [checkOutShiftId, setCheckOutShiftId] = useState<string | null>(null);
+  const [remarks, setRemarks] = useState('');
 
   const filters = [
     { id: 'all', label: 'All Shifts' },
@@ -67,21 +75,23 @@ export function ShiftsPage() {
   };
 
   const handleConfirm = async (shiftId: string) => {
-    setIsProcessing(true);
+    setProcessingShiftId(shiftId);
     try {
       await shiftsApi.confirm(shiftId);
+      toast.success('Shift confirmed successfully');
       fetchShifts();
     } catch (error) {
       console.error('Failed to confirm shift:', error);
+      toast.error('Failed to confirm shift');
     } finally {
-      setIsProcessing(false);
+      setProcessingShiftId(null);
     }
   };
 
   const handleCancel = async () => {
     if (!selectedShift) return;
     
-    setIsProcessing(true);
+    setProcessingShiftId(selectedShift._id);
     try {
       await shiftsApi.cancel(selectedShift._id, cancellationReason);
       setShowCancelModal(false);
@@ -91,7 +101,56 @@ export function ShiftsPage() {
     } catch (error) {
       console.error('Failed to cancel shift:', error);
     } finally {
-      setIsProcessing(false);
+      setProcessingShiftId(null);
+    }
+  };
+
+  const getCurrentLocation = (): Promise<{ lat: number; lng: number }> => {
+    return new Promise((resolve) => {
+      if (!navigator.geolocation) { resolve({ lat: 0, lng: 0 }); return; }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => resolve({ lat: 0, lng: 0 }),
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+      );
+    });
+  };
+
+  const handleClockIn = async (shiftId: string) => {
+    setProcessingShiftId(shiftId);
+    try {
+      const loc = await getCurrentLocation();
+      await attendanceApi.checkIn(shiftId, { latitude: loc.lat, longitude: loc.lng });
+      toast.success('✅ Clocked in successfully!');
+      fetchShifts();
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || 'Failed to clock in');
+    } finally {
+      setProcessingShiftId(null);
+    }
+  };
+
+  const handleClockOut = async () => {
+    if (!checkOutShiftId) return;
+    setProcessingShiftId(checkOutShiftId);
+    try {
+      const loc = await getCurrentLocation();
+      await attendanceApi.checkOut(checkOutShiftId, {
+        latitude: loc.lat,
+        longitude: loc.lng,
+        remarks: remarks.trim() || undefined,
+      });
+      toast.success('✅ Clocked out successfully!');
+      setShowCheckOutModal(false);
+      setCheckOutShiftId(null);
+      setRemarks('');
+      fetchShifts();
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || 'Failed to clock out');
+    } finally {
+      setProcessingShiftId(null);
     }
   };
 
@@ -218,7 +277,7 @@ export function ShiftsPage() {
                   )}
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   {shift.status === 'scheduled' && (
                     <>
                       <button
@@ -232,24 +291,60 @@ export function ShiftsPage() {
                       </button>
                       <button
                         onClick={() => handleConfirm(shift._id)}
-                        disabled={isProcessing}
-                        className="px-4 py-2 bg-forest-900 text-white rounded-lg text-sm font-medium hover:bg-forest-800 transition-colors disabled:opacity-50"
+                        disabled={processingShiftId === shift._id}
+                        className="px-4 py-2 bg-forest-900 text-white rounded-lg text-sm font-medium hover:bg-forest-800 transition-colors disabled:opacity-50 flex items-center gap-2"
                       >
-                        {isProcessing ? (
+                        {processingShiftId === shift._id ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
-                          'Confirm'
+                          <CheckCircle className="w-4 h-4" />
                         )}
+                        Confirm
                       </button>
                     </>
                   )}
-                  {(shift.status === 'confirmed' || shift.status === 'in-progress') && (
-                    <NavLink
-                      to={`/shifts/${shift._id}`}
-                      className="px-4 py-2 bg-forest-50 text-forest-700 rounded-lg text-sm font-medium hover:bg-forest-100 transition-colors"
-                    >
-                      View Details
-                    </NavLink>
+                  {shift.status === 'confirmed' && (
+                    <>
+                      <NavLink
+                        to={`/shifts/${shift._id}`}
+                        className="px-4 py-2 bg-gray-50 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                      >
+                        Details
+                      </NavLink>
+                      <button
+                        onClick={() => handleClockIn(shift._id)}
+                        disabled={processingShiftId === shift._id}
+                        className="px-5 py-2 bg-forest-900 text-white rounded-lg text-sm font-bold hover:bg-forest-800 transition-colors disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                      >
+                        {processingShiftId === shift._id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <LogIn className="w-4 h-4" />
+                        )}
+                        Clock In
+                      </button>
+                    </>
+                  )}
+                  {shift.status === 'in-progress' && (
+                    <>
+                      <NavLink
+                        to={`/shifts/${shift._id}`}
+                        className="px-4 py-2 bg-gray-50 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                      >
+                        Details
+                      </NavLink>
+                      <button
+                        onClick={() => {
+                          setCheckOutShiftId(shift._id);
+                          setShowCheckOutModal(true);
+                        }}
+                        disabled={processingShiftId === shift._id}
+                        className="px-5 py-2 bg-orange-500 text-white rounded-lg text-sm font-bold hover:bg-orange-600 transition-colors disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Clock Out
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -324,14 +419,59 @@ export function ShiftsPage() {
                 </button>
                 <button
                   onClick={handleCancel}
-                  disabled={isProcessing}
+                  disabled={!!processingShiftId}
                   className="flex-1 py-3 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  {isProcessing ? (
+                  {processingShiftId ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     'Cancel Shift'
                   )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Clock Out Modal */}
+      {showCheckOutModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-900">Clock Out</h2>
+              <button onClick={() => { setShowCheckOutModal(false); setCheckOutShiftId(null); }}>
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="p-4 bg-orange-50 rounded-xl text-sm text-orange-700">
+                Your location will be recorded when you clock out.
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Remarks (Optional)</label>
+                <textarea
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                  placeholder="Any notes about your shift..."
+                  rows={3}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-forest-500 resize-none"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setShowCheckOutModal(false); setCheckOutShiftId(null); setRemarks(''); }}
+                  className="flex-1 py-3 border-2 border-gray-200 text-gray-700 rounded-full font-semibold hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleClockOut}
+                  disabled={!!processingShiftId}
+                  className="flex-1 py-3 bg-orange-500 text-white rounded-full font-bold hover:bg-orange-600 disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {processingShiftId ? <Loader2 className="w-5 h-5 animate-spin" /> : <LogOut className="w-5 h-5" />}
+                  Confirm Clock Out
                 </button>
               </div>
             </div>

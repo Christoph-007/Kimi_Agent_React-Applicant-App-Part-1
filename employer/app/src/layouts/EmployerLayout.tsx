@@ -12,7 +12,8 @@ import {
   Menu,
   X,
   Star,
-  Mail
+  Mail,
+  UserCheck
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState } from 'react';
@@ -21,6 +22,7 @@ import { cn } from '@/lib/utils';
 const employerNavItems = [
   { to: '/employer/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/employer/jobs', icon: Briefcase, label: 'My Jobs' },
+  { to: '/employer/employees', icon: UserCheck, label: 'Employees' },
   { to: '/employer/applicants', icon: Users, label: 'Browse Applicants' },
   { to: '/employer/shifts', icon: Calendar, label: 'Shifts' },
   { to: '/employer/attendance', icon: ClipboardList, label: 'Attendance' },
@@ -67,7 +69,7 @@ export function EmployerLayout() {
           {/* Right side */}
           <div className="flex items-center gap-3">
             <NavLink 
-              to="/notifications" 
+              to="/employer/notifications" 
               className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <Bell className="w-5 h-5 text-gray-600" />

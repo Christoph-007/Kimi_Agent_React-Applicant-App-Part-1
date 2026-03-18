@@ -22,7 +22,8 @@ import type { Application, JobRequest, Job } from '@/types';
 import { toast } from 'sonner';
 
 export function MyJobsPage() {
-  const [activeTab, setActiveTab] = useState<'applications' | 'requests' | 'saved'>('applications');
+  const [activeTab, setActiveTab] = useState<'active' | 'applications' | 'requests' | 'saved'>('active');
+  const [activeJobs, setActiveJobs] = useState<(Application | JobRequest)[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [requests, setRequests] = useState<JobRequest[]>([]);
   const [savedJobs, setSavedJobs] = useState<Job[]>([]);
@@ -38,7 +39,9 @@ export function MyJobsPage() {
   const [showDeclineModal, setShowDeclineModal] = useState(false);
 
   useEffect(() => {
-    if (activeTab === 'applications') {
+    if (activeTab === 'active') {
+      fetchActiveJobs();
+    } else if (activeTab === 'applications') {
       fetchApplications();
     } else if (activeTab === 'requests') {
       fetchRequests();
@@ -47,6 +50,41 @@ export function MyJobsPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, pagination.currentPage]);
+
+  const fetchActiveJobs = async () => {
+    try {
+      setIsLoading(true);
+      const [appRes, reqRes] = await Promise.all([
+        applicationsApi.getMyApplications({ status: 'accepted', limit: 50 }),
+        jobRequestsApi.getReceivedRequests({ status: 'accepted', limit: 50 })
+      ]);
+
+      const apps = appRes.data || [];
+      const reqs = reqRes.data || [];
+
+      // Deduplicate if a job request created an application
+      const uniqueReqs = reqs.filter(req => {
+        if (!req.job) return true;
+        const jobId = typeof req.job === 'string' ? req.job : req.job._id;
+        return !apps.some(app => app.job._id === jobId);
+      });
+
+      const combined = [...apps, ...uniqueReqs].sort((a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+
+      setActiveJobs(combined);
+      setPagination({
+        currentPage: 1,
+        totalPages: 1,
+        totalItems: combined.length,
+      });
+    } catch (error) {
+      console.error('Failed to fetch active jobs:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const fetchApplications = async () => {
     try {
@@ -195,8 +233,9 @@ export function MyJobsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-gray-200">
+      <div className="flex flex-wrap gap-2 border-b border-gray-200">
         {[
+          { id: 'active', label: 'Active Jobs', count: activeJobs.length },
           { id: 'applications', label: 'My Applications', count: applications.length },
           { id: 'requests', label: 'Job Requests', count: requests.length },
           { id: 'saved', label: 'Saved Jobs', count: savedJobs.length },
@@ -227,6 +266,103 @@ export function MyJobsPage() {
         <div className="flex items-center justify-center h-64">
           <Loader2 className="w-8 h-8 animate-spin text-forest-700" />
         </div>
+      ) : activeTab === 'active' ? (
+        activeJobs.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-2xl shadow-card border-2 border-dashed border-gray-100">
+            <div className="w-20 h-20 bg-forest-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Briefcase className="w-10 h-10 text-forest-300" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No active jobs yet</h3>
+            <p className="text-gray-500 mb-8 max-w-sm mx-auto">
+              Once your applications are accepted or you accept job requests, they will appear here as your active working jobs.
+            </p>
+            <NavLink
+              to="/jobs"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-forest-900 text-white rounded-full font-bold hover:bg-forest-800 transition-all shadow-lg hover:shadow-forest-900/20 active:scale-95"
+            >
+              <Briefcase className="w-5 h-5" />
+              Find Your Next Job
+            </NavLink>
+          </div>
+        ) : (
+          <div className="grid gap-6">
+            <div className="bg-forest-50 border border-forest-100 rounded-2xl p-4 mb-2">
+              <div className="flex items-center gap-3 text-forest-800">
+                <div className="p-2 bg-forest-900 text-white rounded-lg">
+                  <CheckCircle className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm uppercase tracking-wider">Currently Employed</h4>
+                  <p className="text-sm opacity-80">You have {activeJobs.length} active job{activeJobs.length !== 1 ? 's' : ''} currently.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              {activeJobs.map((item) => {
+                const isJobRequest = 'jobTitle' in item;
+                const employer = item.employer;
+                const title = !isJobRequest ? (item as Application).job.title : (item as JobRequest).jobTitle;
+                const location = !isJobRequest ? (item as Application).job.location.city : (item as JobRequest).location;
+                const salary = !isJobRequest 
+                  ? `₹${(item as Application).job.salary.amount}/${(item as Application).job.salary.period}`
+                  : `₹${(item as JobRequest).offeredHourlyRate}/hour`;
+
+                return (
+                  <div key={item._id} className="bg-white rounded-2xl p-6 shadow-card border-l-4 border-forest-600 hover:shadow-card-hover transition-all">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-16 h-16 bg-forest-100 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl font-black text-forest-700 shadow-inner">
+                          {employer.storeName[0]}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+                            <span className="px-2.5 py-0.5 bg-green-100 text-green-700 text-[10px] font-black uppercase tracking-widest rounded-full">
+                              Active
+                            </span>
+                          </div>
+                          <p className="text-forest-700 font-medium mb-3">{employer.storeName}</p>
+                          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-500">
+                            <span className="flex items-center gap-1.5">
+                              <MapPin className="w-4 h-4 text-forest-600" />
+                              {location}
+                            </span>
+                            <span className="flex items-center gap-1.5 font-semibold text-forest-900">
+                              <DollarSign className="w-4 h-4" />
+                              {salary}
+                            </span>
+                            <span className="flex items-center gap-1.5">
+                              <Clock className="w-4 h-4 text-forest-600" />
+                              Joined {formatDate(item.updatedAt)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <NavLink
+                          to={!isJobRequest ? `/jobs/${(item as Application).job._id}` : '#'}
+                          className="px-6 py-2.5 bg-gray-50 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-100 transition-colors border border-gray-200"
+                        >
+                          Details
+                        </NavLink>
+                        <NavLink
+                          to="/attendance"
+                          className="px-6 py-2.5 bg-forest-900 text-white rounded-xl text-sm font-bold hover:bg-forest-800 transition-all shadow-md active:scale-95 flex items-center gap-2"
+                        >
+                          <span>⏰</span>
+                          Clock In / Out
+                        </NavLink>
+                      </div>
+
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )
       ) : activeTab === 'applications' ? (
         applications.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-2xl shadow-card">

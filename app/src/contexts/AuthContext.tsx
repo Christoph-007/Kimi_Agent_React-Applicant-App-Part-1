@@ -57,14 +57,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('token', response.token);
     setUser(response.user);
 
+    // Admin users should use the dedicated admin app
+    if (userType === 'admin') {
+      window.location.href = 'http://localhost:5175/login';
+      return;
+    }
+
     // Navigate based on user type
-    const routes: Record<UserType, string> = {
+    const routes: Record<Exclude<UserType, 'admin'>, string> = {
       applicant: '/home',
       employer: '/employer/dashboard',
-      admin: '/admin/dashboard',
     };
 
-    navigate(routes[userType]);
+    navigate(routes[userType as Exclude<UserType, 'admin'>]);
   };
 
   const signup = async (data: SignupData, userType: Exclude<UserType, 'admin'>) => {

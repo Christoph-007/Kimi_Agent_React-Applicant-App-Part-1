@@ -23,6 +23,7 @@ interface CreateJobRequestData {
   location: string;
   offeredHourlyRate: number;
   message?: string;
+  jobId?: string;
 }
 
 export const jobRequestsApi = {

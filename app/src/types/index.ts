@@ -91,6 +91,7 @@ export interface Application {
   rejectionReason?: string;
   statusHistory: StatusHistory[];
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface Applicant {
@@ -155,7 +156,25 @@ export interface Shift {
 // Attendance Types
 export interface Attendance {
   _id: string;
-  shift: Shift;
+  shift: Shift & {
+    job?: { _id: string; title: string };
+    employer?: { _id: string; storeName: string };
+  };
+  // Top-level populated fields (returned directly from backend)
+  applicant?: {
+    _id: string;
+    name: string;
+    phone?: string;
+  };
+  job?: {
+    _id: string;
+    title: string;
+    jobType?: string;
+  };
+  employer?: {
+    _id: string;
+    storeName: string;
+  };
   checkInTime?: string;
   checkOutTime?: string;
   checkInLocation?: {
@@ -167,11 +186,15 @@ export interface Attendance {
     longitude: number;
   };
   totalHours?: number;
-  status: 'present' | 'late' | 'absent';
+  status: 'present' | 'late' | 'absent' | 'half-day';
+  checkInStatus?: 'early' | 'on-time' | 'late';
   lateBy?: number;
+  earlyByMinutes?: number;
   remarks?: string;
   isApproved: boolean;
+  approvedAt?: string;
   employerRemarks?: string;
+  createdAt?: string;
 }
 
 // Job Request Types
@@ -186,6 +209,7 @@ export interface JobRequest {
     _id: string;
     name: string;
   };
+  job?: string | Job;
   jobTitle: string;
   jobDescription: string;
   shiftType: string;
@@ -194,8 +218,10 @@ export interface JobRequest {
   message?: string;
   status: 'sent' | 'accepted' | 'declined' | 'expired';
   declineReason?: string;
+  respondedAt?: string;
   expiresAt: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 // Notification Types
