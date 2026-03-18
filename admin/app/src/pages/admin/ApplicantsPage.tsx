@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   XCircle,
+  CheckCircle,
   Phone,
   Mail,
   Briefcase
@@ -65,6 +66,20 @@ export function ApplicantsPage() {
       fetchApplicants();
     } catch (error) {
       console.error('Failed to deactivate applicant:', error);
+    } finally {
+      setIsProcessing(null);
+    }
+  };
+
+  const handleActivate = async (id: string) => {
+    if (!confirm('Are you sure you want to activate this applicant?')) return;
+    
+    setIsProcessing(id);
+    try {
+      await adminApi.activateApplicant(id);
+      fetchApplicants();
+    } catch (error) {
+      console.error('Failed to activate applicant:', error);
     } finally {
       setIsProcessing(null);
     }
@@ -209,7 +224,20 @@ export function ApplicantsPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  {applicant.isActive !== false && (
+                  {applicant.isActive === false ? (
+                    <button
+                      onClick={() => handleActivate(applicant._id)}
+                      disabled={isProcessing === applicant._id}
+                      className="px-4 py-2 bg-green-50 text-green-600 rounded-lg text-sm font-medium hover:bg-green-100 transition-colors disabled:opacity-50 flex items-center gap-2"
+                    >
+                      {isProcessing === applicant._id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <CheckCircle className="w-4 h-4" />
+                      )}
+                      Activate
+                    </button>
+                  ) : (
                     <button
                       onClick={() => handleDeactivate(applicant._id)}
                       disabled={isProcessing === applicant._id}

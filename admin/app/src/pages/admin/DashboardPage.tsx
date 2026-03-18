@@ -12,11 +12,30 @@ import {
 import { adminApi } from '@/api/admin';
 
 interface DashboardStats {
-  totalApplicants: number;
-  totalEmployers: number;
-  totalJobs: number;
-  totalApplications: number;
-  pendingApprovals: number;
+  employers: {
+    total: number;
+    pending: number;
+    approved: number;
+    blocked: number;
+  };
+  applicants: {
+    total: number;
+    active: number;
+  };
+  jobs: {
+    total: number;
+    open: number;
+    closed: number;
+  };
+  applications: {
+    total: number;
+    pending: number;
+    accepted: number;
+  };
+  shifts: {
+    total: number;
+    upcoming: number;
+  };
   recentJobs: Array<{
     _id: string;
     title: string;
@@ -83,35 +102,35 @@ export function DashboardPage() {
         {[
           { 
             label: 'Total Applicants', 
-            value: stats?.totalApplicants || 0, 
+            value: stats?.applicants?.total || 0, 
             icon: Users, 
             color: 'bg-blue-50 text-blue-600',
             href: '/admin/applicants'
           },
           { 
             label: 'Total Employers', 
-            value: stats?.totalEmployers || 0, 
+            value: stats?.employers?.total || 0, 
             icon: Building2, 
             color: 'bg-green-50 text-green-600',
             href: '/admin/employers'
           },
           { 
             label: 'Total Jobs', 
-            value: stats?.totalJobs || 0, 
+            value: stats?.jobs?.total || 0, 
             icon: Briefcase, 
             color: 'bg-purple-50 text-purple-600',
             href: '/admin/jobs'
           },
           { 
             label: 'Applications', 
-            value: stats?.totalApplications || 0, 
+            value: stats?.applications?.total || 0, 
             icon: FileText, 
             color: 'bg-orange-50 text-orange-600',
             href: '/admin/analytics'
           },
           { 
             label: 'Pending Approvals', 
-            value: stats?.pendingApprovals || 0, 
+            value: stats?.employers?.pending || 0, 
             icon: AlertCircle, 
             color: 'bg-red-50 text-red-600',
             href: '/admin/employers'

@@ -7,6 +7,157 @@ const Shift = require('../models/Shift');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseUtils');
 const { notifyEmployerApproval } = require('../services/notificationService');
 
+// @desc    Get analytics chart data (monthly trends)
+// @route   GET /api/admin/analytics/charts
+// @access  Private (Admin)
+const getAnalyticsChartData = async (req, res) => {
+    try {
+        const monthsBack = 6;
+        const months = [];
+        const now = new Date();
+
+        for (let i = monthsBack - 1; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            months.push({
+                year: d.getFullYear(),
+                month: d.getMonth() + 1,
+                label: d.toLocaleString('en-US', { month: 'short' }) + ' ' + d.getFullYear(),
+                start: new Date(d.getFullYear(), d.getMonth(), 1),
+                end: new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59),
+            });
+        }
+
+        // Aggregate applicants per month
+        const applicantAgg = await Applicant.aggregate([
+            { $match: { createdAt: { $gte: months[0].start } } },
+            {
+                $group: {
+                    _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } },
+                    count: { $sum: 1 },
+                },
+            },
+        ]);
+
+        // Aggregate employers per month
+        const employerAgg = await Employer.aggregate([
+            { $match: { createdAt: { $gte: months[0].start } } },
+            {
+                $group: {
+                    _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } },
+                    count: { $sum: 1 },
+                },
+            },
+        ]);
+
+        // Aggregate jobs per month
+        const jobAgg = await Job.aggregate([
+            { $match: { createdAt: { $gte: months[0].start } } },
+            {
+                $group: {
+                    _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } },
+                    count: { $sum: 1 },
+                },
+            },
+        ]);
+
+        // Aggregate applications per month
+        const applicationAgg = await Application.aggregate([
+            { $match: { createdAt: { $gte: months[0].start } } },
+            {
+                $group: {
+                    _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } },
+                    count: { $sum: 1 },
+                },
+            },
+        ]);
+
+        const findCount = (agg, year, month) => {
+            const found = agg.find(a => a._id.year === year && a._id.month === month);
+            return found ? found.count : 0;
+        };
+
+        const userGrowth = months.map(m => ({
+            month: m.label,
+            applicants: findCount(applicantAgg, m.year, m.month),
+            employers: findCount(employerAgg, m.year, m.month),
+        }));
+
+        const jobTrend = months.map(m => ({
+            month: m.label,
+            jobs: findCount(jobAgg, m.year, m.month),
+            applications: findCount(applicationAgg, m.year, m.month),
+        }));
+
+        return successResponse(res, 200, 'Analytics chart data retrieved', { userGrowth, jobTrend });
+    } catch (error) {
+        console.error('Get analytics chart data error:', error);
+        return errorResponse(res, 500, 'Error retrieving analytics data', error.message);
+    }
+};
+
+// @desc    Get all jobs (admin)
+// @route   GET /api/admin/jobs
+// @access  Private (Admin)
+const getAllJobs = async (req, res) => {
+    try {
+        const {
+            search,
+            status,
+            jobType,
+            page = 1,
+            limit = 10,
+            sortBy = 'createdAt',
+            order = 'desc',
+        } = req.query;
+
+        const query = {};
+
+        if (status) {
+            query.status = status;
+        }
+
+        if (jobType) {
+            query.jobType = jobType;
+        }
+
+        if (search) {
+            query.$or = [
+                { title: new RegExp(search, 'i') },
+                { description: new RegExp(search, 'i') },
+            ];
+        }
+
+        const pageNum = parseInt(page);
+        const limitNum = parseInt(limit);
+        const skip = (pageNum - 1) * limitNum;
+
+        const sortOrder = order === 'asc' ? 1 : -1;
+        const sortOptions = { [sortBy]: sortOrder };
+
+        const jobs = await Job.find(query)
+            .sort(sortOptions)
+            .skip(skip)
+            .limit(limitNum)
+            .populate('employer', 'storeName businessType');
+
+        const totalJobs = await Job.countDocuments(query);
+
+        const pagination = {
+            currentPage: pageNum,
+            totalPages: Math.ceil(totalJobs / limitNum),
+            totalItems: totalJobs,
+            itemsPerPage: limitNum,
+            hasNextPage: pageNum < Math.ceil(totalJobs / limitNum),
+            hasPrevPage: pageNum > 1,
+        };
+
+        return paginatedResponse(res, 200, 'Jobs retrieved successfully', jobs, pagination);
+    } catch (error) {
+        console.error('Get all jobs (admin) error:', error);
+        return errorResponse(res, 500, 'Error retrieving jobs', error.message);
+    }
+};
+
 // @desc    Get dashboard statistics
 // @route   GET /api/admin/dashboard/stats
 // @access  Private (Admin)
@@ -108,15 +259,17 @@ const getAllEmployers = async (req, res) => {
         const query = {};
 
         if (isApproved !== undefined) {
-            query.isApproved = isApproved === 'true';
+            query.isApproved = isApproved === 'true' || isApproved === true;
         }
 
         if (isBlocked !== undefined) {
-            query.isBlocked = isBlocked === 'true';
+            query.isBlocked = isBlocked === 'true' || isBlocked === true;
         }
 
         if (businessType) {
-            query.businessType = businessType;
+            // Use case-insensitive search or exact match based on your preference
+            // Given the frontend uses "Restaurant" but database might have "restaurant"
+            query.businessType = new RegExp(`^${businessType}$`, 'i');
         }
 
         if (search) {
@@ -260,7 +413,7 @@ const getAllApplicants = async (req, res) => {
         const query = {};
 
         if (isActive !== undefined) {
-            query.isActive = isActive === 'true';
+            query.isActive = isActive === 'true' || isActive === true;
         }
 
         if (search) {
@@ -332,6 +485,31 @@ const deactivateApplicant = async (req, res) => {
     }
 };
 
+// @desc    Activate applicant
+// @route   PUT /api/admin/applicants/:id/activate
+// @access  Private (Admin)
+const activateApplicant = async (req, res) => {
+    try {
+        const applicant = await Applicant.findById(req.params.id);
+
+        if (!applicant) {
+            return errorResponse(res, 404, 'Applicant not found');
+        }
+
+        if (applicant.isActive) {
+            return errorResponse(res, 400, 'Applicant is already active');
+        }
+
+        applicant.isActive = true;
+        await applicant.save();
+
+        return successResponse(res, 200, 'Applicant activated successfully', applicant);
+    } catch (error) {
+        console.error('Activate applicant error:', error);
+        return errorResponse(res, 500, 'Error activating applicant', error.message);
+    }
+};
+
 // @desc    Delete job (moderation)
 // @route   DELETE /api/admin/jobs/:id
 // @access  Private (Admin)
@@ -360,6 +538,8 @@ const deleteJob = async (req, res) => {
 };
 
 module.exports = {
+    getAnalyticsChartData,
+    getAllJobs,
     getDashboardStats,
     getAllEmployers,
     approveEmployer,
@@ -367,5 +547,6 @@ module.exports = {
     unblockEmployer,
     getAllApplicants,
     deactivateApplicant,
+    activateApplicant,
     deleteJob,
 };

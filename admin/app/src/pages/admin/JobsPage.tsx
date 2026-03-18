@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Briefcase,
   Search,
@@ -11,11 +12,11 @@ import {
   DollarSign,
   Building2
 } from 'lucide-react';
-import { jobsApi } from '@/api/jobs';
 import { adminApi } from '@/api/admin';
 import type { Job } from '@/types';
 
 export function JobsPage() {
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -45,7 +46,7 @@ export function JobsPage() {
       if (filters.status) params.status = filters.status;
       if (filters.jobType) params.jobType = filters.jobType;
 
-      const response = await jobsApi.getAll(params);
+      const response = await adminApi.getJobs(params);
       setJobs(response.data || []);
       setPagination({
         currentPage: response.pagination?.currentPage || 1,
@@ -215,15 +216,13 @@ export function JobsPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <a
-                    href={`/jobs/${job._id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => navigate(`/admin/jobs/${job._id}`)}
                     className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors flex items-center gap-2"
                   >
                     <Eye className="w-4 h-4" />
                     View
-                  </a>
+                  </button>
                   <button
                     onClick={() => handleDelete(job._id)}
                     disabled={isDeleting === job._id}

@@ -2,11 +2,30 @@ import { apiClient } from './client';
 import type { User, Job, Pagination } from '@/types';
 
 interface DashboardStats {
-  totalApplicants: number;
-  totalEmployers: number;
-  totalJobs: number;
-  totalApplications: number;
-  pendingApprovals: number;
+  employers: {
+    total: number;
+    pending: number;
+    approved: number;
+    blocked: number;
+  };
+  applicants: {
+    total: number;
+    active: number;
+  };
+  jobs: {
+    total: number;
+    open: number;
+    closed: number;
+  };
+  applications: {
+    total: number;
+    pending: number;
+    accepted: number;
+  };
+  shifts: {
+    total: number;
+    upcoming: number;
+  };
   recentJobs: Job[];
   recentApplications: {
     _id: string;
@@ -52,6 +71,16 @@ export const adminApi = {
   getDashboardStats: () =>
     apiClient.get<DashboardStatsResponse>('/admin/dashboard/stats'),
 
+  // Analytics
+  getAnalyticsCharts: () =>
+    apiClient.get<{
+      success: boolean;
+      data: {
+        userGrowth: { month: string; applicants: number; employers: number }[];
+        jobTrend: { month: string; jobs: number; applications: number }[];
+      };
+    }>('/admin/analytics/charts'),
+
   // Employer Management
   getEmployers: (params?: { 
     isApproved?: boolean; 
@@ -84,7 +113,16 @@ export const adminApi = {
   deactivateApplicant: (id: string) =>
     apiClient.put(`/admin/applicants/${id}/deactivate`),
 
+  activateApplicant: (id: string) =>
+    apiClient.put(`/admin/applicants/${id}/activate`),
+
   // Job Management
+  getJobs: (params?: Record<string, unknown>) =>
+    apiClient.get<{ success: boolean; message: string; data: Job[]; pagination: { currentPage: number; totalPages: number; totalItems: number; itemsPerPage: number; hasNextPage: boolean; hasPrevPage: boolean } }>('/admin/jobs', { params }),
+
+  getJobById: (id: string) =>
+    apiClient.get<{ success: boolean; data: Job }>(`/jobs/${id}`),
+
   deleteJob: (id: string) =>
     apiClient.delete(`/admin/jobs/${id}`),
 };

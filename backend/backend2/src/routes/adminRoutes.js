@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const {
+    getAnalyticsChartData,
+    getAllJobs,
     getDashboardStats,
     getAllEmployers,
     approveEmployer,
@@ -8,6 +10,7 @@ const {
     unblockEmployer,
     getAllApplicants,
     deactivateApplicant,
+    activateApplicant,
     deleteJob,
 } = require('../controllers/adminController');
 const { protect, authorize } = require('../middlewares/authMiddleware');
@@ -18,6 +21,7 @@ router.use(authorize('admin'));
 
 // Dashboard
 router.get('/dashboard/stats', getDashboardStats);
+router.get('/analytics/charts', getAnalyticsChartData);
 
 // Employer management
 router.get('/employers', getAllEmployers);
@@ -28,8 +32,10 @@ router.put('/employers/:id/unblock', unblockEmployer);
 // Applicant management
 router.get('/applicants', getAllApplicants);
 router.put('/applicants/:id/deactivate', deactivateApplicant);
+router.put('/applicants/:id/activate', activateApplicant);
 
 // Job moderation
+router.get('/jobs', getAllJobs);
 router.delete('/jobs/:id', deleteJob);
 
 module.exports = router;

@@ -9,31 +9,74 @@ import {
   Calendar,
   BarChart3
 } from 'lucide-react';
+import { 
+  LineChart, 
+  Line, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip as RechartsTooltip, 
+  Legend, 
+  ResponsiveContainer,
+  AreaChart,
+  Area
+} from 'recharts';
 import { adminApi } from '@/api/admin';
 
 interface DashboardStats {
-  totalApplicants: number;
-  totalEmployers: number;
-  totalJobs: number;
-  totalApplications: number;
-  pendingApprovals: number;
+  employers: {
+    total: number;
+    pending: number;
+    approved: number;
+    blocked: number;
+  };
+  applicants: {
+    total: number;
+    active: number;
+  };
+  jobs: {
+    total: number;
+    open: number;
+    closed: number;
+  };
+  applications: {
+    total: number;
+    pending: number;
+    accepted: number;
+  };
+  shifts: {
+    total: number;
+    upcoming: number;
+  };
+}
+
+interface ChartData {
+  userGrowth: { month: string; applicants: number; employers: number }[];
+  jobTrend: { month: string; jobs: number; applications: number }[];
 }
 
 export function AnalyticsPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [chartData, setChartData] = useState<ChartData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchStats();
+    fetchData();
   }, []);
 
-  const fetchStats = async () => {
+  const fetchData = async () => {
     try {
       setIsLoading(true);
-      const response = await adminApi.getDashboardStats();
-      setStats(response.data);
+      const [statsRes, chartsRes] = await Promise.all([
+        adminApi.getDashboardStats(),
+        adminApi.getAnalyticsCharts()
+      ]);
+      setStats(statsRes.data);
+      setChartData(chartsRes.data);
     } catch (error) {
-      console.error('Failed to fetch stats:', error);
+      console.error('Failed to fetch analytics data:', error);
     } finally {
       setIsLoading(false);
     }
@@ -46,6 +89,10 @@ export function AnalyticsPage() {
       </div>
     );
   }
+
+  // Current month data for platform summary
+  const currentMonthUsers = chartData?.userGrowth[chartData.userGrowth.length - 1];
+  const currentMonthJobs = chartData?.jobTrend[chartData.jobTrend.length - 1];
 
   return (
     <div className="space-y-8">
@@ -60,28 +107,28 @@ export function AnalyticsPage() {
         {[
           { 
             label: 'Total Applicants', 
-            value: stats?.totalApplicants || 0, 
+            value: stats?.applicants?.total || 0, 
             icon: Users, 
             color: 'bg-blue-50 text-blue-600',
             trend: '+12%'
           },
           { 
             label: 'Total Employers', 
-            value: stats?.totalEmployers || 0, 
+            value: stats?.employers?.total || 0, 
             icon: Building2, 
             color: 'bg-green-50 text-green-600',
             trend: '+8%'
           },
           { 
             label: 'Total Jobs', 
-            value: stats?.totalJobs || 0, 
+            value: stats?.jobs?.total || 0, 
             icon: Briefcase, 
             color: 'bg-purple-50 text-purple-600',
             trend: '+15%'
           },
           { 
             label: 'Applications', 
-            value: stats?.totalApplications || 0, 
+            value: stats?.applications?.total || 0, 
             icon: FileText, 
             color: 'bg-orange-50 text-orange-600',
             trend: '+23%'
@@ -116,7 +163,7 @@ export function AnalyticsPage() {
               Needs attention
             </span>
           </div>
-          <div className="text-3xl font-bold text-gray-900 mb-1">{stats?.pendingApprovals || 0}</div>
+          <div className="text-3xl font-bold text-gray-900 mb-1">{stats?.employers?.pending || 0}</div>
           <div className="text-sm text-gray-500">Pending Employer Approvals</div>
         </div>
 
@@ -132,7 +179,7 @@ export function AnalyticsPage() {
             </span>
           </div>
           <div className="text-3xl font-bold text-gray-900 mb-1">
-            {stats?.totalJobs ? Math.round((stats.totalApplications / stats.totalJobs) * 10) / 10 : 0}
+            {stats?.jobs?.total ? Math.round((stats.applications.total / stats.jobs.total) * 10) / 10 : 0}
           </div>
           <div className="text-sm text-gray-500">Avg Applications per Job</div>
         </div>
@@ -149,71 +196,162 @@ export function AnalyticsPage() {
             </span>
           </div>
           <div className="text-3xl font-bold text-gray-900 mb-1">
-            {((stats?.totalApplicants || 0) + (stats?.totalEmployers || 0)).toLocaleString()}
+            {((stats?.applicants?.total || 0) + (stats?.employers?.total || 0)).toLocaleString()}
           </div>
           <div className="text-sm text-gray-500">Total Platform Users</div>
         </div>
       </div>
 
-      {/* Charts Placeholder */}
+      {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-8">
+        {/* User Growth Chart */}
         <div className="bg-white rounded-2xl p-6 shadow-card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">User Growth</h3>
-          <div className="h-64 bg-gray-50 rounded-xl flex items-center justify-center">
-            <div className="text-center text-gray-400">
-              <BarChart3 className="w-12 h-12 mx-auto mb-2" />
-              <p>Chart visualization would appear here</p>
-              <p className="text-sm">Connect to analytics service for detailed charts</p>
-            </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+            <Users className="w-5 h-5 text-blue-600" />
+            User Growth (Last 6 Months)
+          </h3>
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData?.userGrowth}>
+                <defs>
+                  <linearGradient id="colorApplicants" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorEmployers" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                <XAxis 
+                  dataKey="month" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#6B7280', fontSize: 12 }}
+                  dy={10}
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#6B7280', fontSize: 12 }} 
+                />
+                <RechartsTooltip 
+                  contentStyle={{ 
+                    borderRadius: '12px', 
+                    border: 'none', 
+                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' 
+                  }}
+                />
+                <Legend iconType="circle" />
+                <Area 
+                  type="monotone" 
+                  dataKey="applicants" 
+                  stroke="#3B82F6" 
+                  strokeWidth={3}
+                  fillOpacity={1} 
+                  fill="url(#colorApplicants)" 
+                  name="Applicants"
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="employers" 
+                  stroke="#10B981" 
+                  strokeWidth={3}
+                  fillOpacity={1} 
+                  fill="url(#colorEmployers)" 
+                  name="Employers"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
+        {/* Job Postings Trend Chart */}
         <div className="bg-white rounded-2xl p-6 shadow-card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Job Postings Trend</h3>
-          <div className="h-64 bg-gray-50 rounded-xl flex items-center justify-center">
-            <div className="text-center text-gray-400">
-              <TrendingUp className="w-12 h-12 mx-auto mb-2" />
-              <p>Chart visualization would appear here</p>
-              <p className="text-sm">Connect to analytics service for detailed charts</p>
-            </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+            <Briefcase className="w-5 h-5 text-purple-600" />
+            Job Postings Trend
+          </h3>
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData?.jobTrend}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                <XAxis 
+                  dataKey="month" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#6B7280', fontSize: 12 }}
+                  dy={10}
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#6B7280', fontSize: 12 }} 
+                />
+                <RechartsTooltip 
+                  cursor={{ fill: '#F9FAFB' }}
+                  contentStyle={{ 
+                    borderRadius: '12px', 
+                    border: 'none', 
+                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' 
+                  }}
+                />
+                <Legend iconType="circle" />
+                <Bar 
+                  dataKey="jobs" 
+                  fill="#8B5CF6" 
+                  radius={[4, 4, 0, 0]} 
+                  name="Jobs Posted"
+                  barSize={30}
+                />
+                <Bar 
+                  dataKey="applications" 
+                  fill="#F59E0B" 
+                  radius={[4, 4, 0, 0]} 
+                  name="Applications"
+                  barSize={30}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
 
       {/* Monthly Summary */}
       <div className="bg-white rounded-2xl p-6 shadow-card">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Platform Summary</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">Monthly Highlights</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="p-4 bg-gray-50 rounded-xl">
+          <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
             <div className="flex items-center gap-2 text-gray-500 mb-2">
               <Calendar className="w-4 h-4" />
-              <span className="text-sm">This Month</span>
+              <span className="text-sm">New This Month</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{stats?.totalJobs || 0}</p>
-            <p className="text-sm text-gray-500">New Jobs Posted</p>
+            <p className="text-2xl font-bold text-gray-900">{currentMonthJobs?.jobs || 0}</p>
+            <p className="text-sm text-gray-500">Jobs Posted</p>
           </div>
-          <div className="p-4 bg-gray-50 rounded-xl">
+          <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
             <div className="flex items-center gap-2 text-gray-500 mb-2">
               <Users className="w-4 h-4" />
-              <span className="text-sm">This Month</span>
+              <span className="text-sm">New This Month</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{stats?.totalApplicants || 0}</p>
-            <p className="text-sm text-gray-500">New Applicants</p>
+            <p className="text-2xl font-bold text-gray-900">{currentMonthUsers?.applicants || 0}</p>
+            <p className="text-sm text-gray-500">Applicants Joined</p>
           </div>
-          <div className="p-4 bg-gray-50 rounded-xl">
+          <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
             <div className="flex items-center gap-2 text-gray-500 mb-2">
               <Building2 className="w-4 h-4" />
-              <span className="text-sm">This Month</span>
+              <span className="text-sm">New This Month</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{stats?.totalEmployers || 0}</p>
-            <p className="text-sm text-gray-500">New Employers</p>
+            <p className="text-2xl font-bold text-gray-900">{currentMonthUsers?.employers || 0}</p>
+            <p className="text-sm text-gray-500">Employers Joined</p>
           </div>
-          <div className="p-4 bg-gray-50 rounded-xl">
+          <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
             <div className="flex items-center gap-2 text-gray-500 mb-2">
               <FileText className="w-4 h-4" />
-              <span className="text-sm">This Month</span>
+              <span className="text-sm">New This Month</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{stats?.totalApplications || 0}</p>
+            <p className="text-2xl font-bold text-gray-900">{currentMonthJobs?.applications || 0}</p>
             <p className="text-sm text-gray-500">Applications Received</p>
           </div>
         </div>

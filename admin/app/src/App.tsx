@@ -41,6 +41,7 @@ import { DashboardPage as AdminDashboardPage } from '@/pages/admin/DashboardPage
 import { EmployersPage } from '@/pages/admin/EmployersPage';
 import { ApplicantsPage } from '@/pages/admin/ApplicantsPage';
 import { JobsPage as AdminJobsPage } from '@/pages/admin/JobsPage';
+import { JobDetailPage as AdminJobDetailPage } from '@/pages/admin/JobDetailPage';
 import { AnalyticsPage } from '@/pages/admin/AnalyticsPage';
 import { ProfilePage as AdminProfilePage } from '@/pages/admin/ProfilePage';
 import { NotificationsPage as AdminNotificationsPage } from '@/pages/admin/NotificationsPage';
@@ -114,6 +115,7 @@ function App() {
                 <Route path="/admin/employers" element={<EmployersPage />} />
                 <Route path="/admin/applicants" element={<ApplicantsPage />} />
                 <Route path="/admin/jobs" element={<AdminJobsPage />} />
+                <Route path="/admin/jobs/:id" element={<AdminJobDetailPage />} />
                 <Route path="/admin/analytics" element={<AnalyticsPage />} />
                 <Route path="/admin/profile" element={<AdminProfilePage />} />
                 <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
