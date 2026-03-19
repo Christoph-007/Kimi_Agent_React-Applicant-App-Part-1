@@ -55,6 +55,13 @@ router.get(
     getEmployerApplications
 );
 
+router.get(
+    '/employer/applications',
+    protect,
+    authorize('employer'),
+    getEmployerApplications
+);
+
 router.put(
     '/:id/accept',
     protect,

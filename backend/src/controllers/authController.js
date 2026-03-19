@@ -289,6 +289,8 @@ const getMe = async (req, res) => {
             userObj.name = userObj.ownerName || userObj.storeName;
         }
 
+        console.log(`[Auth] getMe for ${userObj.email} (${req.userType}). isApproved: ${userObj.isApproved}`);
+
         return successResponse(res, 200, 'User retrieved successfully', userObj);
     } catch (error) {
         return errorResponse(res, 500, 'Error retrieving user', error.message);

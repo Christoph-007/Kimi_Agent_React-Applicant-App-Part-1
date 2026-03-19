@@ -4,8 +4,6 @@ const connectDatabase = async (retries = 3) => {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const conn = await mongoose.connect(process.env.MONGODB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
         serverSelectionTimeoutMS: 15000,
         socketTimeoutMS: 45000,
       });

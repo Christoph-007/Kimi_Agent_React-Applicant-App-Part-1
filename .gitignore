@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Build outputs
+dist/
+build/
+
+# Logs
+logs/
+*.log
+
+# MongoDB local data
+mongodb_data/
+
+# Vite cache
+.vite/
+
+# Screenshots and assets
+*.png
+*.jpg
+
+# Mac system files
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/

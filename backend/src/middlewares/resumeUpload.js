@@ -25,10 +25,11 @@ const storage = new CloudinaryStorage({
     cloudinary,
     params: {
         folder: 'shiftmatch/resumes',
-        resource_type: 'raw',          // required for non-image files (PDF, DOC)
-        allowed_formats: ['pdf', 'doc', 'docx'],
+        resource_type: 'auto',
         // Use applicant ID + timestamp as public_id for uniqueness
-        public_id: (req) => `resume_${req.user._id}_${Date.now()}`,
+        public_id: (req, file) => {
+            return `resume_${req.user._id}_${Date.now()}`;
+        },
     },
 });
 
@@ -43,6 +44,7 @@ const fileFilter = (req, file, cb) => {
     if (allowedMimeTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
+        console.warn(`[Resume] Blocked upload: Unsupported mimetype "${file.mimetype}" for file "${file.originalname}"`);
         cb(new Error('Only PDF and Word documents (.doc, .docx) are allowed'), false);
     }
 };
@@ -51,7 +53,7 @@ const upload = multer({
     storage,
     fileFilter,
     limits: {
-        fileSize: 5 * 1024 * 1024, // 5 MB max
+        fileSize: 10 * 1024 * 1024, // Increased to 10 MB max
     },
 });
 

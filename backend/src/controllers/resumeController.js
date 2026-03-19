@@ -16,6 +16,16 @@ const { successResponse, errorResponse } = require('../utils/responseUtils');
 // ─────────────────────────────────────────────────────────────────────────────
 const uploadResume = async (req, res) => {
     try {
+        if (req.file) {
+            console.log('[Resume] Uploaded File metadata:', {
+                originalname: req.file.originalname,
+                mimetype: req.file.mimetype,
+                path: req.file.path,
+                filename: req.file.filename,
+                size: req.file.size
+            });
+        }
+
         if (!req.file) {
             return errorResponse(res, 400, 'No file uploaded. Please attach a PDF or Word document.');
         }
@@ -24,8 +34,12 @@ const uploadResume = async (req, res) => {
         const applicant = await Applicant.findById(req.user._id);
         if (applicant.resume && applicant.resume.publicId) {
             try {
+                // Better detection — check URL for '/raw/'
+                const isLegacyRaw = applicant.resume.url && applicant.resume.url.includes('/raw/');
+                const resType = isLegacyRaw ? 'raw' : 'image';
+                
                 await cloudinary.uploader.destroy(applicant.resume.publicId, {
-                    resource_type: 'raw',
+                    resource_type: resType,
                 });
             } catch (deleteErr) {
                 // Non-fatal — log and continue
@@ -33,12 +47,12 @@ const uploadResume = async (req, res) => {
             }
         }
 
-        // Save new resume URL and publicId
         applicant.resume = {
             url: req.file.path,        // Cloudinary URL
             publicId: req.file.filename, // Cloudinary public_id
         };
         await applicant.save();
+        console.log('[Resume] Success: Saved for user', applicant._id, '->', applicant.resume.publicId);
 
         return successResponse(res, 200, 'Resume uploaded successfully', {
             url: applicant.resume.url,
@@ -65,12 +79,22 @@ const deleteResume = async (req, res) => {
 
         // Delete from Cloudinary
         if (applicant.resume.publicId) {
-            await cloudinary.uploader.destroy(applicant.resume.publicId, {
-                resource_type: 'raw',
-            });
+            try {
+                // Determine resource_type from URL
+                const isRaw = applicant.resume.url && applicant.resume.url.includes('/raw/');
+                const resource_type = isRaw ? 'raw' : 'image';
+                
+                await cloudinary.uploader.destroy(applicant.resume.publicId, {
+                    resource_type: resource_type,
+                });
+            } catch (cloudinaryErr) {
+                // Non-fatal — log and continue so the DB is still cleared
+                console.warn('[Resume] Failed to delete resume from Cloudinary during removal:', cloudinaryErr.message);
+            }
         }
 
-        applicant.resume = { url: undefined, publicId: undefined };
+        // Completely remove the resume field to ensure it is deleted from the document
+        applicant.resume = undefined;
         await applicant.save();
 
         return successResponse(res, 200, 'Resume deleted successfully');

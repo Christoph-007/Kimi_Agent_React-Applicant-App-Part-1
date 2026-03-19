@@ -86,6 +86,7 @@ const protect = async (req, res, next) => {
 const authorize = (...roles) => {
     return (req, res, next) => {
         if (!roles.includes(req.userType)) {
+            console.log(`[Auth] Authorization failed: User ${req.user?._id} (${req.userType}) attempted to access route ${req.originalUrl} which requires roles: [${roles}]`);
             return errorResponse(
                 res,
                 403,

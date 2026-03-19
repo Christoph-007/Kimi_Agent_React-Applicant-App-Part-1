@@ -328,14 +328,17 @@ const getAllEmployers = async (req, res) => {
 // @access  Private (Admin)
 const approveEmployer = async (req, res) => {
     try {
+        console.log(`[Admin] Attempting to approve employer ID: ${req.params.id}`);
         const employer = await Employer.findById(req.params.id);
 
         if (!employer) {
+            console.warn(`[Admin] Employer not found: ${req.params.id}`);
             return errorResponse(res, 404, 'Employer not found');
         }
 
         if (employer.isApproved) {
-            return errorResponse(res, 400, 'Employer is already approved');
+            console.log(`[Admin] Employer ${req.params.id} is already approved`);
+            return successResponse(res, 200, 'Employer is already approved', employer);
         }
 
         employer.isApproved = true;
@@ -343,8 +346,14 @@ const approveEmployer = async (req, res) => {
         employer.approvedAt = new Date();
         await employer.save();
 
-        // Send approval notification
-        await notifyEmployerApproval(employer);
+        console.log(`[Admin] Employer ${employer.email} approved successfully. isApproved: ${employer.isApproved}`);
+
+        // Send approval notification (non-fatal)
+        try {
+            await notifyEmployerApproval(employer);
+        } catch (err) {
+            console.error(`[Admin] Approval notification failed for ${employer.email}:`, err.message);
+        }
 
         return successResponse(res, 200, 'Employer approved successfully', employer);
     } catch (error) {

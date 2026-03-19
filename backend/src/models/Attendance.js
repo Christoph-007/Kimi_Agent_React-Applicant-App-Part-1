@@ -6,7 +6,7 @@ const attendanceSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Shift',
             required: [true, 'Shift is required'],
-            unique: true,
+            // Note: unique index defined below via schema.index()
         },
         applicant: {
             type: mongoose.Schema.Types.ObjectId,
@@ -210,6 +210,7 @@ attendanceSchema.methods.checkIfLate = function (expectedStartTime) {
 };
 
 // Index for efficient queries
+attendanceSchema.index({ shift: 1 }, { unique: true });  // Explicit unique index
 attendanceSchema.index({ applicant: 1, createdAt: -1 });
 attendanceSchema.index({ employer: 1, createdAt: -1 });
 
