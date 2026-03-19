@@ -30,3 +30,6 @@ mongodb_data/
 # IDE files
 .vscode/
 .idea/
+backend/.env
+.env
+**/.env
