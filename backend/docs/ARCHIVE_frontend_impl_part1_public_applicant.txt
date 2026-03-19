@@ -1,0 +1,591 @@
+# ShiftMaster — Frontend Implementation Document
+## Part 1: Public Screens (SCR-01–06) & Applicant Portal (SCR-07–16)
+
+> **Stack:** React (Vite) + React Router v6 + Axios + TailwindCSS + Recharts
+
+---
+
+## 🌐 PUBLIC SCREENS
+
+---
+
+### SCR-01 — Landing Page (`/`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Single-column sections (full-width hero → stats → how-it-works → featured jobs grid → testimonials → footer) |
+| Primary Colors | Brand indigo `#4F46E5`, Accent amber `#F59E0B`, bg white / dark-gray |
+| Typography | H1: `text-5xl font-bold`, H2: `text-3xl font-semibold`, body: `text-base text-gray-600` |
+| Spacing | Section padding `py-20 px-6`, max width `max-w-7xl mx-auto` |
+| Responsive | Desktop: 3-col job grid; Tablet: 2-col; Mobile: 1-col stack, hero text scales down |
+| Dark Mode | Class-based `dark:` variants on bg and text |
+
+#### B. UI Components
+| Component | Type | States |
+|-----------|------|--------|
+| `Navbar` | Reusable | Default, scrolled (shadow), mobile (hamburger menu) |
+| `HeroSection` | Screen-specific | Static |
+| `StatsBar` | Screen-specific | Loading skeleton, loaded |
+| `HowItWorksCard` | Screen-specific | Static |
+| `JobCard` (×6) | Reusable | Default, hover (shadow lift), loading skeleton |
+| `TestimonialCard` | Screen-specific | Static |
+| `Footer` | Reusable | Static |
+| `Button` | Reusable | Primary, secondary, hover, disabled |
+
+#### C. Functional Elements
+- **Interactions:** Hero CTA buttons navigate to `/jobs` and `/signup/employer`; Job cards navigate to `/jobs/:id`
+- **API Calls:** `GET /api/jobs?limit=6&status=open` — loads featured jobs on mount
+- **Loading State:** 6 skeleton `JobCard` placeholders while fetching
+- **Error State:** Toast notification; fallback to hardcoded placeholder cards
+- **Empty State:** N/A — always show 6 jobs or skeletons
+- **Permissions:** No auth required; Navbar shows "Login" + "Sign Up" if unauthenticated
+
+#### D. Navigation & Routing
+- **Route:** `/`
+- **Guard:** None
+- **Redirect:** If authenticated, Navbar links update to portal-specific items (no forced redirect)
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/public/LandingPage.jsx`
+- **Libraries:** None specific; use CSS animation for hero entrance
+- **Performance:** Lazy-load testimonials and footer sections
+- **Accessibility:** `<main>`, `<section aria-label="...">`, all CTAs have descriptive text
+
+---
+
+### SCR-02 — Login (`/login`) ⚠️ Auth Sensitive
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Centered card, split (left: branding illustration, right: form) on desktop; single column mobile |
+| Colors | White card, indigo submit button, red error text |
+| Typography | Card title `text-2xl font-bold`, labels `text-sm font-medium` |
+| Spacing | Form fields `gap-4`, card `p-8 rounded-2xl shadow-lg` |
+| Responsive | Split → stacked below `md` breakpoint; illustration hidden on mobile |
+
+#### B. UI Components
+| Component | Type | States |
+|-----------|------|--------|
+| `AuthLayout` | Reusable wrapper | Static |
+| Radio group (user type) | Screen-specific | Default, selected ring |
+| `TextInput` (email/phone) | Reusable | Default, focused, error, disabled |
+| `PasswordInput` (with toggle) | Reusable | Default, focused, visible/hidden |
+| `Button` (Login) | Reusable | Default, loading spinner, disabled |
+| `FormError` | Reusable | Shown on API error |
+
+#### C. Functional Elements
+- **Validation:** All fields required; password min 6 chars; email/phone format check
+- **Submission:** `POST /api/auth/login { identifier, password, userType }` → store JWT in `localStorage` / `AuthContext`
+- **Post-login redirect:** `employer` → `/employer/dashboard`; `applicant` → `/applicant/dashboard`; `admin` → `/admin/dashboard`
+- **Loading:** Button shows spinner, inputs disabled during request
+- **Error:** API error message shown below form (e.g., "Invalid credentials")
+- **Permissions:** Redirect already-authenticated users away from `/login`
+
+#### D. Navigation & Routing
+- **Route:** `/login`
+- **Guard:** Redirect to role dashboard if already authenticated
+- **Redirect on success:** Role-based (see above)
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/auth/LoginPage.jsx`
+- **Libraries:** `react-hook-form` for form state; `yup` for schema validation
+- **Accessibility:** Fieldset + legend for radio group; `aria-invalid` on error fields; `autocomplete="email"` on email field
+- **Security:** Never log credentials; clear form on unmount
+
+---
+
+### SCR-03 — Applicant Registration (`/signup/applicant`) ⚠️ Auth Sensitive
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | 2-column form grid inside centered card; progress stepper optional |
+| Colors | Same as Login; multi-checkbox groups use indigo checkmarks |
+| Typography | Section headings `text-lg font-semibold text-gray-700` |
+| Responsive | 2-col → 1-col on mobile; tag input wraps |
+
+#### B. UI Components
+| Component | Type | States |
+|-----------|------|--------|
+| `SkillTagInput` | Reusable | Default, tag added, remove (×) |
+| `DayCheckboxGrid` | Reusable | Unchecked, checked |
+| `FileUpload` (resume) | Reusable | Idle, hover, selected, error (size/type) |
+| `MultiSelect` (job categories) | Reusable | Default, open dropdown, selected items |
+| `TextInput`, `SelectInput` | Reusable | Default, focused, error |
+| `Button` (Submit) | Reusable | Default, loading, disabled |
+
+#### C. Functional Elements
+- **Validation rules:**
+
+| Field | Rule |
+|-------|------|
+| Full Name | Required, non-empty |
+| Phone | Required, exactly 10 digits |
+| Email | Optional, valid email format |
+| Password | Required, min 6 chars |
+| Confirm Password | Must match Password |
+| Experience | Optional, number ≥ 0 |
+| Expected Hourly Rate | Optional, number ≥ 0 |
+| Resume File | Optional, PDF/DOC/DOCX, max 5 MB |
+
+- **API Calls:** `POST /api/auth/applicant/signup` → on success, `POST /api/resume/upload` (if file selected)
+- **Loading:** Submit button spinner; file upload progress bar
+- **Error:** Per-field inline error messages; toast on server error
+- **Permissions:** Redirect authenticated users away
+
+#### D. Navigation & Routing
+- **Route:** `/signup/applicant`
+- **Guard:** Redirect if authenticated
+- **Redirect on success:** `/applicant/dashboard` (auto-login) or `/login`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/auth/ApplicantSignupPage.jsx`
+- **Libraries:** `react-hook-form` + `yup`; `react-dropzone` for file upload
+- **Performance:** Lazy-load file upload component
+- **Accessibility:** All inputs have `<label>` with `htmlFor`; required fields marked with `aria-required`
+
+---
+
+### SCR-04 — Employer Registration (`/signup/employer`) ⚠️ Auth + Approval
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | 2-column form grid, address section grouped visually |
+| Colors | Same auth palette; info banner (amber) post-submit explaining approval wait |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `TextInput`, `SelectInput`, `TextareaInput` | Default, focused, error |
+| `Button` (Submit) | Default, loading, disabled |
+| `InfoBanner` (post-submit) | Amber background — "Your account is pending approval" |
+
+#### C. Functional Elements
+- **Validation:** Store name, owner name, email, phone, password, confirm password, city, state, pincode all required; pincode = 6 digits; password min 6 chars
+- **API Calls:** `POST /api/auth/employer/signup`
+- **Post-signup:** Show pending-approval info banner; redirect to `/employer/dashboard`
+- **Error:** Per-field inline errors; toast on server error
+
+#### D. Navigation & Routing
+- **Route:** `/signup/employer`
+- **Guard:** Redirect if authenticated
+- **Redirect on success:** `/employer/dashboard`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/auth/EmployerSignupPage.jsx`
+- **Libraries:** `react-hook-form` + `yup`
+
+---
+
+### SCR-05 — Browse Jobs Public (`/jobs`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Left sidebar (filters, fixed 280px) + right main area (job cards grid + pagination) |
+| Colors | Sidebar bg `gray-50`, card bg white, status badges color-coded |
+| Responsive | Sidebar collapses to top filter bar on mobile; grid 3-col → 2-col → 1-col |
+
+#### B. UI Components
+| Component | Type | States |
+|-----------|------|--------|
+| `FilterPanel` | Reusable | Expanded, collapsed (mobile drawer) |
+| `SearchBar` | Reusable | Default, active, debounced |
+| `JobCard` | Reusable | Default, hover, skeleton |
+| `StatusBadge` | Reusable | open (green), closed (gray), filled (blue) |
+| `Pagination` | Reusable | Default, disabled prev/next at limits |
+| `EmptyState` | Reusable | "No jobs found" illustration + message |
+
+#### C. Functional Elements
+- **Filters:** Search (debounced 400ms), job type (checkbox), city (text), salary min/max (number)
+- **API Calls:** `GET /api/jobs?status=open&page=1&limit=10&search=&jobType=&city=` — re-fetched on filter change
+- **Loading:** Skeleton cards (×6) while fetching
+- **Empty State:** Illustration + "No jobs match your filters. Try clearing filters."
+- **Permissions:** No auth required; "Apply" on card absent (only on detail page)
+
+#### D. Navigation & Routing
+- **Route:** `/jobs`
+- **Guard:** None
+- **Redirect:** None
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/public/BrowseJobsPage.jsx`
+- **Performance:** URL query params mirror filter state (shareable URLs); debounced API calls
+- **Accessibility:** Filter form uses `<fieldset>` + `<legend>`; pagination buttons have `aria-label`
+
+---
+
+### SCR-06 — Job Detail Public (`/jobs/:id`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Single column, max-width `max-w-4xl`; sticky apply sidebar on desktop |
+| Colors | Status badge prominent at top; employer info in gray card |
+| Responsive | Sticky sidebar → bottom fixed bar on mobile |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `JobDetailHeader` | Static |
+| `RequirementsList` | Static (skill tags) |
+| `EmployerCard` | Static |
+| `ApplyModal` | Closed, open, submitting, success |
+| `Button` (Apply Now) | Default, loading, disabled (already applied) |
+| `Toast` | Success / Error |
+
+#### C. Functional Elements
+- **Apply flow:** If unauthenticated → redirect to `/login?redirect=/jobs/:id`; if authenticated applicant → open `ApplyModal`
+- **Apply Modal fields:** Cover letter (textarea), expected salary (number)
+- **API Calls:** `GET /api/jobs/:id` on mount; `POST /api/applications/:jobId` on submit
+- **Loading:** Skeleton layout while job loads
+- **Error:** 404 page if job not found; toast on apply error
+- **Permissions:** Only applicants can apply; employer/admin see detail read-only
+
+#### D. Navigation & Routing
+- **Route:** `/jobs/:id`
+- **Guard:** None for viewing; apply action checks auth
+- **Redirect:** Unauthenticated apply → `/login`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/public/JobDetailPage.jsx`
+- **Libraries:** `react-share` or clipboard API for share button
+- **Accessibility:** Modal traps focus; `role="dialog"` with `aria-modal="true"`
+
+---
+
+## 🟢 APPLICANT PORTAL SCREENS
+
+> All screens in `src/pages/applicant/`. All require `ProtectedRoute role="applicant"`.
+
+---
+
+### SCR-07 — Applicant Dashboard (`/applicant/dashboard`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Sidebar + main content area; stat cards row (4 cards) + 3-column widget sections |
+| Colors | Stat cards: indigo, green, amber, red accent borders |
+| Responsive | Sidebar hidden on mobile (hamburger); stat cards 2×2 on tablet, 1-col stack on mobile |
+
+#### B. UI Components
+| Component | Type | States |
+|-----------|------|--------|
+| `Sidebar` (Applicant) | Reusable | Expanded, collapsed |
+| `StatCard` (×4) | Reusable | Loading skeleton, loaded, zero-state |
+| `ApplicationCard` (×3) | Reusable | Default, hover |
+| `ShiftCard` (×2) | Reusable | Default |
+| `NotificationItem` (×3) | Reusable | Unread (bold), read, hover |
+| `QuickActionButton` | Screen-specific | Default, hover |
+
+#### C. Functional Elements
+- **API Calls (parallel on mount):**
+  - `GET /api/applications/my-applications?limit=3`
+  - `GET /api/shifts/applicant/my-shifts?limit=2`
+  - `GET /api/notifications/unread-count`
+  - `GET /api/job-requests/applicant/received?status=sent&limit=1`
+- **Loading:** Each widget has independent skeleton state
+- **Empty States:** "No applications yet — Browse Jobs" with CTA button
+- **Real-time:** Poll unread notification count every 60s (or use websocket if available)
+
+#### D. Navigation & Routing
+- **Route:** `/applicant/dashboard`
+- **Guard:** `ProtectedRoute role="applicant"`
+- **Redirect:** Unauthenticated → `/login`; wrong role → `/`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/applicant/DashboardPage.jsx`
+- **Performance:** Use `Promise.all` for parallel API calls; cache notification count in context
+
+---
+
+### SCR-08 — Browse Jobs Authenticated (`/applicant/jobs`)
+
+> Inherits all implementation from SCR-05 with additions below.
+
+#### C. Additional Functional Elements
+- **"Apply" per card:** Opens `ApplyModal` inline — no navigation away
+- **"Already Applied" badge:** Shown if applicant has existing application for that job (check from API response field or local state)
+- **API Calls:** Same as SCR-05 + `POST /api/applications/:jobId` on apply
+
+---
+
+### SCR-09 — My Applications (`/applicant/applications`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Full-width list with filter bar at top |
+| Colors | Status badges: applied=blue, reviewing=yellow, accepted=green, rejected=red, withdrawn=gray |
+| Responsive | Cards stack; status history timeline collapses below card |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `SelectFilter` (status) | Default, selected |
+| `ApplicationCard` (expandable) | Collapsed, expanded (timeline), hover |
+| `StatusBadge` | Per status color |
+| `Timeline` | List of status-change events |
+| `ConfirmDialog` (withdraw) | Closed, open |
+| `Pagination` | Standard |
+| `EmptyState` | "No applications yet" |
+
+#### C. Functional Elements
+- **Filter:** `GET /api/applications/my-applications?status=&page=&limit=10`; re-fetch on status change
+- **View Details:** `GET /api/applications/:id` — fetch full detail for expand/modal
+- **Withdraw:** Confirm dialog → `PUT /api/applications/:id/withdraw` → remove card from list
+- **Loading:** Skeleton list items
+- **Error:** Toast on withdraw failure
+
+#### D. Navigation & Routing
+- **Route:** `/applicant/applications`
+- **Guard:** `ProtectedRoute role="applicant"`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/applicant/MyApplicationsPage.jsx`
+
+---
+
+### SCR-10 — My Shifts (`/applicant/shifts`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Filter bar + shift card list |
+| Colors | Status badges; upcoming shifts highlight with left indigo border |
+| Responsive | Cards stack; filter bar collapses to accordion on mobile |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `ShiftCard` | Default, pending-confirm (amber border), active (green), completed (gray) |
+| `StatusBadge` | scheduled, confirmed, in-progress, completed, cancelled |
+| `DateRangePicker` | Default, selecting |
+| `ConfirmDialog` (cancel) | Closed, open, reason textarea |
+| `GeolocationButton` (check-in/out) | Idle, requesting location, success, error |
+
+#### C. Functional Elements
+- **Filters:** Status select + date range; `GET /api/shifts/applicant/my-shifts?status=&page=`
+- **Shift Detail:** `GET /api/attendance/shift/:shiftId` — fetch check-in/check-out record for a shift
+- **Confirm Shift:** `PUT /api/shifts/:id/confirm` — only shown if status = `scheduled`
+- **Cancel Shift:** Reason dialog → `PUT /api/shifts/:id/cancel` (shared endpoint; both employer & applicant role accepted)
+- **Check-In:** `navigator.geolocation.getCurrentPosition()` → `POST /api/attendance/:shiftId/checkin { latitude, longitude }`
+- **Check-Out:** Same with checkout endpoint
+- **Loading:** Skeleton cards; geolocation spinner
+
+#### D. Navigation & Routing
+- **Route:** `/applicant/shifts`
+- **Guard:** `ProtectedRoute role="applicant"`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/applicant/MyShiftsPage.jsx`
+- **Libraries:** Browser Geolocation API (no third-party needed)
+- **Accessibility:** Confirm dialogs trap focus; destructive actions (cancel) use red button
+
+---
+
+### SCR-11 — Attendance History (`/applicant/attendance`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Filter bar + data table |
+| Colors | Status: approved=green, pending=yellow, disputed=red |
+| Responsive | Table horizontally scrollable on mobile |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `DataTable` | Loading, populated, empty |
+| `DateRangePicker` | Default, selecting |
+| `AttendanceDetailModal` | Closed, open |
+| `ExportButton` | Default, downloading |
+
+#### C. Functional Elements
+- **API:** `GET /api/attendance/applicant/history?page=&limit=`
+- **Shift detail lookup:** `GET /api/attendance/shift/:shiftId` — to fetch exact check-in/out record for a specific shift
+- **Detail row:** Click expands modal with check-in/out timestamps + location
+- **Export:** Client-side CSV generation from loaded data
+- **Loading:** Table skeleton rows
+
+#### D. Navigation & Routing
+- **Route:** `/applicant/attendance`
+- **Guard:** `ProtectedRoute role="applicant"`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/applicant/AttendancePage.jsx`
+- **Libraries:** `papaparse` for CSV export
+
+---
+
+### SCR-12 — Job Requests Received (`/applicant/job-requests`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Filter bar + request card list |
+| Colors | sent=amber, accepted=green, declined=red, expired=gray badges |
+| Responsive | Cards full-width stack |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `JobRequestCard` | Default, expanded (employer message), hover |
+| `StatusBadge` | Per status |
+| `DeclineModal` | Closed, open, submitting |
+| `ConfirmDialog` (accept) | Closed, open |
+| `CountdownTimer` | Shown for non-expired pending requests |
+
+#### C. Functional Elements
+- **API:** `GET /api/job-requests/applicant/received?status=&page=`
+- **Accept:** Confirm dialog → `PUT /api/job-requests/:id/accept`
+- **Decline:** `DeclineModal` with reason textarea → `PUT /api/job-requests/:id/decline { declineReason }`
+- **Expiry:** Show countdown or "Expired" badge if past expiry date
+- **Loading:** Skeleton cards
+
+#### D. Navigation & Routing
+- **Route:** `/applicant/job-requests`
+- **Guard:** `ProtectedRoute role="applicant"`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/applicant/JobRequestsPage.jsx`
+
+---
+
+### SCR-13 — Notifications Applicant (`/applicant/notifications`)
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Full-width list; unread items have left blue border + slightly darker bg |
+| Colors | Unread bg `blue-50`; read bg white |
+| Responsive | List stacks on all breakpoints |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `NotificationItem` | Unread, read, hover, loading |
+| `EmptyState` | "No notifications" illustration |
+| `IconBadge` | Per notification type icon |
+| `Pagination` | Standard |
+
+#### C. Functional Elements
+- **API:**
+  - `GET /api/notifications?isRead=&page=`
+  - `PUT /api/notifications/read-all`
+  - `PUT /api/notifications/:id/read` (on item click)
+  - `DELETE /api/notifications/:id` (dismiss ×)
+- **Filter:** Unread toggle re-fetches with `?isRead=false`
+- **Loading:** Skeleton list items
+
+#### D. Navigation & Routing
+- **Route:** `/applicant/notifications`
+- **Guard:** `ProtectedRoute role="applicant"`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/applicant/NotificationsPage.jsx`
+
+---
+
+### SCR-14 — Applicant Profile (`/applicant/profile`) ⚠️ Sensitive
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Single column sections with edit toggle; view mode vs edit mode |
+| Colors | Availability toggle: green (available) / gray (unavailable) |
+| Responsive | Full-width sections; tag list wraps |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `ProfileHeader` | View mode, edit mode |
+| `ToggleSwitch` (availability) | On (green), Off (gray) |
+| `SkillTagInput` | View (tags only), edit (add/remove) |
+| `DayCheckboxGrid` | View (read-only), edit (interactive) |
+| `MultiSelect` (job categories) | View, edit |
+| `Button` (Save/Cancel) | Edit mode only |
+
+#### C. Functional Elements
+- **API:** `GET /api/auth/me` on mount; `PUT /api/auth/me` on save
+- **Edit toggle:** Shows form fields; Cancel reverts to fetched values
+- **Availability toggle:** Immediate PATCH (no edit mode required)
+- **Loading:** Skeleton profile sections
+- **Error:** Toast + revert on save failure
+
+#### D. Navigation & Routing
+- **Route:** `/applicant/profile`
+- **Guard:** `ProtectedRoute role="applicant"`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/applicant/ProfilePage.jsx`
+- **Accessibility:** Toggle switch has `role="switch"` + `aria-checked`
+
+---
+
+### SCR-15 — Resume Management (`/applicant/resume`) ⚠️ Sensitive
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Two-section card: current resume preview + upload zone |
+| Colors | Upload zone: dashed border indigo, bg `indigo-50` on hover |
+| Responsive | Full-width layout |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `ResumeUploadZone` | Idle, drag-over, file-selected, uploading (progress bar), success, error |
+| `ResumePreviewCard` | No resume, has resume (filename + date) |
+| `ConfirmDialog` (delete) | Closed, open |
+
+#### C. Functional Elements
+- **Upload:** `POST /api/resume/upload` (multipart, field: `resume`)
+- **Delete:** Confirm dialog → `DELETE /api/resume`
+- **View:** Opens Cloudinary URL in new tab
+- **Drag-and-drop:** `react-dropzone`; validates file type (PDF/DOC/DOCX) + max 5MB
+- **Error:** "File too large" / "Invalid file type" inline in upload zone
+
+#### D. Navigation & Routing
+- **Route:** `/applicant/resume`
+- **Guard:** `ProtectedRoute role="applicant"`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/applicant/ResumePage.jsx`
+- **Libraries:** `react-dropzone`
+
+---
+
+### SCR-16 — Account Settings Applicant (`/applicant/settings`) ⚠️ Sensitive
+
+#### A. Design Elements
+| Property | Value |
+|----------|-------|
+| Layout | Single-column narrow card (max-w-lg) |
+| Colors | Danger zone section in red border card |
+
+#### B. UI Components
+| Component | States |
+|-----------|--------|
+| `PasswordInput` (×3) | Default, focused, visible, error |
+| `Button` (Update) | Default, loading, disabled |
+| `DangerZoneCard` | Static |
+| `FormError` | Shown on validation or API error |
+
+#### C. Functional Elements
+- **Validation:** All 3 fields required; new password min 6 chars; confirm must match
+- **API:** `PUT /api/auth/update-password { currentPassword, newPassword }`
+- **Success:** Toast "Password updated successfully"; form clears
+- **Error:** "Current password incorrect" inline error
+
+#### D. Navigation & Routing
+- **Route:** `/applicant/settings`
+- **Guard:** `ProtectedRoute role="applicant"`
+
+#### E. Implementation Notes
+- **Folder:** `src/pages/applicant/SettingsPage.jsx`
+- **Accessibility:** `autocomplete="current-password"` / `"new-password"` on respective fields

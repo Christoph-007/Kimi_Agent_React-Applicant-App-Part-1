@@ -1,0 +1,435 @@
+# 🎯 ShiftMaster - Complete API & Features Summary
+
+## 📊 QUICK STATS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+│ Total API Endpoints    │ 44                                              │
+│ Database Models        │ 7 (Employer, Applicant, Job, Application,      │
+│                        │    Shift, Attendance, Admin)                    │
+│ User Roles             │ 3 (Employer, Applicant, Admin)                  │
+│ External Integrations  │ 3 (Email, SMS, Cloud Storage)                   │
+│ Lines of Code          │ 5000+                                           │
+│ Documentation Pages    │ 130+ pages across 6 documents                   │
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 🔌 ALL API ENDPOINTS (44 Total)
+
+### 🔐 AUTHENTICATION (6 endpoints)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+POST   /api/auth/employer/signup      Register employer account
+POST   /api/auth/applicant/signup     Register applicant account
+POST   /api/auth/login                Login (all user types)
+GET    /api/auth/me                   Get current user profile
+PUT    /api/auth/update-password      Update password
+POST   /api/auth/logout               Logout user
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 💼 JOBS (8 endpoints)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET    /api/jobs                      Get all jobs (public, with filters)
+GET    /api/jobs/:id                  Get single job details
+POST   /api/jobs                      Create new job (employer, approved)
+GET    /api/jobs/employer/my-jobs     Get employer's jobs
+PUT    /api/jobs/:id                  Update job details
+DELETE /api/jobs/:id                  Delete job
+PUT    /api/jobs/:id/close            Close job to applications
+PUT    /api/jobs/:id/reopen           Reopen closed job
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 📝 APPLICATIONS (7 endpoints)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+POST   /api/applications/:jobId       Apply for job (applicant)
+GET    /api/applications/my-applications   Get my applications
+GET    /api/applications/job/:jobId   Get applications for job (employer)
+GET    /api/applications/:id          Get application details
+PUT    /api/applications/:id/accept   Accept application (employer)
+PUT    /api/applications/:id/reject   Reject application (employer)
+PUT    /api/applications/:id/withdraw Withdraw application (applicant)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 📅 SHIFTS (8 endpoints)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+POST   /api/shifts                    Create shift (employer)
+GET    /api/shifts/employer/my-shifts Get employer's shifts
+GET    /api/shifts/applicant/my-shifts Get applicant's shifts
+GET    /api/shifts/:id                Get shift details
+PUT    /api/shifts/:id                Update shift (employer)
+PUT    /api/shifts/:id/confirm        Confirm shift (applicant)
+PUT    /api/shifts/:id/cancel         Cancel shift (both)
+DELETE /api/shifts/:id                Delete shift (employer)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### ⏰ ATTENDANCE (7 endpoints)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+POST   /api/attendance/:shiftId/checkin    Check in (applicant, with GPS)
+POST   /api/attendance/:shiftId/checkout   Check out (applicant, with GPS)
+GET    /api/attendance/shift/:shiftId      Get shift attendance
+GET    /api/attendance/employer/records    Get all attendance records (employer)
+GET    /api/attendance/applicant/history   Get attendance history (applicant)
+PUT    /api/attendance/:id/approve         Approve attendance (employer)
+POST   /api/attendance/manual              Mark manual attendance (employer)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 🛡️ ADMIN (8 endpoints)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET    /api/admin/dashboard/stats          Get platform statistics
+GET    /api/admin/employers                Get all employers
+PUT    /api/admin/employers/:id/approve    Approve employer
+PUT    /api/admin/employers/:id/block      Block employer
+PUT    /api/admin/employers/:id/unblock    Unblock employer
+GET    /api/admin/applicants               Get all applicants
+PUT    /api/admin/applicants/:id/deactivate Deactivate applicant
+DELETE /api/admin/jobs/:id                 Delete job (moderation)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 🗄️ DATABASE MODELS (7 Total)
+
+### 1. EMPLOYER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Fields:  storeName, ownerName, email, phone, password, address,
+         businessType, businessDescription, isApproved, isBlocked,
+         approvedBy, approvedAt, totalJobsPosted, activeJobs
+Methods: comparePassword()
+Hooks:   Pre-save password hashing
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 2. APPLICANT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Fields:  name, phone, email, password, skills, experience,
+         preferredJobType, availability, resume, isActive,
+         totalApplications, acceptedApplications, completedShifts
+Methods: comparePassword()
+Hooks:   Pre-save password hashing
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 3. JOB
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Fields:  employer, title, description, jobType, salary, workingHours,
+         location, requirements, benefits, status, totalApplications,
+         acceptedApplicants, views, expiryDate
+Methods: isAcceptingApplications()
+Indexes: Text search (title, description), Location, Job type/status
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 4. APPLICATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Fields:  job, applicant, employer, coverLetter, expectedSalary,
+         status, statusHistory, rejectionReason
+Methods: updateStatus(newStatus, updatedBy, model, note)
+Indexes: Compound unique (job, applicant) - Prevents duplicates
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 5. SHIFT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Fields:  job, employer, applicant, date, startTime, endTime, location,
+         instructions, status, confirmedByApplicant, confirmedAt,
+         cancelledBy, cancelledByModel, cancellationReason,
+         cancelledAt, completedAt, paymentAmount
+Methods: canBeCancelled()
+Indexes: Employer+date, Applicant+date, Status+date
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 6. ATTENDANCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Fields:  shift, applicant, employer, job, checkIn (time, location, method),
+         checkOut (time, location, method), totalHours, status, isLate,
+         lateByMinutes, isApproved, approvedBy, approvedAt,
+         applicantRemarks, employerRemarks
+Methods: calculateTotalHours(), checkIfLate(expectedStartTime)
+Indexes: Applicant+createdAt, Employer+createdAt, Shift
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 7. ADMIN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Fields:  name, email, password, role, permissions, isActive
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 🎯 FEATURES BY USER ROLE
+
+### 👔 EMPLOYER FEATURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Register and wait for admin approval
+✅ Post and manage job listings (after approval)
+✅ Review and manage applications
+✅ Accept/reject applications
+✅ Create and assign shifts to accepted applicants
+✅ Track employee attendance
+✅ Approve attendance records
+✅ Mark manual attendance
+✅ View job statistics (applications, views)
+✅ Receive email notifications for new applications
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 👤 APPLICANT FEATURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Register and create profile
+✅ Upload resume to cloud storage
+✅ Browse and search jobs with filters
+✅ Apply for jobs with cover letter
+✅ Track application status
+✅ Withdraw applications
+✅ View assigned shifts
+✅ Confirm shift attendance
+✅ Cancel shifts (with reason)
+✅ Check-in with GPS location tracking
+✅ Check-out with GPS location tracking
+✅ View attendance history
+✅ Receive email + SMS notifications for acceptance and shifts
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### 🛡️ ADMIN FEATURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ View platform dashboard with statistics
+✅ Approve/reject employer registrations
+✅ Block/unblock employers
+✅ Deactivate applicants
+✅ Delete inappropriate job postings
+✅ View all users and jobs
+✅ Monitor platform activity
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 🔐 SECURITY FEATURES
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ JWT Authentication (7-day token expiry)
+✅ bcrypt Password Hashing (10 rounds)
+✅ Helmet.js Security Headers
+✅ CORS Configuration
+✅ Joi Input Validation
+✅ Role-Based Access Control
+✅ Mongoose ODM (SQL Injection Prevention)
+✅ Password Never Returned in Responses
+✅ Error Message Sanitization in Production
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 📧 NOTIFICATION SYSTEM
+
+### EMAIL NOTIFICATIONS (Nodemailer + Gmail)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✉️ Employer signup (pending approval)
+✉️ Employer approval confirmation
+✉️ Applicant signup (welcome message)
+✉️ Application status updates
+✉️ Shift assignments
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### SMS NOTIFICATIONS (Twilio)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📱 Application accepted
+📱 Shift assigned
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 🚨 CRITICAL BUSINESS RULES
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. EMPLOYER APPROVAL
+   → New employers start with isApproved: false
+   → Cannot post jobs until admin approves
+   → Email notification sent on approval
+
+2. APPLICATION UNIQUENESS
+   → One application per job per applicant
+   → Enforced by compound unique database index
+   → Returns 409 Conflict error if duplicate
+
+3. SHIFT CREATION
+   → Only for accepted applications
+   → Requires valid job, employer, and applicant
+   → Date must be in the future
+
+4. ATTENDANCE RULES
+   → Check-in only allowed on shift date
+   → Check-out requires prior check-in
+   → Late if check-in >15 minutes after start time
+   → Total hours auto-calculated on check-out
+
+5. STATUS HISTORY TRACKING
+   → All status changes recorded in history
+   → Includes: status, updatedBy, timestamp, note
+   → Immutable (append-only)
+
+6. BLOCKING & DEACTIVATION
+   → Blocked employers cannot post jobs or manage applications
+   → Inactive applicants cannot apply or check-in
+   → Existing shifts/applications remain
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 🔄 COMPLETE USER WORKFLOWS
+
+### EMPLOYER WORKFLOW: Hiring Process
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. POST /api/auth/employer/signup
+   → Account created (isApproved: false)
+   → Email: "Pending approval"
+
+2. Admin: PUT /api/admin/employers/:id/approve
+   → isApproved: true
+   → Email: "Account approved"
+
+3. POST /api/jobs
+   → Job posted (status: open)
+   → Visible to all applicants
+
+4. Applicants: POST /api/applications/:jobId
+   → Applications received
+   → Email: "New application"
+
+5. PUT /api/applications/:id/accept
+   → Application accepted
+   → Email + SMS to applicant
+
+6. POST /api/shifts
+   → Shift created
+   → Email + SMS to applicant
+
+7. Track attendance and approve
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### APPLICANT WORKFLOW: Job Application to Shift Completion
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. POST /api/auth/applicant/signup
+   → Account created (active)
+   → Email: "Welcome"
+
+2. GET /api/jobs (with filters)
+   → Browse available jobs
+
+3. POST /api/applications/:jobId
+   → Application submitted
+   → Wait for employer decision
+
+4. Employer accepts
+   → Email + SMS notification
+
+5. GET /api/shifts/applicant/my-shifts
+   → View assigned shifts
+
+6. PUT /api/shifts/:id/confirm
+   → Confirm shift attendance
+
+7. POST /api/attendance/:shiftId/checkin
+   → Check-in with GPS location
+   → Late detection automatic
+
+8. POST /api/attendance/:shiftId/checkout
+   → Check-out with GPS location
+   → Total hours calculated
+
+9. Employer approves attendance
+   → Payment processed (if integrated)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 🛠️ TECHNOLOGY STACK
+
+### Core Dependencies (14)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+express                      Web framework
+mongoose                     MongoDB ODM
+jsonwebtoken                 JWT authentication
+bcryptjs                     Password hashing
+dotenv                       Environment variables
+cors                         CORS middleware
+helmet                       Security headers
+multer                       File uploads
+multer-storage-cloudinary    Cloudinary integration
+nodemailer                   Email service
+joi                          Validation
+morgan                       HTTP logger
+cloudinary                   Cloud storage
+twilio                       SMS service
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 📊 RESPONSE FORMATS
+
+### Success Response
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{
+  "success": true,
+  "message": "Operation successful",
+  "data": { ... }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### Error Response
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{
+  "success": false,
+  "message": "Error description"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### Paginated Response
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{
+  "success": true,
+  "message": "Data retrieved",
+  "data": [ ... ],
+  "pagination": {
+    "currentPage": 1,
+    "totalPages": 5,
+    "totalItems": 50,
+    "itemsPerPage": 10,
+    "hasNextPage": true,
+    "hasPrevPage": false
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 🚀 QUICK START
+
+### Installation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+npm install                  Install dependencies
+npm run dev                  Development mode (auto-reload)
+npm start                    Production mode
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+### Required Environment Variables
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MONGODB_URI                  MongoDB connection string
+JWT_SECRET                   JWT secret key (min 32 chars)
+EMAIL_USER                   Gmail address
+EMAIL_PASS                   Gmail app password
+TWILIO_ACCOUNT_SID           Twilio account SID
+TWILIO_AUTH_TOKEN            Twilio auth token
+CLOUDINARY_CLOUD_NAME        Cloudinary cloud name
+CLOUDINARY_API_KEY           Cloudinary API key
+CLOUDINARY_API_SECRET        Cloudinary API secret
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## 📚 DOCUMENTATION FILES
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. API_DOCUMENTATION.md       Complete API reference (50+ pages)
+2. API_QUICK_REFERENCE.md     Quick endpoint lookup (20+ pages)
+3. FEATURES_OVERVIEW.md       Platform capabilities (30+ pages)
+4. README.md                  Setup and installation (15+ pages)
+5. PROJECT_SUMMARY.md         Project overview (10+ pages)
+6. DOCUMENTATION_INDEX.md     Documentation navigation guide
+7. API_SUMMARY.txt            This file - Quick visual summary
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## ✅ PRODUCTION READY
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Complete API implementation (44 endpoints)
+✅ Comprehensive error handling
+✅ Security best practices
+✅ Scalable architecture
+✅ Well-documented code
+✅ Email & SMS notifications
+✅ File upload support
+✅ Location tracking
+✅ Attendance management
+✅ Admin dashboard
+✅ Role-based access control
+✅ Database optimization
+✅ Production deployment ready
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+═══════════════════════════════════════════════════════════════════════════
+                    ShiftMaster Backend v1.0.0
+              Complete Job Management Platform API
+           Built with ❤️ using Node.js, Express & MongoDB
+═══════════════════════════════════════════════════════════════════════════
+
+Last Updated: February 2024

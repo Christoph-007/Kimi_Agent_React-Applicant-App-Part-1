@@ -1,0 +1,1522 @@
+# ShiftMaster - Flutter App Site Map
+> **Backend Analysis Complete** | **Generated:** 2026-03-04
+> **Purpose:** Complete visual site map for Flutter frontend development
+
+---
+
+## 🏗️ Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           SHIFTMASTER FLUTTER APP                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Three distinct portals with role-based access:                            │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                      │
+│  │   PUBLIC     │  │   EMPLOYER   │  │    ADMIN     │                      │
+│  │  (Applicant) │  │   Portal     │  │   Portal     │                      │
+│  └──────────────┘  └──────────────┘  └──────────────┘                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📱 1. PUBLIC PORTAL (Applicant)
+
+### 1.1 Auth Flow
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   Splash    │────▶│    Login    │◄───▶│   Signup    │
+│   Screen    │     │   Screen    │     │   Screen    │
+└─────────────┘     └─────────────┘     └──────┬──────┘
+                                               │
+                                               ▼
+                                        ┌─────────────┐
+                                        │  Applicant  │
+                                        │ Registration│
+                                        │   Form      │
+                                        └─────────────┘
+```
+
+**Screens:**
+| Screen | Route | Key Features |
+|--------|-------|--------------|
+| Splash | `/splash` | Logo, loading, token check |
+| Login | `/login` | Phone/email + password, user type selector |
+| Applicant Signup | `/signup/applicant` | Personal info, phone, password |
+| Registration Form | `/register/applicant` | Full profile setup |
+
+**Registration Form Fields:**
+```dart
+// Required
+- name / fullName (String)
+- phone (String, 10 digits)
+- password (String, min 6 chars)
+
+// Optional but recommended
+- email (String, valid email)
+- skills (List<String>)
+- experience (int, years)
+- preferredJobType (Enum: full-time, part-time, shift, contract)
+- jobCategories (List<String>)
+- preferredShiftType (String)
+- preferredWorkLocation (String)
+- weeklyAvailability.days (List<String> - days of week)
+- weeklyAvailability.hoursPerWeek (int)
+- expectedHourlyRate (double)
+- availabilityDays (List<String>)
+```
+
+---
+
+### 1.2 Main Navigation (Bottom Nav)
+```
+┌────────────────────────────────────────────────────────┐
+│  🏠 Home    🔍 Browse    📋 My Jobs    👤 Profile    │
+└────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 1.3 Home Tab
+```
+┌─────────────────────────────────────────┐
+│  Home (Dashboard)                       │
+├─────────────────────────────────────────┤
+│  ┌─────────────────────────────────┐    │
+│  │  🔍 Search Bar                  │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  📊 Quick Stats Cards           │    │
+│  │  • Applied Jobs: X              │    │
+│  │  • Upcoming Shifts: X           │    │
+│  │  • Completed Shifts: X          │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  🔔 Notifications (Unread: X)   │    │
+│  │  • List of recent notifications │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  🎯 Recommended Jobs            │    │
+│  │  • Job Cards (horizontal scroll)│    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  📅 Upcoming Shifts             │    │
+│  │  • Next 3 shifts list           │    │
+│  └─────────────────────────────────┘    │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/auth/me` - User profile
+- `GET /api/notifications/unread-count` - Badge count
+- `GET /api/notifications?limit=5` - Recent notifications
+- `GET /api/jobs?page=1&limit=5` - Recommended jobs
+- `GET /api/shifts/applicant/my-shifts?limit=3` - Upcoming shifts
+
+---
+
+### 1.4 Browse Jobs Tab
+```
+┌─────────────────────────────────────────┐
+│  Browse Jobs                            │
+├─────────────────────────────────────────┤
+│  ┌─────────────────────────────────┐    │
+│  │  🔍 Search + Filter Button      │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  🏷️ Category Chips (scroll)     │    │
+│  │  [All][Food][Retail][Logistics]│    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  📋 Job List (vertical scroll)  │    │
+│  │                                 │    │
+│  │  ┌─────────────────────────┐    │    │
+│  │  │ Job Card                │    │    │
+│  │  │ • Title                 │    │    │
+│  │  │ • Company Name          │    │    │
+│  │  │ • Location              │    │    │
+│  │  │ • Salary                │    │    │
+│  │  │ • Job Type Badge        │    │    │
+│  │  │ • [View Details]        │    │    │
+│  │  └─────────────────────────┘    │    │
+│  │                                 │    │
+│  │  ┌─────────────────────────┐    │    │
+│  │  │ Job Card...             │    │    │
+│  │  └─────────────────────────┘    │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  [Load More / Pagination]               │
+└─────────────────────────────────────────┘
+```
+
+**Filter Panel (Bottom Sheet/Modal):**
+```dart
+Filters:
+├── jobType (Enum: full-time, part-time, shift, contract)
+├── city (String)
+├── state (String)
+├── minSalary (double)
+├── maxSalary (double)
+├── category (String - search term)
+└── sortBy + order (String, Enum: asc/desc)
+```
+
+**API Calls:**
+- `GET /api/jobs?page=&limit=&jobType=&city=&minSalary=&maxSalary=&search=&category=`
+- `GET /api/categories` - For category chips
+
+---
+
+### 1.5 Job Detail Screen
+```
+┌─────────────────────────────────────────┐
+│  ← Job Details                          │
+├─────────────────────────────────────────┤
+│  ┌─────────────────────────────────┐    │
+│  │  JOB HEADER                     │    │
+│  │  • Title (large)                │    │
+│  │  • Company Name                 │    │
+│  │  • Location 📍                  │    │
+│  │  • Posted Date                  │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  QUICK INFO (Row)               │    │
+│  │  💰 Salary    🕐 Job Type      │    │
+│  │  📅 Shift     👥 Views         │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  DESCRIPTION                    │    │
+│  │  [Full job description text]    │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  REQUIREMENTS                   │    │
+│  │  • Min Experience: X years      │    │
+│  │  • Skills: [skill chips]        │    │
+│  │  • Education: X                 │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  WORKING HOURS                  │    │
+│  │  • Hours per day: X             │    │
+│  │  • Days per week: X             │    │
+│  │  • Shift timing: X              │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  BENEFITS                       │    │
+│  │  [Benefit chips/tags]           │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  EMPLOYER INFO                  │    │
+│  │  • Store Name                   │    │
+│  │  • Business Type                │    │
+│  │  • [View Profile]               │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  [    APPLY FOR THIS JOB    ]   │    │
+│  └─────────────────────────────────┘    │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/jobs/:id` - Job details
+- `POST /api/applications/:jobId` - Apply (body: coverLetter, expectedSalary)
+
+---
+
+### 1.6 My Jobs Tab
+```
+┌─────────────────────────────────────────┐
+│  My Jobs                                │
+├─────────────────────────────────────────┤
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐   │
+│  │Applied  │ │Accepted │ │Job Req  │   │
+│  │  (X)    │ │  (X)    │ │  (X)    │   │
+│  └─────────┘ └─────────┘ └─────────┘   │
+├─────────────────────────────────────────┤
+│                                         │
+│  [Tab Content based on selection]       │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │ APPLICATION CARD                │    │
+│  │ • Job Title                     │    │
+│  │ • Company                       │    │
+│  │ • Status Badge (applied/reviewing/│   │
+│  │   accepted/rejected/withdrawn)  │    │
+│  │ • Applied Date                  │    │
+│  │ • [View Details] [Withdraw]     │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**Sub-tabs:**
+1. **Applications** - Jobs the applicant applied to
+2. **Job Requests** - Direct job offers from employers
+3. **Accepted** - Accepted applications/requests
+
+**API Calls:**
+- `GET /api/applications/my-applications?status=&page=`
+- `GET /api/job-requests/applicant/received?status=&page=`
+- `PUT /api/applications/:id/withdraw` - Withdraw application
+
+---
+
+### 1.7 Job Request Detail (Employer-initiated offer)
+```
+┌─────────────────────────────────────────┐
+│  ← Job Request                          │
+├─────────────────────────────────────────┤
+│  ┌─────────────────────────────────┐    │
+│  │  FROM EMPLOYER                  │    │
+│  │  • Store Name                   │    │
+│  │  • Business Type                │    │
+│  │  • Location                     │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  JOB DETAILS                    │    │
+│  │  • Title                        │    │
+│  │  • Description                  │    │
+│  │  • Shift Type                   │    │
+│  │  • Location                     │    │
+│  │  • Offered Hourly Rate          │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  MESSAGE FROM EMPLOYER          │    │
+│  │  [Personal message text]        │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  STATUS: [sent/accepted/declined/│    │
+│  │          expired]               │    │
+│  │  Expires: [Date]                │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  [   ACCEPT   ]  [   DECLINE   ]        │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/job-requests/:id`
+- `PUT /api/job-requests/:id/accept`
+- `PUT /api/job-requests/:id/decline` (body: declineReason optional)
+
+---
+
+### 1.8 My Shifts Screen
+```
+┌─────────────────────────────────────────┐
+│  ← My Shifts                            │
+├─────────────────────────────────────────┤
+│  [Upcoming] [Completed] [Cancelled]     │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │ SHIFT CARD                      │    │
+│  │                                 │    │
+│  │ • Job Title                     │    │
+│  │ • Employer Name                 │    │
+│  │ • Date: DD/MM/YYYY              │    │
+│  │ • Time: HH:MM - HH:MM           │    │
+│  │ • Location                      │    │
+│  │                                 │    │
+│  │ Status: [scheduled/confirmed/   │    │
+│  │  in-progress/completed/         │    │
+│  │  cancelled]                     │    │
+│  │                                 │    │
+│  │ [View Details] [Confirm]        │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/shifts/applicant/my-shifts?status=&page=`
+- `PUT /api/shifts/:id/confirm`
+- `PUT /api/shifts/:id/cancel` (body: cancellationReason)
+
+---
+
+### 1.9 Shift Detail Screen
+```
+┌─────────────────────────────────────────┐
+│  ← Shift Details                        │
+├─────────────────────────────────────────┤
+│  ┌─────────────────────────────────┐    │
+│  │  SHIFT INFO                     │    │
+│  │  • Job Title                    │    │
+│  │  • Date & Time                  │    │
+│  │  • Location                     │    │
+│  │  • Instructions                 │    │
+│  │  • Payment Amount               │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  EMPLOYER CONTACT               │    │
+│  │  • Store Name                   │    │
+│  │  • Phone                        │    │
+│  │  • Address                      │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  ATTENDANCE                     │    │
+│  │  Status: [Not checked in]       │    │
+│  │                                 │    │
+│  │  [   CHECK IN   ] ← Only on     │    │
+│  │                     shift date  │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  [View Attendance Record]               │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/shifts/:id`
+- `POST /api/attendance/:shiftId/checkin` (body: latitude, longitude)
+- `POST /api/attendance/:shiftId/checkout` (body: latitude, longitude, remarks)
+- `GET /api/attendance/shift/:shiftId`
+
+---
+
+### 1.10 Attendance History Screen
+```
+┌─────────────────────────────────────────┐
+│  ← Attendance History                   │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │ ATTENDANCE CARD                 │    │
+│  │ • Date                          │    │
+│  │ • Job Title                     │    │
+│  │ • Check In: HH:MM               │    │
+│  │ • Check Out: HH:MM              │    │
+│  │ • Total Hours: X.X              │    │
+│  │ • Status: present/late/absent   │    │
+│  │ • Approved: Yes/No              │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/attendance/applicant/history?page=`
+
+---
+
+### 1.11 Profile Tab
+```
+┌─────────────────────────────────────────┐
+│  Profile                                │
+├─────────────────────────────────────────┤
+│  ┌─────────────────────────────────┐    │
+│  │  PROFILE HEADER                 │    │
+│  │  • Avatar (circle)              │    │
+│  │  • Name                         │    │
+│  │  • Email                        │    │
+│  │  • Phone                        │    │
+│  │  • [Edit Profile]               │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  MY STATS                       │    │
+│  │  • Total Applications: X        │    │
+│  │  • Accepted: X                  │    │
+│  │  • Completed Shifts: X          │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  PROFILE DETAILS                │    │
+│  │  • Skills: [chips]              │    │
+│  │  • Experience: X years          │    │
+│  │  • Preferred Job Type: X        │    │
+│  │  • Categories: [chips]          │    │
+│  │  • Shift Type: X                │    │
+│  │  • Work Location: X             │    │
+│  │  • Hourly Rate: ₹X              │    │
+│  │  • Availability: [days chips]   │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  RESUME                         │    │
+│  │  • [Upload Resume] / View PDF   │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  SETTINGS                       │    │
+│  │  • [Change Password]            │    │
+│  │  • [Notifications]              │    │
+│  │  • [Logout]                     │    │
+│  └─────────────────────────────────┘    │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/auth/me`
+- `PUT /api/auth/me` - Update profile
+- `POST /api/resume/upload` - Multipart form data
+- `DELETE /api/resume` - Delete resume
+- `PUT /api/auth/update-password` - Change password
+- `POST /api/auth/logout`
+
+---
+
+### 1.12 Notifications Screen
+```
+┌─────────────────────────────────────────┐
+│  ← Notifications                        │
+├─────────────────────────────────────────┤
+│  [Mark All as Read]                     │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │ 🔴 Notification Item            │    │
+│  │ • Title                         │    │
+│  │ • Body (truncated)              │    │
+│  │ • Time (relative: 2h ago)       │    │
+│  │ • [Tap to mark read]            │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │ ⚪ Read Notification            │    │
+│  │ • Title                         │    │
+│  │ • Body                          │    │
+│  │ • Time                          │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  [Swipe to dismiss]                     │
+└─────────────────────────────────────────┘
+```
+
+**Notification Types:**
+```dart
+enum ApplicantNotificationType {
+  job_request_received,      // Employer sent job request
+  job_request_status_changed,// Request accepted/declined/expired
+  job_match_alert,           // New job matching interests
+  new_employer_match,        // New employer joined matching interests
+}
+```
+
+**API Calls:**
+- `GET /api/notifications?page=`
+- `GET /api/notifications/unread-count`
+- `PUT /api/notifications/:id/read`
+- `PUT /api/notifications/read-all`
+- `DELETE /api/notifications/:id` (Dismiss)
+
+---
+
+## 🏢 2. EMPLOYER PORTAL
+
+### 2.1 Auth Flow
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   Splash    │────▶│    Login    │◄───▶│   Signup    │
+│   Screen    │     │   Screen    │     │   Screen    │
+└─────────────┘     └─────────────┘     └──────┬──────┘
+                                               │
+                                               ▼
+                                        ┌─────────────┐
+                                        │   Employer  │
+                                        │ Registration│
+                                        │    Form     │
+                                        └─────────────┘
+```
+
+**Employer Registration Fields:**
+```dart
+// Required
+- storeName (String)
+- ownerName (String)
+- email (String, valid email)
+- phone (String, 10 digits)
+- password (String, min 6 chars)
+- address.street (String)
+- address.city (String)
+- address.state (String)
+- address.pincode (String, 6 digits)
+- businessType (Enum: restaurant, retail, logistics, healthcare, hospitality, other)
+
+// Optional
+- businessDescription (String)
+```
+
+---
+
+### 2.2 Main Navigation (Bottom Nav)
+```
+┌────────────────────────────────────────────────────────┐
+│  🏠 Home    📋 Jobs    👥 Applicants    ⚙️ More        │
+└────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 2.3 Employer Home Tab
+```
+┌─────────────────────────────────────────┐
+│  Dashboard                              │
+├─────────────────────────────────────────┤
+│  ┌─────────────────────────────────┐    │
+│  │  APPROVAL STATUS                │    │
+│  │  [Pending/Approved/Blocked]     │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  QUICK STATS                    │    │
+│  │  ┌─────┐ ┌─────┐ ┌─────┐       │    │
+│  │  │Jobs │ │Apps │ │Shfts│       │    │
+│  │  │  X  │ │  X  │ │  X  │       │    │
+│  │  └─────┘ └─────┘ └─────┘       │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  RECENT JOBS                    │    │
+│  │  • List of last 5 jobs          │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  RECENT APPLICATIONS            │    │
+│  │  • Per-job application summaries│    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  UPCOMING SHIFTS                │    │
+│  │  • Next 3 shifts                │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  JOB REQUESTS SENT              │    │
+│  │  • Last 3 sent requests         │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  SHORTLIST                      │    │
+│  │  • Last 3 shortlisted           │    │
+│  │    applicants                   │    │
+│  └─────────────────────────────────┘    │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/auth/me` - Employer profile (check isApproved, isBlocked)
+- `GET /api/notifications/unread-count`
+- `GET /api/jobs/employer/my-jobs?limit=5` - Recent jobs
+- `GET /api/shifts/employer/my-shifts?limit=3` - Upcoming shifts
+- `GET /api/job-requests/employer/sent?limit=3` - Sent requests
+- `GET /api/shortlist?limit=3` - Shortlisted applicants
+- `GET /api/applications/job/:jobId?limit=5` - Per-job applications (see NOTE below)
+
+> **⚠️ IMPORTANT NOTE:** There is NO `/api/applications/employer/recent` endpoint. To show recent applications on dashboard, you must:
+> 1. First fetch employer's jobs (`GET /api/jobs/employer/my-jobs`)
+> 2. Then for each job, fetch applications (`GET /api/applications/job/:jobId?limit=1`)
+> 3. Combine and sort client-side, take top 5
+
+---
+
+### 2.4 My Jobs Tab
+```
+┌─────────────────────────────────────────┐
+│  My Jobs                           [+]  │
+├─────────────────────────────────────────┤
+│  [All] [Open] [Closed] [Filled]         │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │ JOB CARD                        │    │
+│  │ • Title                         │    │
+│  │ • Posted: Date                  │    │
+│  │ • Applications: X               │    │
+│  │ • Status: open/closed/filled    │    │
+│  │                                 │    │
+│  │ [View] [Edit] [Close] [Delete]  │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  [+ Post New Job]                       │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/jobs/employer/my-jobs?status=&page=`
+- `DELETE /api/jobs/:id`
+- `PUT /api/jobs/:id/close`
+- `PUT /api/jobs/:id/reopen`
+
+---
+
+### 2.5 Post/Edit Job Screen
+```
+┌─────────────────────────────────────────┐
+│  ← Post New Job / Edit Job              │
+├─────────────────────────────────────────┤
+│                                         │
+│  Job Title *                            │
+│  [________________]                     │
+│                                         │
+│  Description *                          │
+│  [                            ]         │
+│  [____________________________]         │
+│                                         │
+│  Job Type *                             │
+│  [Dropdown: full-time/part-time/       │
+│   shift/contract]                       │
+│                                         │
+│  Salary *                               │
+│  Amount: [____] Period: [dropdown]      │
+│                                         │
+│  Location *                             │
+│  City: [____] State: [____]             │
+│  Pincode: [____]                        │
+│                                         │
+│  Working Hours                          │
+│  Hours/Day: [__] Days/Week: [__]        │
+│  Shift Timing: [____]                   │
+│                                         │
+│  Requirements                           │
+│  Min Experience: [__]                   │
+│  Skills: [tag input]                    │
+│  Education: [____]                      │
+│                                         │
+│  Benefits                               │
+│  [tag input]                            │
+│                                         │
+│  [   POST JOB   ]                       │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `POST /api/jobs` - Create job
+- `PUT /api/jobs/:id` - Update job
+
+**Request Body:**
+```json
+{
+  "title": "String (required)",
+  "description": "String (required)",
+  "jobType": "Enum: full-time, part-time, shift, contract",
+  "salary": {
+    "amount": "Number (required)",
+    "period": "Enum: hourly, daily, weekly, monthly, yearly"
+  },
+  "location": {
+    "city": "String (required)",
+    "state": "String (required)",
+    "pincode": "String, 6 digits (required)",
+    "address": "String"
+  },
+  "workingHours": {
+    "hoursPerDay": "Number",
+    "daysPerWeek": "Number",
+    "shiftTiming": "String"
+  },
+  "requirements": {
+    "minimumExperience": "Number",
+    "skills": ["String"],
+    "education": "String",
+    "otherRequirements": "String"
+  },
+  "benefits": ["String"],
+  "expiryDate": "Date"
+}
+```
+
+---
+
+### 2.6 Job Applications Screen
+```
+┌─────────────────────────────────────────┐
+│  ← Applications for [Job Title]         │
+├─────────────────────────────────────────┤
+│  [All] [Applied] [Reviewing] [Accepted] │
+│  [Rejected]                             │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │ APPLICATION CARD                │    │
+│  │                                 │    │
+│  │ • Applicant Name                │    │
+│  │ • Phone: XXX                    │    │
+│  │ • Skills: [chips]               │    │
+│  │ • Experience: X years           │    │
+│  │ • Expected Salary: ₹X           │    │
+│  │ • Applied: Date                 │    │
+│  │                                 │    │
+│  │ [View Profile] [View Resume]    │    │
+│  │                                 │    │
+│  │ [   ACCEPT   ]  [   REJECT   ]  │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/applications/job/:jobId?status=&page=`
+- `GET /api/applications/:id` - Single application details
+- `PUT /api/applications/:id/accept`
+- `PUT /api/applications/:id/reject` (body: rejectionReason)
+- `GET /api/resume/:applicantId` - View resume
+
+---
+
+### 2.7 Browse Applicants Tab
+```
+┌─────────────────────────────────────────┐
+│  Browse Applicants                 ⚙️   │
+├─────────────────────────────────────────┤
+│  ┌─────────────────────────────────┐    │
+│  │  🔍 Search + Filter Button      │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  APPLICANT CARD                 │    │
+│  │                                 │    │
+│  │ • Name                          │    │
+│  │ • Categories: [chips]           │    │
+│  │ • Shift Type: X                 │    │
+│  │ • Location: X                   │    │
+│  │ • Hourly Rate: ₹X               │    │
+│  │ • Experience: X years           │    │
+│  │ • Availability: [day chips]     │    │
+│  │                                 │    │
+│  │ [View Profile] [Send Request]   │    │
+│  │ [⭐ Shortlist]                  │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**Filter Panel:**
+```dart
+Filters:
+├── jobCategory (String)
+├── preferredShiftType (String)
+├── preferredWorkLocation (String)
+├── minHourlyRate (double)
+├── maxHourlyRate (double)
+├── availableDay (String - single day)
+├── search (String - search by name)
+├── sortBy (String: createdAt, expectedHourlyRate, experience)
+└── order (String: asc, desc)
+```
+
+**API Calls:**
+- `GET /api/employer/applicants?filters...`
+- `GET /api/employer/applicants/:id` - View profile
+- `POST /api/shortlist` - Add to shortlist
+- `GET /api/shortlist/check/:applicantId` - Check if shortlisted
+
+---
+
+### 2.8 Send Job Request Screen
+```
+┌─────────────────────────────────────────┐
+│  ← Send Job Request                     │
+├─────────────────────────────────────────┤
+│  To: [Applicant Name]                   │
+│                                         │
+│  Job Title *                            │
+│  [________________]                     │
+│                                         │
+│  Description *                          │
+│  [                            ]         │
+│  [____________________________]         │
+│                                         │
+│  Shift Type *                           │
+│  [Dropdown: full-time/part-time/       │
+│   weekends-only/flexible]               │
+│                                         │
+│  Location *                             │
+│  [________________]                     │
+│                                         │
+│  Offered Hourly Rate *                  │
+│  [________________]                     │
+│                                         │
+│  Message (Optional)                     │
+│  [________________]                     │
+│                                         │
+│  Expires in: 7 days                     │
+│                                         │
+│  [   SEND REQUEST   ]                   │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `POST /api/job-requests`
+
+**Request Body:**
+```json
+{
+  "applicantId": "String (MongoDB ObjectId)",
+  "jobTitle": "String (required)",
+  "jobDescription": "String (required)",
+  "shiftType": "Enum: full-time, part-time, weekends-only, flexible",
+  "location": "String (required)",
+  "offeredHourlyRate": "Number (required)",
+  "message": "String (optional)"
+}
+```
+
+---
+
+### 2.9 Shortlist Screen
+```
+┌─────────────────────────────────────────┐
+│  ← My Shortlist                         │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │ SHORTLIST CARD                  │    │
+│  │                                 │    │
+│  │ • Applicant Name                │    │
+│  │ • Categories                    │    │
+│  │ • Location                      │    │
+│  │ • Rate: ₹X/hr                   │    │
+│  │                                 │    │
+│  │ Label: [Custom label/tag]       │    │
+│  │ Notes: [Private notes]          │    │
+│  │                                 │    │
+│  │ [Edit Notes] [Remove] [Request] │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/shortlist?page=`
+- `PUT /api/shortlist/:id` - Update notes/label
+- `DELETE /api/shortlist/:id` - Remove
+
+---
+
+### 2.10 My Shifts (Employer)
+```
+┌─────────────────────────────────────────┐
+│  ← My Shifts                       [+]  │
+├─────────────────────────────────────────┤
+│  [Scheduled] [Confirmed] [In Progress]  │
+│  [Completed] [Cancelled]                │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │ SHIFT CARD                      │    │
+│  │ • Job Title                     │    │
+│  │ • Applicant Name                │    │
+│  │ • Date & Time                   │    │
+│  │ • Location                      │    │
+│  │ • Status                        │    │
+│  │                                 │    │
+│  │ [Edit] [Cancel] [Delete]        │    │
+│  │ [View Attendance]               │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/shifts/employer/my-shifts?status=&page=`
+- `POST /api/shifts` - Create shift
+- `PUT /api/shifts/:id` - Edit shift
+- `PUT /api/shifts/:id/cancel` (body: cancellationReason)
+- `DELETE /api/shifts/:id`
+- `GET /api/attendance/shift/:shiftId`
+
+---
+
+### 2.11 Create Shift Screen
+```
+┌─────────────────────────────────────────┐
+│  ← Create Shift                         │
+├─────────────────────────────────────────┤
+│  Job *                                  │
+│  [Dropdown: Select from my jobs]        │
+│                                         │
+│  Applicant *                            │
+│  [Dropdown: Accepted applicants only]   │
+│                                         │
+│  Date *                                 │
+│  [Date Picker]                          │
+│                                         │
+│  Start Time * (HH:MM)                   │
+│  [Time Picker]                          │
+│                                         │
+│  End Time * (HH:MM)                     │
+│  [Time Picker]                          │
+│                                         │
+│  Location *                             │
+│  [________________]                     │
+│                                         │
+│  Instructions                           │
+│  [________________]                     │
+│                                         │
+│  Payment Amount                         │
+│  [________________]                     │
+│                                         │
+│  [   CREATE SHIFT   ]                   │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/jobs/employer/my-jobs?status=open` - For job dropdown
+- `POST /api/shifts` - Create
+
+**Request Body:**
+```json
+{
+  "jobId": "String (required)",
+  "applicantId": "String (required)",
+  "date": "Date (ISO string, required)",
+  "startTime": "String, HH:MM format (required)",
+  "endTime": "String, HH:MM format (required)",
+  "location": "String (required)",
+  "instructions": "String (optional)",
+  "paymentAmount": "Number (optional)"
+}
+```
+
+---
+
+### 2.12 Attendance Records (Employer)
+```
+┌─────────────────────────────────────────┐
+│  ← Attendance Records                   │
+├─────────────────────────────────────────┤
+│  [Filter: Date Range, Status, Approved] │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │ ATTENDANCE CARD                 │    │
+│  │ • Date                          │    │
+│  │ • Job Title                     │    │
+│  │ • Applicant Name                │    │
+│  │ • Check In: HH:MM               │    │
+│  │ • Check Out: HH:MM              │    │
+│  │ • Total Hours: X.X              │    │
+│  │ • Status: present/late/absent   │    │
+│  │ • Approved: Yes/No              │    │
+│  │                                 │    │
+│  │ [Approve] [Add Remarks]         │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  [+ Mark Manual Attendance]             │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/attendance/employer/records?page=`
+- `PUT /api/attendance/:id/approve` (body: employerRemarks)
+- `POST /api/attendance/manual` - Mark manual attendance
+
+---
+
+### 2.13 More Tab (Employer Profile)
+```
+┌─────────────────────────────────────────┐
+│  More                                   │
+├─────────────────────────────────────────┤
+│  ┌─────────────────────────────────┐    │
+│  │  STORE PROFILE                  │    │
+│  │  • Store Name                   │    │
+│  │  • Owner Name                   │    │
+│  │  • Business Type                │    │
+│  │  • [Edit Profile]               │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  MENU ITEMS:                            │
+│  ┌─────────────────────────────────┐    │
+│  │ 📋 Job Requests Sent            │    │
+│  │ ⭐ Shortlisted Applicants       │    │
+│  │ 📅 Attendance Records           │    │
+│  │ 💾 Saved Filters                │    │
+│  │ 🔔 Notifications                │    │
+│  │ 🔒 Change Password              │    │
+│  │ 🚪 Logout                       │    │
+│  └─────────────────────────────────┘    │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/auth/me`
+- `PUT /api/auth/me`
+- `PUT /api/auth/update-password`
+- `POST /api/auth/logout`
+- `GET /api/employer/saved-filters`
+- `PUT /api/employer/saved-filters`
+
+---
+
+## 👨‍💼 3. ADMIN PORTAL
+
+### 3.1 Admin Login
+```
+┌─────────────────────────────────────────┐
+│  Admin Login                            │
+├─────────────────────────────────────────┤
+│                                         │
+│  Email *                                │
+│  [________________]                     │
+│                                         │
+│  Password *                             │
+│  [________________]                     │
+│                                         │
+│  User Type: admin (fixed)               │
+│                                         │
+│  [   LOGIN   ]                          │
+└─────────────────────────────────────────┘
+```
+
+**API Call:**
+- `POST /api/auth/login` (body: identifier, password, userType: 'admin')
+
+---
+
+### 3.2 Admin Dashboard
+```
+┌─────────────────────────────────────────┐
+│  Admin Dashboard                        │
+├─────────────────────────────────────────┤
+│  ┌─────────────────────────────────┐    │
+│  │  STAT OVERVIEW                  │    │
+│  │  ┌──────┐┌──────┐┌──────┐      │    │
+│  │  │Employ││Applct││ Jobs │      │    │
+│  │  │  X   ││  X   ││  X   │      │    │
+│  │  └──────┘└──────┘└──────┘      │    │
+│  │  ┌──────┐┌──────┐┌──────┐      │    │
+│  │  │Applic││Shifts││Active│      │    │
+│  │  │  X   ││  X   ││  X   │      │    │
+│  │  └──────┘└──────┘└──────┘      │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  PENDING APPROVALS              │    │
+│  │  • Employers awaiting: X        │    │
+│  │  • [View All Pending]           │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  RECENT JOBS                    │    │
+│  │  • List (last 5)                │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  RECENT APPLICATIONS            │    │
+│  │  • List (last 5)                │    │
+│  └─────────────────────────────────┘    │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/admin/dashboard/stats` - Contains all stats + recentJobs + recentApplications
+
+> **⚠️ NOTE:** Do NOT call separate endpoints for recent jobs/applications. They are embedded in the dashboard stats response.
+
+---
+
+### 3.3 Admin Navigation
+```
+┌──────────────────────────────────────────────────────────┐
+│  Admin Panel                                             │
+├──────────────────────────────────────────────────────────┤
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
+│  │Dashboard │  │Employers │  │Applicants│  │   Jobs   │  │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘  │
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 3.4 Manage Employers Screen
+```
+┌─────────────────────────────────────────┐
+│  ← Manage Employers                     │
+├─────────────────────────────────────────┤
+│  [🔍 Search] [Filters: Approved, Blocked│
+│   Business Type]                        │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │ EMPLOYER CARD                   │    │
+│  │ • Store Name                    │    │
+│  │ • Owner: Name                   │    │
+│  │ • Email / Phone                 │    │
+│  │ • Business Type                 │    │
+│  │ • Status: [Approved/Pending/    │    │
+│  │            Blocked]             │    │
+│  │ • Registered: Date              │    │
+│  │                                 │    │
+│  │ [View Details] [Approve]        │    │
+│  │ [Block/Unblock] [Delete]        │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/admin/employers?isApproved=&isBlocked=&businessType=&search=&page=`
+- `PUT /api/admin/employers/:id/approve`
+- `PUT /api/admin/employers/:id/block`
+- `PUT /api/admin/employers/:id/unblock`
+
+---
+
+### 3.5 Manage Applicants Screen
+```
+┌─────────────────────────────────────────┐
+│  ← Manage Applicants                    │
+├─────────────────────────────────────────┤
+│  [🔍 Search] [Filter: Active/Inactive]  │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │ APPLICANT CARD                  │    │
+│  │ • Name                          │    │
+│  │ • Phone                         │    │
+│  │ • Email                         │    │
+│  │ • Status: Active/Inactive       │    │
+│  │ • Total Applications: X         │    │
+│  │ • Completed Shifts: X           │    │
+│  │                                 │    │
+│  │ [View Details]                  │    │
+│  │ [Deactivate] ← No Activate!     │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/admin/applicants?isActive=&search=&page=`
+- `PUT /api/admin/applicants/:id/deactivate`
+
+> **⚠️ CRITICAL:** There is NO `PUT /api/admin/applicants/:id/activate` endpoint. Admin can only DEACTIVATE applicants, not reactivate them.
+
+---
+
+### 3.6 Moderate Jobs Screen
+```
+┌─────────────────────────────────────────┐
+│  ← Moderate Jobs                        │
+├─────────────────────────────────────────┤
+│  [🔍 Search] [Filter: Status, Category] │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │ JOB CARD                        │    │
+│  │ • Title                         │    │
+│  │ • Employer: Store Name          │    │
+│  │ • Posted: Date                  │    │
+│  │ • Status: open/closed/filled    │    │
+│  │ • Applications: X               │    │
+│  │                                 │    │
+│  │ [View Details] [Delete Job]     │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/jobs?status=&search=&page=` - Use public endpoint (no admin list exists)
+- `DELETE /api/admin/jobs/:id` - Delete job
+
+> **⚠️ CRITICAL:** 
+> - There is NO `GET /api/admin/jobs` endpoint - use the public `GET /api/jobs`
+> - There is NO `PUT /api/admin/jobs/:id/close` - Admin can only DELETE jobs, not close them
+
+---
+
+### 3.7 Admin Analytics
+```
+┌─────────────────────────────────────────┐
+│  ← Analytics                            │
+├─────────────────────────────────────────┤
+│  [Time Range: Today/Week/Month/Year]    │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  CHARTS                         │    │
+│  │                                 │    │
+│  │  [Line Chart: Applications      │    │
+│  │   over time]                    │    │
+│  │                                 │    │
+│  │  [Bar Chart: Jobs by Category]  │    │
+│  │                                 │    │
+│  │  [Pie Chart: Employer Status]   │    │
+│  │                                 │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+│  ┌─────────────────────────────────┐    │
+│  │  KEY METRICS                    │    │
+│  │  • Total Signups: X             │    │
+│  │  • Conversion Rate: X%          │    │
+│  │  • Avg Time to Hire: X days     │    │
+│  │  • etc.                         │    │
+│  └─────────────────────────────────┘    │
+└─────────────────────────────────────────┘
+```
+
+**API Calls:**
+- `GET /api/admin/dashboard/stats` - For key metrics
+
+---
+
+## 🔄 Shared Screens
+
+### Common Components Across All Portals
+
+#### Loading/Error States
+```dart
+// Loading Widget
+class LoadingWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: CircularProgressIndicator());
+  }
+}
+
+// Error Widget
+class ErrorWidget extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+  
+  // Display error with retry button
+}
+
+// Empty State Widget
+class EmptyStateWidget extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+}
+```
+
+#### Confirmation Dialogs
+```dart
+// Logout Confirmation
+// Delete Confirmation
+// Cancel Shift Confirmation
+// Withdraw Application Confirmation
+```
+
+#### Bottom Sheets
+```dart
+// Filter Bottom Sheet
+// Sort Bottom Sheet
+// Action Menu Bottom Sheet
+```
+
+---
+
+## 📊 Complete Screen Inventory
+
+### Public Portal (Applicant) - 15 Screens
+| # | Screen | Route | Auth Required |
+|---|--------|-------|---------------|
+| 1 | Splash | `/splash` | No |
+| 2 | Login | `/login` | No |
+| 3 | Applicant Signup | `/signup/applicant` | No |
+| 4 | Registration Form | `/register/applicant` | No |
+| 5 | Home Dashboard | `/home` | Yes |
+| 6 | Browse Jobs | `/jobs` | Yes |
+| 7 | Job Detail | `/jobs/:id` | Yes |
+| 8 | My Jobs | `/my-jobs` | Yes |
+| 9 | Job Request Detail | `/job-requests/:id` | Yes |
+| 10 | My Shifts | `/shifts` | Yes |
+| 11 | Shift Detail | `/shifts/:id` | Yes |
+| 12 | Attendance History | `/attendance` | Yes |
+| 13 | Profile | `/profile` | Yes |
+| 14 | Notifications | `/notifications` | Yes |
+| 15 | Edit Profile | `/profile/edit` | Yes |
+
+### Employer Portal - 18 Screens
+| # | Screen | Route | Auth Required |
+|---|--------|-------|---------------|
+| 1 | Splash | `/splash` | No |
+| 2 | Login | `/login` | No |
+| 3 | Employer Signup | `/signup/employer` | No |
+| 4 | Registration Form | `/register/employer` | No |
+| 5 | Dashboard | `/employer/dashboard` | Yes |
+| 6 | My Jobs | `/employer/jobs` | Yes |
+| 7 | Post Job | `/employer/jobs/create` | Yes |
+| 8 | Edit Job | `/employer/jobs/:id/edit` | Yes |
+| 9 | Job Applications | `/employer/jobs/:id/applications` | Yes |
+| 10 | Browse Applicants | `/employer/applicants` | Yes |
+| 11 | Applicant Profile | `/employer/applicants/:id` | Yes |
+| 12 | Send Job Request | `/employer/requests/create` | Yes |
+| 13 | Job Requests Sent | `/employer/requests` | Yes |
+| 14 | Shortlist | `/employer/shortlist` | Yes |
+| 15 | My Shifts | `/employer/shifts` | Yes |
+| 16 | Create Shift | `/employer/shifts/create` | Yes |
+| 17 | Attendance Records | `/employer/attendance` | Yes |
+| 18 | More/Profile | `/employer/more` | Yes |
+
+### Admin Portal - 6 Screens
+| # | Screen | Route | Auth Required |
+|---|--------|-------|---------------|
+| 1 | Admin Login | `/admin/login` | No |
+| 2 | Dashboard | `/admin/dashboard` | Yes |
+| 3 | Manage Employers | `/admin/employers` | Yes |
+| 4 | Manage Applicants | `/admin/applicants` | Yes |
+| 5 | Moderate Jobs | `/admin/jobs` | Yes |
+| 6 | Analytics | `/admin/analytics` | Yes |
+
+---
+
+## 🎨 Design System
+
+### Colors
+```dart
+class AppColors {
+  // Primary
+  static const primary = Color(0xFF1976D2);
+  static const primaryDark = Color(0xFF115293);
+  static const primaryLight = Color(0xFF4791DB);
+  
+  // Status Colors
+  static const success = Color(0xFF4CAF50);
+  static const warning = Color(0xFFFFA726);
+  static const error = Color(0xFFE53935);
+  static const info = Color(0xFF29B6F6);
+  
+  // Job Status
+  static const jobOpen = Color(0xFF4CAF50);
+  static const jobClosed = Color(0xFF9E9E9E);
+  static const jobFilled = Color(0xFF2196F3);
+  
+  // Application Status
+  static const applied = Color(0xFFFFA726);
+  static const reviewing = Color(0xFF29B6F6);
+  static const accepted = Color(0xFF4CAF50);
+  static const rejected = Color(0xFFE53935);
+  static const withdrawn = Color(0xFF9E9E9E);
+  
+  // Shift Status
+  static const scheduled = Color(0xFFFFA726);
+  static const confirmed = Color(0xFF4CAF50);
+  static const inProgress = Color(0xFF2196F3);
+  static const completed = Color(0xFF9E27B0);
+  static const cancelled = Color(0xFFE53935);
+}
+```
+
+### Typography
+```dart
+class AppTextStyles {
+  static const heading1 = TextStyle(fontSize: 28, fontWeight: FontWeight.bold);
+  static const heading2 = TextStyle(fontSize: 24, fontWeight: FontWeight.bold);
+  static const heading3 = TextStyle(fontSize: 20, fontWeight: FontWeight.w600);
+  static const body1 = TextStyle(fontSize: 16, fontWeight: FontWeight.normal);
+  static const body2 = TextStyle(fontSize: 14, fontWeight: FontWeight.normal);
+  static const caption = TextStyle(fontSize: 12, fontWeight: FontWeight.normal);
+  static const button = TextStyle(fontSize: 16, fontWeight: FontWeight.w600);
+}
+```
+
+### Spacing
+```dart
+class AppSpacing {
+  static const xs = 4.0;
+  static const sm = 8.0;
+  static const md = 16.0;
+  static const lg = 24.0;
+  static const xl = 32.0;
+}
+```
+
+---
+
+## ⚠️ Critical Implementation Notes
+
+### 1. Employer Dashboard - Recent Applications
+```dart
+// ❌ WRONG - This endpoint does NOT exist
+GET /api/applications/employer/recent?limit=5
+
+// ✅ CORRECT - Fetch applications per job
+// Step 1: Get employer's jobs
+GET /api/jobs/employer/my-jobs?limit=5
+
+// Step 2: For each job, fetch applications
+GET /api/applications/job/:jobId?limit=1
+
+// Step 3: Combine client-side
+```
+
+### 2. Admin Stats Endpoint
+```dart
+// ❌ WRONG
+GET /api/admin/stats
+
+// ✅ CORRECT
+GET /api/admin/dashboard/stats
+// Note: This returns stats + recentJobs + recentApplications
+```
+
+### 3. Reject Application Body Field
+```dart
+// ❌ WRONG
+PUT /api/applications/:id/reject
+Body: { "rejectReason": "..." }
+
+// ✅ CORRECT
+PUT /api/applications/:id/reject
+Body: { "rejectionReason": "..." }
+```
+
+### 4. Admin Cannot Activate Applicants
+```dart
+// ❌ WRONG - This endpoint does NOT exist
+PUT /api/admin/applicants/:id/activate
+
+// ✅ CORRECT - Admin can only deactivate
+PUT /api/admin/applicants/:id/deactivate
+```
+
+### 5. Admin Cannot Close Jobs
+```dart
+// ❌ WRONG - This endpoint does NOT exist
+PUT /api/admin/jobs/:id/close
+
+// ✅ CORRECT - Admin can only delete
+DELETE /api/admin/jobs/:id
+```
+
+### 6. Admin Job Listing
+```dart
+// ❌ WRONG - This endpoint does NOT exist
+GET /api/admin/jobs
+
+// ✅ CORRECT - Use public endpoint
+GET /api/jobs?status=&search=&page=
+```
+
+---
+
+## 📱 Responsive Breakpoints
+
+```dart
+class Breakpoints {
+  static const mobile = 600;
+  static const tablet = 900;
+  static const desktop = 1200;
+}
+
+// Mobile: Bottom Navigation
+// Tablet: Navigation Rail
+// Desktop: Side Navigation Drawer
+```
+
+---
+
+**End of Site Map Documentation**
